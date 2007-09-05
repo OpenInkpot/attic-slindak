@@ -30,7 +30,7 @@ void check_file(char *path)
 	struct debfile debf;
 	struct dscfile dscf;
 	char *c;
-	int s, sn;
+	int s;
 
 	/* XXX: consider a simple '.deb' check sufficient? */
 	p += strlen(path) - 4;
@@ -56,8 +56,8 @@ void check_file(char *path)
 		if (!s2)
 			return;
 
-		sn = get_suite_by_name(suite);
-		if (sn == GE_ERROR)
+		/* validate the suite name */
+		if (get_suite_by_name(suite) == GE_ERROR)
 			return;
 
 		s = ov_find_component(debf.source, debf.version, debf.arch,
@@ -66,7 +66,7 @@ void check_file(char *path)
 			printf("%s=%s: dists/clydesdale/%s/binary-%s/Packages\n",
 					debf.debname, debf.version,
 					debf.component, debf.arch);
-			list_append(sn, path);
+			pkg_append(path, suite, debf.arch, debf.component, 0);
 		/*printf(" * %s (%s): %s %s %s/%s\n", debf.debname, debf.source,
 				debf.version, debf.arch, debf.component, c);*/
 			free(c);
@@ -80,6 +80,7 @@ void check_file(char *path)
 			printf("%s=%s: dists/clydesdale/%s/source/Sources\n",
 					dscf.pkgname, dscf.version,
 					dscf.component);
+			pkg_append(path, "clydesdale", dscf.arch, dscf.component, 1);
 		/*printf(" = %s: %s %s %s/%s\n", dscf.pkgname,
 				dscf.version, dscf.arch, dscf.component, c);*/
 			free(c);

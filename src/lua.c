@@ -80,10 +80,28 @@ int L_push_table(char *table, int parent)
 
 #define L_pop_table(x) do { /*lua_pop(L, 2 * x);*/ } while (0)
 
+char *L_call3(char *fn, char *arg1, char *arg2, char *arg3)
+{
+	char *ret;
+
+	lua_getfield(L, LUA_GLOBALSINDEX, fn);
+	lua_pushstring(L, arg1);
+	lua_pushstring(L, arg2);
+	lua_pushstring(L, arg3);
+	lua_pcall(L, 3, 1, 0);
+	ret = lua_tostring(L, -1);
+
+	if (!ret)
+		return NULL;
+
+	return strdup(ret);
+}
+
 int L_call_aptconf()
 {
 	int tbl, ttbl;
 	int i;
+	FILE *aptf;
 
 	/* settings = {} */
 	tbl = L_push_table("settings", LUA_GLOBALSINDEX);
@@ -93,22 +111,24 @@ int L_call_aptconf()
 	/* settings["SUITES"] = {} */
 	ttbl = L_push_table("SUITES", tbl);
 	
-	for (i = 0; i < NSUITES; i++)
-		L_push_int_str(ttbl, i + 1, suites[i]);
+	for (i = 0; i < nsuites; i++)
+		L_push_int_str(ttbl, i + 1, SUITES[i]->name);
 
 	L_pop_table(1);
 
 	/* settings["SUITE_SETTINGS"] = {} */
 	ttbl = L_push_table("SUITE_SETTINGS", tbl);
 	
-	for (i = 0; i < NSUITES; i++) {
+	for (i = 0; i < nsuites; i++) {
 		int ltbl;
 
-		ltbl = L_push_table(suites[i], ttbl);
-		L_push_pair_str(ltbl, "bin_list_path", lists[i * 2]->name);
-		L_push_pair_str(ltbl, "src_list_path", lists[i * 2 + 1]->name);
-		L_push_pair_str(ltbl, "components",    "host-tools");
-		L_push_pair_str(ltbl, "arches",        "i386");
+		ltbl = L_push_table(SUITES[i]->name, ttbl);
+		L_push_str_vstr(ltbl, "bin_list_path",
+				"%s_$(SECTION)_$(ARCH).list", SUITES[i]->name);
+		L_push_str_vstr(ltbl, "src_list_path",
+				"%s_$(SECTION).src.list", SUITES[i]->name);
+		L_push_pair_str(ltbl, "components", SUITES[i]->complist);
+		L_push_pair_str(ltbl, "arches",     SUITES[i]->archlist);
 		L_pop_table(1);
 	}
 
@@ -117,7 +137,9 @@ int L_call_aptconf()
 	lua_getfield(L, LUA_GLOBALSINDEX, "generate_apt_conf");
 	/*lua_getfield(L, LUA_GLOBALSINDEX, "settings");*/
 	lua_pcall(L, 0, 1, 0);
-	printf(">>>>>>>>>>>>>\n%s<<<<<<<<<<<<<\n", lua_tostring(L, -1));
+	aptf = fopen("/tmp/apt-ftparchive.conf", "w");
+	fprintf(aptf, "%s\n", lua_tostring(L, -1));
+	fclose(aptf);
 	lua_pop(L, 1);
 
 	L_pop_table(1);

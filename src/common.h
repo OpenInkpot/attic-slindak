@@ -4,8 +4,16 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#define NSUITES 3
-static char *suites[NSUITES] = { "clydesdale", "percheron", "attic" };
+#define MAX_SUITES 8
+
+struct suite {
+	char *name;
+	char *archlist;
+	char *complist;
+};
+
+extern struct suite *SUITES[MAX_SUITES];
+extern int nsuites;
 
 #define GE_OK    (0)
 #define GE_ERROR (-1)
@@ -17,15 +25,6 @@ static char *suites[NSUITES] = { "clydesdale", "percheron", "attic" };
 extern char repo_dir[PATH_MAX];
 extern char pool_dir[PATH_MAX];
 extern char odb_path[PATH_MAX];
-
-struct list_file {
-	char name[PATH_MAX];
-	FILE *file;
-};
-
-#define MAX_SUITES 8
-extern struct list_file *lists[MAX_SUITES * 2];
-extern int nlists;
 
 #endif
 
