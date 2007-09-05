@@ -5,11 +5,13 @@
 #define __COMMON_H__
 
 #define MAX_SUITES 8
+#define MAX_ARCHES 32
+#define MAX_COMPS  32
 
 struct suite {
 	char *name;
-	char *archlist;
-	char *complist;
+	char *archlist[MAX_ARCHES];
+	char *complist[MAX_COMPS];
 };
 
 extern struct suite *SUITES[MAX_SUITES];

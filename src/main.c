@@ -133,8 +133,8 @@ int traverse(char *path)
 
 int main(int argc, char **argv)
 {
-	int s;
-	char *c;
+	int s, sn, an, cn;
+	char *c, *fn;
 	
 	if (argc != 2) {
 		fprintf(stderr, "Gimme a repo, ye wee cunt!\n");
@@ -155,11 +155,31 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
+	/* clean all the lists */
+	for (sn = 0; sn < nsuites; sn++)
+		for (cn = 0; SUITES[sn]->complist[cn]; cn++) {
+			fn = L_call("RenderSrcListFileName",
+					2, SUITES[sn]->name, SUITES[sn]->complist[cn]);
+			unlink(fn);
+			free(fn);
+
+			for (an = 0; SUITES[sn]->archlist[an]; an++) {
+				fn = L_call("RenderListFileName",
+						3, SUITES[sn]->name,
+						SUITES[sn]->archlist[an],
+						SUITES[sn]->complist[cn]);
+				unlink(fn);
+				free(fn);
+			}
+		}
+				
 	traverse(repo_dir);
 
 	db_done();
 	done_slind();
 	L_done();
+
+	system("apt-ftparchive generate /tmp/apt-ftparchive.conf");
 
 	return 0;
 }

@@ -33,14 +33,9 @@ Suites = {
   }
 }
 
--- SuiteAdd("suffolk", "i386 arm powerpc", "main");
-
-for i, j in pairs(Suites) do
-  local arches = table.concat(j["arches"], " ")
-  local comps = table.concat(j["components"], " ")
-
-  SuiteAdd(i, arches, comps)
-end
+SuiteAdd("clydesdale")
+SuiteAdd("percheron")
+SuiteAdd("attic")
 
 function RenderListFileName(suite, arch, components)
   return (
@@ -48,7 +43,7 @@ function RenderListFileName(suite, arch, components)
     "/indices/" .. suite .. "_" .. components .. "_" .. arch .. ".list")
 end
 
-function RenderSrcListFileName(suite, arch, components)
+function RenderSrcListFileName(suite, components)
   return (
     Config["repo_dir"] ..
     "/indices/" .. suite .. "_" .. components .. ".src.list")

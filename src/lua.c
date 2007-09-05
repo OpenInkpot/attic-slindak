@@ -20,6 +20,14 @@ static lua_State *L;
 #define LUA_MAIN_CONF "lua/config.lua"
 #endif
 
+#ifndef LUA_TABLE_SUITES
+#define LUA_TABLE_SUITES "Suites"
+#endif
+
+#ifndef LUA_TABLE_CONFIG
+#define LUA_TABLE_CONFIG "Config"
+#endif
+
 int L_push_int_str(int table, int key, char *val)
 {
 	lua_pushinteger(L, key);
@@ -94,6 +102,7 @@ char *L_call(char *fn, int argc, ...)
 
 	lua_pcall(L, argc, 1, 0);
 	ret = lua_tostring(L, -1);
+	lua_pop(L, 1);
 
 	if (!ret)
 		return NULL;
@@ -131,8 +140,6 @@ int L_call_aptconf()
 				"%s_$(SECTION)_$(ARCH).list", SUITES[i]->name);
 		L_push_str_vstr(ltbl, "src_list_path",
 				"%s_$(SECTION).src.list", SUITES[i]->name);
-		L_push_pair_str(ltbl, "components", SUITES[i]->complist);
-		L_push_pair_str(ltbl, "arches",     SUITES[i]->archlist);
 		L_pop_table(1);
 	}
 
@@ -183,30 +190,65 @@ int L_dofile(const char *path)
 	return GE_OK;
 }
 
+int L_get_array(int index, char **array, int narr)
+{
+	int i = 0;
+
+	lua_pushnil(L);
+	while (lua_next(L, index) && i < narr) {
+		lua_pushvalue(L, -1);
+		printf(" * %s\n",
+				lua_tostring(L, -1));
+
+		array[i++] = strdup(lua_tostring(L, -1));
+		lua_pop(L, 2);
+	}
+
+	return i;
+}
+
 int extl_suite_add(lua_State *L)
 {
 	char *suite;
+	char *archlist[MAX_ARCHES];
+	char *complist[MAX_COMPS];
 	int argc = lua_gettop(L);
-	int s;
+	int s, tbl;
 
-	if (argc != 3) {
-		fprintf(stderr, "%s requires 3 args\n", __FUNCTION__);
+	if (argc != 1) {
+		fprintf(stderr, "%s requires 1 args\n", __FUNCTION__);
 		return 0;
 	}
 
-	suite = lua_tostring(L, -3);
-	s = suite_add(
-			lua_tostring(L, -3), /* suite name */
-			lua_tostring(L, -2), /* arch list  */
-			lua_tostring(L, -1)  /* components */
-			);
-	if (s != GE_OK) {
-		fprintf(stderr, "Failed to add suite %s\n",
-				lua_tostring(L, -3));
-		return 0;
-	}
+	suite = lua_tostring(L, -1);
+	lua_pop(L, 1);
 
-	printf("Successfully added suite %s\n", suite);
+	s = get_suite_by_name(suite);
+	if (s != GE_ERROR) {
+		/*suite_remove(s);*/
+		fprintf(stderr, "Suite %s is already there\n", suite);
+		return 0;
+	} else
+		s = -1;
+
+	memset(archlist, 0, sizeof(archlist));
+	memset(complist, 0, sizeof(complist));
+
+	printf("Hashing suite %s\n", suite);
+	lua_getfield(L, LUA_GLOBALSINDEX, LUA_TABLE_SUITES);
+	lua_getfield(L, -1, suite);
+	lua_getfield(L, -1, "arches");
+
+	L_get_array(-2, archlist, MAX_ARCHES);
+
+	lua_pop(L, 1);
+	lua_getfield(L, -1, "components");
+
+	L_get_array(-2, complist, MAX_COMPS);
+
+	lua_pop(L, 4);
+	suite_add(suite, archlist, complist, s);
+
 	return 0;
 }
 
