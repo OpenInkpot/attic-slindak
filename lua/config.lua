@@ -36,18 +36,21 @@ Suites = {
 -- SuiteAdd("suffolk", "i386 arm powerpc", "main");
 
 for i, j in pairs(Suites) do
-  local arches = ""
-  local comps = ""
-
-  print(">> "..i.." : ");
-  for k, l in ipairs(j["arches"]) do
-    arches = arches .. l;
-  end
-
-  for k, l in ipairs(j["components"]) do
-    comps = comps .. l;
-  end
+  local arches = table.concat(j["arches"], " ")
+  local comps = table.concat(j["components"], " ")
 
   SuiteAdd(i, arches, comps)
+end
+
+function RenderListFileName(suite, arch, components)
+  return (
+    Config["repo_dir"] ..
+    "/indices/" .. suite .. "_" .. components .. "_" .. arch .. ".list")
+end
+
+function RenderSrcListFileName(suite, arch, components)
+  return (
+    Config["repo_dir"] ..
+    "/indices/" .. suite .. "_" .. components .. ".src.list")
 end
 
