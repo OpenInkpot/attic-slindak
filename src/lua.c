@@ -12,12 +12,17 @@
 
 static lua_State *L;
 
-#ifndef LUA_APT_CONF
+#if HACKER
 #define LUA_APT_CONF "lua/apt-conf.lua"
+#define LUA_MAIN_CONF "lua/config.lua"
+#endif
+
+#ifndef LUA_APT_CONF
+#define LUA_APT_CONF "/usr/share/slindak/apt-conf.lua"
 #endif
 
 #ifndef LUA_MAIN_CONF
-#define LUA_MAIN_CONF "lua/config.lua"
+#define LUA_MAIN_CONF "/etc/config.lua"
 #endif
 
 #ifndef LUA_TABLE_SUITES

@@ -1,0 +1,14 @@
+Source: slindak
+Maintainer: Alexander Shishkin <virtuoso@slind.org>
+Section: host-tools
+Priority: optional
+Standards-Version: 3.6.2
+Build-Depends: libc6-dev, libpopt-dev, liblua5.1-0-dev, libsqlite3-dev
+
+Package: slindak
+Section: host-tools
+Architecture: any
+Depends: ${shlibs:Depends}, apt-utils
+Description: generates package pool indices
+ This is SLIND. The rest is TODO.
+

@@ -32,6 +32,12 @@ AC_DEFINE_UNQUOTED([MV_BIN_PATH],     ["$MV_BIN_PATH"], ["Path to mv executable"
 AC_DEFINE_UNQUOTED([RM_BIN_PATH],     ["$RM_BIN_PATH"], ["Path to rm executable"])
 AC_DEFINE_UNQUOTED([MKDIR_BIN_PATH],  ["$MKDIR_BIN_PATH"], ["Path to mkdir executable"])
 AC_DEFINE_UNQUOTED([MD5SUM_BIN_PATH], ["$MD5SUM_BIN_PATH"], ["Path to md5sum executable"])
+AC_ARG_WITH(hacker,
+		AS_HELP_STRING([--with-hacker],
+			[enables hacker mode]),
+		[HACKER=1],
+		[HACKER=0])
+AC_SUBST(HACKER)
 
 BUILD_DATE="`822-date`"
 AC_SUBST(BUILD_DATE)

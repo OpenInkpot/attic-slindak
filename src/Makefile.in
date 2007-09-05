@@ -106,6 +106,7 @@ F77 = @F77@
 FFLAGS = @FFLAGS@
 GIT_BIN_PATH = @GIT_BIN_PATH@
 GREP = @GREP@
+HACKER = @HACKER@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -188,7 +189,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 slindak_SOURCES = main.c db.c overrides.c debfile.c slind.c lua.c
-slindak_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" $(LUA_CFLAGS)
+slindak_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAGS)
 slindak_LDADD = $(SQL_LIBS) $(LUA_LIBS)
 all: all-am
 
@@ -203,9 +204,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  src/Makefile
+	  $(AUTOMAKE) --foreign  src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
