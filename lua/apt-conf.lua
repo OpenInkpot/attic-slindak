@@ -19,32 +19,6 @@ Default
 
 ]]
 
-function test_call (q)
-	return "test_call: "..q
-end
-
-function list_iter (t)
-    local i = 0
-    local n = table.getn(t)
-    return function ()
-	i = i + 1
-	if i <= n then return t[i] end
-    end
-end
-
-function dump_table (tbl)
-	local testt = { 'one', 'two', 'three'};
-	for i, j in pairs(tbl["SUITES"]) do
-		print("# "..i..": "..j)
-	end
-	for i, j in pairs(testt) do
-		print(">> "..i.." >> "..j)
-	end
-	for i in list_iter(tbl["SUITES"]) do
-		print(">> "..i)
-	end
-end
-
 function generate_apt_conf ()
     -- Settings is a table:
     -- POOLTOP: The top directory for the pool.
@@ -59,7 +33,7 @@ function generate_apt_conf ()
      -- src_override  -- path to the source overrides
      apt_conf = string.gsub(apt_conf_template, "POOLTOP", settings["POOLTOP"])
 
-     for suite in list_iter(settings["SUITES"]) do
+     for i, suite in ipairs(settings["SUITES"]) do
 	 -- Main logic.
 	 -- Start a tree for this suite.
 	 apt_conf = apt_conf .. "tree \"dists/" .. suite .. "\"\n{\n"
