@@ -49,9 +49,9 @@ int pkg_append(char *path, char *suite, char *arch, char *comp, int src)
 	FILE *f;
 	char *fn;
 
-	fn = L_call3(src
+	fn = L_call(src
 			? "RenderSrcListFileName"
-			: "RenderListFileName", suite, arch, comp);
+			: "RenderListFileName", 3, suite, arch, comp);
 	GE_ERROR_IFNULL(fn);
 
 	f = fopen(fn, "a");

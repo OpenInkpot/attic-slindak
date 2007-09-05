@@ -80,15 +80,19 @@ int L_push_table(char *table, int parent)
 
 #define L_pop_table(x) do { /*lua_pop(L, 2 * x);*/ } while (0)
 
-char *L_call3(char *fn, char *arg1, char *arg2, char *arg3)
+char *L_call(char *fn, int argc, ...)
 {
+	va_list ap;
+	int n = argc;
 	char *ret;
 
 	lua_getfield(L, LUA_GLOBALSINDEX, fn);
-	lua_pushstring(L, arg1);
-	lua_pushstring(L, arg2);
-	lua_pushstring(L, arg3);
-	lua_pcall(L, 3, 1, 0);
+	va_start(ap, argc);
+	while (n--)
+		lua_pushstring(L, va_arg(ap, char *));
+	va_end(ap);
+
+	lua_pcall(L, argc, 1, 0);
 	ret = lua_tostring(L, -1);
 
 	if (!ret)
