@@ -4,12 +4,13 @@ apt_conf_template = [[
 Dir 
 {
    ArchiveDir "POOLTOP";
+   FileListDir "POOLTOP/indices";
 };
 
 Default
 {
-   Packages::Compress "gzip bzip2";
-   Sources::Compress "gzip bzip2";
+   Packages::Compress ". gzip bzip2";
+   Sources::Compress ". gzip bzip2";
    Contents::Compress "gzip";
    DeLinkLimit 0;
    MaxContentsChange 25000;
@@ -63,6 +64,7 @@ function generate_apt_conf ()
 	 -- Start a tree for this suite.
 	 apt_conf = apt_conf .. "tree \"dists/" .. suite .. "\"\n{\n"
 	 suite_conf = settings["SUITE_SETTINGS"][suite]
+	 apt_conf = apt_conf .. "  BinCacheDB \"/tmp/" .. suite .. ".db\";\n"
 	 apt_conf = apt_conf .. "  FileList \"" .. suite_conf["bin_list_path"] .. "\";\n"
 	 apt_conf = apt_conf .. "  SourceFileList \"" .. suite_conf["src_list_path"] .. "\";\n"
 	 apt_conf = apt_conf .. "  Sections \"" .. suite_conf["components"] .. "\";\n"
