@@ -63,18 +63,19 @@ void check_file(char *path)
 
 		free(suite);
 	} else if (!strcmp(p, ".dsc")) {
+		int sn;
+
 		dscfile_read(path, &dscf);
 
-		s = ov_find_component(dscf.pkgname, dscf.version, dscf.arch,
-				"clydesdale", &c);
-		if (s == GE_OK) {
-			printf("%s=%s: dists/clydesdale/%s/source/Sources\n",
-					dscf.pkgname, dscf.version,
-					dscf.component);
-			pkg_append(path, "clydesdale", dscf.arch, dscf.component, 1);
-		/*printf(" = %s: %s %s %s/%s\n", dscf.pkgname,
-				dscf.version, dscf.arch, dscf.component, c);*/
-			free(c);
+		for (sn = 0; SUITES[sn]; sn++) {
+			s = ov_find_component(dscf.pkgname, dscf.version, dscf.arch,
+					SUITES[sn]->name, &c);
+			if (s == GE_OK) {
+				pkg_append(path, SUITES[sn]->name,
+						dscf.arch, dscf.component, 1);
+
+				free(c);
+			}
 		}
 	}
 }
