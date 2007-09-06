@@ -13,5 +13,7 @@ int traverse(char *path, traverse_fn_t callback, void *data);
 
 int spawn(char *cmd, char **argv);
 
+void root_squash();
+
 #endif
 

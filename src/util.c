@@ -80,6 +80,7 @@ int traverse(char *path, traverse_fn_t callback, void *data)
 }
 
 extern char **environ;
+extern char *program_invocation_name;
 
 /*
  * execute a thing (fork, exec, wait)
@@ -110,5 +111,16 @@ int spawn(char *cmd, char **argv)
         }
 
         return ret;
+}
+
+void root_squash()
+{
+	uid_t uid = geteuid();
+
+	if (uid == 0) {
+		SHOUT("Under no circumstances is %s going to work "
+				"with effective uid of root.\n", program_invocation_name);
+		exit(EXIT_FAILURE);
+	}
 }
 

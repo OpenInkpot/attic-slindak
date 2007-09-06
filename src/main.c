@@ -91,6 +91,7 @@ int main(int argc, char **argv)
 	snprintf(odb_path, PATH_MAX, "%s/indices/overrides.db", repo_dir);
 
 	output_init();
+	root_squash();
 	init_slind();
 	L_init();
 
