@@ -41,10 +41,14 @@ static void output(int w, int v, const char *fmt, ...)
 		output(STD, VERB_NORMAL, fmt, ## args); \
 		fflush(OUT[STD]);              \
 	} while (0);
+#define _DBG(fmt, args...)                      \
+	output(ERR, VERB_DEBUG, fmt, ## args)
+#define _SHOUT(fmt, args...)                    \
+	output(ERR, VERB_SILENT, fmt, ## args)
 #define DBG(fmt, args...)                      \
-	output(ERR, VERB_DEBUG, "[DBG] " fmt, ## args)
+	_DBG("[DBG] " fmt, ## args)
 #define SHOUT(fmt, args...)                    \
-	output(ERR, VERB_SILENT, "[!!!] " fmt, ## args)
+	_SHOUT("[!!!] " fmt, ## args)
 
 #endif
 
