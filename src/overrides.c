@@ -17,7 +17,7 @@ static int ov_select_cb(void *user, int cols, char **values, char **keys)
 {
 	int i;
 
-	printf("# select: %s=%s\n", keys[0], values[0]);
+	DBG("select: %s=%s\n", keys[0], values[0]);
 	return GE_OK;
 }
 
@@ -31,13 +31,13 @@ static int ov_fetch_cb(void *user, int cols, char **values, char **keys)
 	char **out = (char **)user;
 	int i;
 
-	printf("# fetch: ");
+	DBG("fetch: ");
 	for (i = OV_FIRSTCOL; i < OV_NCOLS; i++) {
-		printf("%s=\"%s\" ", keys[i], values[i]);
+		_DBG("%s=\"%s\" ", keys[i], values[i]);
 		if (out)
 			out[i] = values[i];
 	}
-	printf("\n");
+	_DBG("\n");
 
 	return GE_OK;
 }
