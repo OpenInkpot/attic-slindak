@@ -25,8 +25,7 @@ void init_output()
 void check_file(char *path)
 {
 	char *p = path;
-	char *s1, *s2 = NULL;
-	char suite[64];
+	char *suite;
 	struct debfile debf;
 	struct dscfile dscf;
 	char *c;
@@ -35,30 +34,21 @@ void check_file(char *path)
 	/* XXX: consider a simple '.deb' check sufficient? */
 	p += strlen(path) - 4;
 	if (!strcmp(p, ".deb")) {
-		debfile_read(path, &debf);
+		s = debfile_read(path, &debf);
+		if (s != GE_OK)
+			return;
 
-		s1 = strrchr(path, '/');
-		if (s1) {
-			*s1 = '\0';
-			s2 = strrchr(path, '/');
-			*s1 = '/';
-			s2++;
-
-			if (s2) {
-				strncpy(suite, s2, s1 - s2);
-				suite[s1-s2] = '\0';
-				printf("suite: %s\n", suite);
-			}
-		}
-		
 		/* XXX: skip packages that are not placed in a suite-named
 		 * directory */
-		if (!s2)
+		suite = parent_dir(path);
+		if (!suite)
 			return;
 
 		/* validate the suite name */
-		if (get_suite_by_name(suite) == GE_ERROR)
+		if (get_suite_by_name(suite) == GE_ERROR) {
+			free(suite);
 			return;
+		}
 
 		s = ov_find_component(debf.source, debf.version, debf.arch,
 				suite, &c);
@@ -67,10 +57,10 @@ void check_file(char *path)
 					debf.debname, debf.version,
 					debf.component, debf.arch);
 			pkg_append(path, suite, debf.arch, debf.component, 0);
-		/*printf(" * %s (%s): %s %s %s/%s\n", debf.debname, debf.source,
-				debf.version, debf.arch, debf.component, c);*/
 			free(c);
 		}
+
+		free(suite);
 	} else if (!strcmp(p, ".dsc")) {
 		dscfile_read(path, &dscf);
 
