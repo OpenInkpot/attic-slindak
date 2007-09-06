@@ -52,7 +52,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_slindak_OBJECTS = slindak-main.$(OBJEXT) slindak-db.$(OBJEXT) \
 	slindak-overrides.$(OBJEXT) slindak-debfile.$(OBJEXT) \
 	slindak-slind.$(OBJEXT) slindak-lua.$(OBJEXT) \
-	slindak-util.$(OBJEXT)
+	slindak-util.$(OBJEXT) slindak-output.$(OBJEXT)
 slindak_OBJECTS = $(am_slindak_OBJECTS)
 am__DEPENDENCIES_1 =
 slindak_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
@@ -97,6 +97,7 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DPKG_BIN_PATH = @DPKG_BIN_PATH@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
@@ -189,7 +190,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-slindak_SOURCES = main.c db.c overrides.c debfile.c slind.c lua.c util.c
+slindak_SOURCES = main.c db.c overrides.c debfile.c slind.c lua.c util.c output.c
 slindak_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAGS)
 slindak_LDADD = $(SQL_LIBS) $(LUA_LIBS)
 all: all-am
@@ -267,6 +268,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-debfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-lua.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-output.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-overrides.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-slind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-util.Po@am__quote@
@@ -389,6 +391,20 @@ slindak-util.obj: util.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='util.c' object='slindak-util.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-util.obj `if test -f 'util.c'; then $(CYGPATH_W) 'util.c'; else $(CYGPATH_W) '$(srcdir)/util.c'; fi`
+
+slindak-output.o: output.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-output.o -MD -MP -MF "$(DEPDIR)/slindak-output.Tpo" -c -o slindak-output.o `test -f 'output.c' || echo '$(srcdir)/'`output.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-output.Tpo" "$(DEPDIR)/slindak-output.Po"; else rm -f "$(DEPDIR)/slindak-output.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='output.c' object='slindak-output.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-output.o `test -f 'output.c' || echo '$(srcdir)/'`output.c
+
+slindak-output.obj: output.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-output.obj -MD -MP -MF "$(DEPDIR)/slindak-output.Tpo" -c -o slindak-output.obj `if test -f 'output.c'; then $(CYGPATH_W) 'output.c'; else $(CYGPATH_W) '$(srcdir)/output.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-output.Tpo" "$(DEPDIR)/slindak-output.Po"; else rm -f "$(DEPDIR)/slindak-output.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='output.c' object='slindak-output.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-output.obj `if test -f 'output.c'; then $(CYGPATH_W) 'output.c'; else $(CYGPATH_W) '$(srcdir)/output.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

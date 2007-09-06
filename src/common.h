@@ -1,8 +1,12 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#include "output.h"
+
 #ifndef __COMMON_H__
 #define __COMMON_H__
+
+#include "config.h"
 
 #define MAX_SUITES 8
 #define MAX_ARCHES 32

@@ -19,10 +19,6 @@ char repo_dir[PATH_MAX];
 char pool_dir[PATH_MAX];
 char odb_path[PATH_MAX];
 
-void init_output()
-{
-}
-
 void check_file(char *path)
 {
 	char *p = path;
@@ -54,7 +50,7 @@ void check_file(char *path)
 		s = ov_find_component(debf.source, debf.version, debf.arch,
 				suite, &c);
 		if (s == GE_OK) {
-			printf("%s=%s: dists/clydesdale/%s/binary-%s/Packages\n",
+			DBG("%s=%s: dists/clydesdale/%s/binary-%s/Packages\n",
 					debf.debname, debf.version,
 					debf.component, debf.arch);
 			pkg_append(path, suite, debf.arch, debf.component, 0);
@@ -86,7 +82,7 @@ int main(int argc, char **argv)
 	char *c, *fn;
 	
 	if (argc != 2) {
-		fprintf(stderr, "Gimme a repo, ye wee cunt!\n");
+		SHOUT("Gimme a repo, ye wee cunt!\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -94,13 +90,13 @@ int main(int argc, char **argv)
 	snprintf(pool_dir, PATH_MAX, "%s/pool", repo_dir);
 	snprintf(odb_path, PATH_MAX, "%s/indices/overrides.db", repo_dir);
 
-	init_output();
+	output_init();
 	init_slind();
 	L_init();
 
 	s = db_init();
 	if (s != GE_OK) {
-		fprintf(stderr, "Can't open database\n");
+		SHOUT("Can't open database\n");
 		exit(EXIT_FAILURE);
 	}
 
