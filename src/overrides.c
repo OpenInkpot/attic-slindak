@@ -98,7 +98,7 @@ int ov_find_component(char *pkgname, char *version, char *arch, char *suite,
 	return GE_OK;
 }
 
-int ov_find_suite(char *pkgname, char *version, char *arch, char *component,
+int ov_find_suite(char *pkgname, char *version, char *arch,
 		char **suite)
 {
 	char *req;
@@ -108,7 +108,6 @@ int ov_find_suite(char *pkgname, char *version, char *arch, char *component,
 	GE_ERROR_IFNULL(pkgname);
 	GE_ERROR_IFNULL(version);
 	GE_ERROR_IFNULL(arch);
-	GE_ERROR_IFNULL(component);
 
 	asprintf(&req,
 			"pkgname='%s' "
@@ -124,6 +123,33 @@ int ov_find_suite(char *pkgname, char *version, char *arch, char *component,
 	free(req);
 
 	*suite = strdup(data[OV_SUITE]);
+
+	return GE_OK;
+}
+
+int ov_find_version(char *pkgname, char *arch, char *suite, char **version)
+{
+	char *req;
+	char *err;
+	char *data[OV_NCOLS];
+
+	GE_ERROR_IFNULL(pkgname);
+	GE_ERROR_IFNULL(arch);
+	GE_ERROR_IFNULL(suite);
+
+	asprintf(&req,
+			"pkgname='%s' "
+			"AND suite='%s' "
+			"AND (arch='%s' OR arch='')",
+			pkgname, suite, arch
+		);
+
+	GE_ERROR_IFNULL(req);
+
+	ov_search(req, -OV_ARCH, data);
+	free(req);
+
+	*version = strdup(data[OV_VERSION]);
 
 	return GE_OK;
 }
