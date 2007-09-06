@@ -186,7 +186,7 @@ int L_dofile(const char *path)
 
 	s = luaL_dofile(L, path);
 	if (s) {
-		fprintf(stderr, "Can't load %s: %s\n", path,
+		SHOUT("Can't load %s: %s\n", path,
 				lua_tostring(L, -1));
 		lua_pop(L, 1);
 		return GE_ERROR;
@@ -202,7 +202,7 @@ int L_get_array(int index, char **array, int narr)
 	lua_pushnil(L);
 	while (lua_next(L, index) && i < narr) {
 		lua_pushvalue(L, -1);
-		printf(" * %s\n",
+		DBG(" * %s\n",
 				lua_tostring(L, -1));
 
 		array[i++] = strdup(lua_tostring(L, -1));
@@ -221,7 +221,7 @@ int extl_suite_add(lua_State *L)
 	int s, tbl;
 
 	if (argc != 1) {
-		fprintf(stderr, "%s requires 1 args\n", __FUNCTION__);
+		SHOUT("%s requires 1 argument\n", __FUNCTION__);
 		return 0;
 	}
 
@@ -229,17 +229,15 @@ int extl_suite_add(lua_State *L)
 	lua_pop(L, 1);
 
 	s = get_suite_by_name(suite);
-	if (s != GE_ERROR) {
-		/*suite_remove(s);*/
-		fprintf(stderr, "Suite %s is already there\n", suite);
-		return 0;
-	} else
+	if (s != GE_ERROR)
+		suite_remove(s);
+	else
 		s = -1;
 
 	memset(archlist, 0, sizeof(archlist));
 	memset(complist, 0, sizeof(complist));
 
-	printf("Hashing suite %s\n", suite);
+	DBG("Hashing suite %s\n", suite);
 	lua_getfield(L, LUA_GLOBALSINDEX, LUA_TABLE_SUITES);
 	lua_getfield(L, -1, suite);
 	lua_getfield(L, -1, "arches");
