@@ -10,6 +10,8 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include "common.h"
+#include "util.h"
 
 /*
  * Given a path, returns a parent directory,
@@ -33,4 +35,47 @@ char *parent_dir(char *path)
 
 	return res;
 }
-		
+
+int traverse(char *path, traverse_fn_t callback, void *data)
+{
+	DIR *dir;
+	struct dirent *de;
+	struct stat st;
+	char *newpath;
+	int s;
+
+	dir = opendir(path);
+	GE_ERROR_IFNULL(dir);
+
+	do {
+		de = readdir(dir);
+		if (!de)
+			break;
+
+		if ( 
+			de->d_name[0] == '.' &&
+			((de->d_name[1] == '.' && de->d_name[2] == '\0') ||
+			(de->d_name[1] == '\0'))
+		   )
+			continue;
+
+		asprintf(&newpath, "%s/%s", path, de->d_name);
+
+		s = stat(newpath, &st);
+		if (s) {
+			free(newpath);
+			continue;
+		}
+
+		if (S_ISDIR(st.st_mode))
+			traverse(newpath, callback, data);
+		else
+			callback(newpath, data);
+
+		free(newpath);
+	} while (de);
+	closedir(dir);
+
+	return GE_OK;
+}
+

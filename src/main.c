@@ -13,6 +13,7 @@
 #include "common.h"
 #include "db.h"
 #include "debfile.h"
+#include "util.h"
 
 char repo_dir[PATH_MAX];
 char pool_dir[PATH_MAX];
@@ -78,49 +79,6 @@ void check_file(char *path)
 	}
 }
 
-int traverse(char *path)
-{
-	DIR *dir;
-	struct dirent *de;
-	struct stat st;
-	char *newpath;
-	int s;
-
-	dir = opendir(path);
-	GE_ERROR_IFNULL(dir);
-
-	do {
-		de = readdir(dir);
-		if (!de)
-			break;
-
-		if ( 
-			de->d_name[0] == '.' &&
-			((de->d_name[1] == '.' && de->d_name[2] == '\0') ||
-			(de->d_name[1] == '\0'))
-		   )
-			continue;
-
-		asprintf(&newpath, "%s/%s", path, de->d_name);
-
-		s = stat(newpath, &st);
-		if (s) {
-			free(newpath);
-			continue;
-		}
-
-		if (S_ISDIR(st.st_mode))
-			traverse(newpath);
-		else
-			check_file(newpath);
-
-		free(newpath);
-	} while (de);
-	closedir(dir);
-
-	return GE_OK;
-}
-
 int main(int argc, char **argv)
 {
 	int s, sn, an, cn;
@@ -163,7 +121,7 @@ int main(int argc, char **argv)
 			}
 		}
 				
-	traverse(repo_dir);
+	traverse(repo_dir, check_file, NULL);
 
 	db_done();
 	done_slind();
