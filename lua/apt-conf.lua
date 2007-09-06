@@ -42,7 +42,7 @@ function generate_apt_conf ()
 	 apt_conf = apt_conf .. "  FileList \"" .. suite_conf["bin_list_path"] .. "\";\n"
 	 apt_conf = apt_conf .. "  SourceFileList \"" .. suite_conf["src_list_path"] .. "\";\n"
 	 apt_conf = apt_conf .. "  Sections \"" .. table.concat(Suites[suite]["components"], " ") .. "\";\n"
-	 apt_conf = apt_conf .. "  Architectures \"" .. table.concat(Suites[suite]["arches"], " ") .. "\";\n"
+	 apt_conf = apt_conf .. "  Architectures \"" .. table.concat(Suites[suite]["arches"], " ") .. " source\";\n"
 	 if suite_conf["bin_override"] then
 	     apt_conf = apt_conf .. "  BinOverride \"" .. suite_conf["bin_override"] .. "\";\n"
 	 end
