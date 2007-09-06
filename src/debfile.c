@@ -8,6 +8,18 @@
 #include "common.h"
 #include "debfile.h"
 
+int deb_ver_gt(char *v1, char *v2)
+{
+	char *argv[] = { "--compare-versions", v1, "gt", v2, NULL };
+	int ret;
+
+	ret = spawn(DPKG_BIN_PATH, argv);
+	if (ret)
+		return GE_ERROR;
+
+	return GE_OK;
+}
+
 int debfile_read(char *path, struct debfile *df)
 {
 	FILE *p;

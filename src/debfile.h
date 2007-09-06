@@ -25,6 +25,10 @@ struct dscfile {
 	char component[DF_COMPLEN];
 };
 
+int deb_ver_gt(char *v1, char *v2);
+
+int debfile_read(char *path, struct debfile *df);
+int dscfile_read(char *path, struct dscfile *df);
 
 #endif
 

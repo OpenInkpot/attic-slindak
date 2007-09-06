@@ -3,6 +3,9 @@
 /* "Path to cp executable" */
 #undef CP_BIN_PATH
 
+/* "Path to dpkg executable" */
+#undef DPKG_BIN_PATH
+
 /* "Path to git executable" */
 #undef GIT_BIN_PATH
 
