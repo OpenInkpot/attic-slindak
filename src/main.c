@@ -81,6 +81,9 @@ int main(int argc, char **argv)
 	int s, sn, an, cn;
 	char *c, *fn;
 	
+	output_init();
+	root_squash();
+
 	if (argc != 2) {
 		SHOUT("Gimme a repo, ye wee cunt!\n");
 		exit(EXIT_FAILURE);
@@ -90,8 +93,6 @@ int main(int argc, char **argv)
 	snprintf(pool_dir, PATH_MAX, "%s/pool", repo_dir);
 	snprintf(odb_path, PATH_MAX, "%s/indices/overrides.db", repo_dir);
 
-	output_init();
-	root_squash();
 	init_slind();
 	L_init();
 
