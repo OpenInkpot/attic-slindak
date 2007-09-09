@@ -52,10 +52,12 @@ PROGRAMS = $(bin_PROGRAMS)
 am_slindak_OBJECTS = slindak-main.$(OBJEXT) slindak-db.$(OBJEXT) \
 	slindak-overrides.$(OBJEXT) slindak-debfile.$(OBJEXT) \
 	slindak-slind.$(OBJEXT) slindak-lua.$(OBJEXT) \
-	slindak-util.$(OBJEXT) slindak-output.$(OBJEXT)
+	slindak-util.$(OBJEXT) slindak-output.$(OBJEXT) \
+	slindak-messages.$(OBJEXT)
 slindak_OBJECTS = $(am_slindak_OBJECTS)
 am__DEPENDENCIES_1 =
-slindak_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+slindak_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -134,6 +136,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
+POPT_LIBS = @POPT_LIBS@
 RANLIB = @RANLIB@
 RM_BIN_PATH = @RM_BIN_PATH@
 SED = @SED@
@@ -190,9 +193,9 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-slindak_SOURCES = main.c db.c overrides.c debfile.c slind.c lua.c util.c output.c
+slindak_SOURCES = main.c db.c overrides.c debfile.c slind.c lua.c util.c output.c messages.c
 slindak_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAGS)
-slindak_LDADD = $(SQL_LIBS) $(LUA_LIBS)
+slindak_LDADD = $(SQL_LIBS) $(LUA_LIBS) $(POPT_LIBS)
 all: all-am
 
 .SUFFIXES:
@@ -206,9 +209,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/Makefile
+	  $(AUTOMAKE) --gnu  src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -268,6 +271,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-debfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-lua.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-messages.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-output.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-overrides.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-slind.Po@am__quote@
@@ -405,6 +409,20 @@ slindak-output.obj: output.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='output.c' object='slindak-output.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-output.obj `if test -f 'output.c'; then $(CYGPATH_W) 'output.c'; else $(CYGPATH_W) '$(srcdir)/output.c'; fi`
+
+slindak-messages.o: messages.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-messages.o -MD -MP -MF "$(DEPDIR)/slindak-messages.Tpo" -c -o slindak-messages.o `test -f 'messages.c' || echo '$(srcdir)/'`messages.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-messages.Tpo" "$(DEPDIR)/slindak-messages.Po"; else rm -f "$(DEPDIR)/slindak-messages.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='messages.c' object='slindak-messages.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-messages.o `test -f 'messages.c' || echo '$(srcdir)/'`messages.c
+
+slindak-messages.obj: messages.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-messages.obj -MD -MP -MF "$(DEPDIR)/slindak-messages.Tpo" -c -o slindak-messages.obj `if test -f 'messages.c'; then $(CYGPATH_W) 'messages.c'; else $(CYGPATH_W) '$(srcdir)/messages.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-messages.Tpo" "$(DEPDIR)/slindak-messages.Po"; else rm -f "$(DEPDIR)/slindak-messages.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='messages.c' object='slindak-messages.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-messages.obj `if test -f 'messages.c'; then $(CYGPATH_W) 'messages.c'; else $(CYGPATH_W) '$(srcdir)/messages.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

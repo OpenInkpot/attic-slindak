@@ -5,6 +5,7 @@
 #ifndef __OUTPUT_H__
 #define __OUTPUT_H__
 
+#include <stdio.h>
 #include <stdarg.h>
 #include "common.h"
 

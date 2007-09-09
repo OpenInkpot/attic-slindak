@@ -8,6 +8,13 @@
 
 #include "config.h"
 
+#ifndef HOST_OS
+#define HOST_OS "linux"
+#endif
+#ifndef BUILD_DATE
+#define BUILD_DATE "N/A"
+#endif
+
 #define MAX_SUITES 8
 #define MAX_ARCHES 32
 #define MAX_COMPS  32
@@ -28,7 +35,7 @@ extern int nsuites;
 #define GE_ERROR_IFNULL(x) do { if (!(x)) return GE_ERROR; } while (0)
 
 #include <limits.h>
-extern char repo_dir[PATH_MAX];
+extern char *repo_dir;
 extern char pool_dir[PATH_MAX];
 extern char odb_path[PATH_MAX];
 

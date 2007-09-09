@@ -12,6 +12,9 @@ PKG_CHECK_MODULES(LUA, lua5.1)
 AC_SUBST(LUA_LIBS)
 AC_SUBST(LUA_CFLAGS)
 
+AC_CHECK_LIB(popt, poptGetArg, [POPT_LIBS="-lpopt"], [echo "$0: libpopt is missing" >&2; exit 2])
+AC_SUBST(POPT_LIBS)
+
 AC_CHECK_LIB(cgi, htmlentities, [CGI_LIBS="-lcgi"], [echo "$0: libcgi is missing" >&2; exit 2])
 AC_SUBST(CGI_LIBS)
 

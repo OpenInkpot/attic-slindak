@@ -10,14 +10,22 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <popt.h>
 #include "common.h"
 #include "db.h"
 #include "debfile.h"
 #include "util.h"
 
-char repo_dir[PATH_MAX];
+char *repo_dir;
 char pool_dir[PATH_MAX];
 char odb_path[PATH_MAX];
+
+static struct poptOption opts_table[] = {
+	{ "verbose",  'v', 0, 0, 'v', "turn on debugging output"   },
+	{ "version",  'V', 0, 0, 'V', "show our version number"    },
+	{ "help",     'h', 0, 0, 'h', "print help message"         },
+	POPT_TABLEEND
+};
 
 void check_file(char *path)
 {
@@ -79,17 +87,50 @@ void check_file(char *path)
 int main(int argc, char **argv)
 {
 	int s, sn, an, cn;
-	char *c, *fn;
+	char *c, *fn, o;
+	poptContext optcon;
 	
 	output_init();
 	root_squash();
 
-	if (argc != 2) {
-		SHOUT("Gimme a repo, ye wee cunt!\n");
+	optcon = poptGetContext(NULL, argc, argv, opts_table, 0);
+	poptSetOtherOptionHelp(optcon, "[<option>] <path-to-repository>");
+
+	while ((o = poptGetNextOpt(optcon)) >= 0) {
+		switch (o) {
+			case 'h':
+				help();
+				poptPrintHelp(optcon, OUT[STD], 0);
+				exit(EXIT_SUCCESS);
+				break;
+
+			case 'V':
+				version();
+				exit(EXIT_SUCCESS);
+				break;
+
+			case 'v':
+				verbosity = VERB_DEBUG;
+				break;
+
+			default:
+				SHOUT("Invalid option on the command line");
+				exit(EXIT_FAILURE);
+		}
+	}
+
+	if (o < -1) {
+		poptPrintUsage(optcon, OUT[ERR], 0);
+		poptFreeContext(optcon);
 		exit(EXIT_FAILURE);
 	}
 
-	strcpy(repo_dir, argv[1]);
+	repo_dir = poptGetArg(optcon);
+	if (!repo_dir) {
+		SHOUT("A repository path is required\n");
+		exit(EXIT_FAILURE);
+	}
+
 	snprintf(pool_dir, PATH_MAX, "%s/pool", repo_dir);
 	snprintf(odb_path, PATH_MAX, "%s/indices/overrides.db", repo_dir);
 
@@ -125,6 +166,7 @@ int main(int argc, char **argv)
 	db_done();
 	done_slind();
 	L_done();
+	poptFreeContext(optcon);
 
 	system("apt-ftparchive generate /tmp/apt-ftparchive.conf");
 
