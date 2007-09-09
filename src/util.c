@@ -113,6 +113,25 @@ int spawn(char *cmd, char **argv)
 	return ret;
 }
 
+/*
+ * create a directory (with all the missing parent directories)
+ */
+int mkdir_p(char *dst, mode_t mode)
+{
+	char *argv[] = { "mkdir", "-p", dst, NULL };
+	int ret;
+
+	ret = spawn(MKDIR_BIN_PATH, argv);
+	if (ret)
+		return GE_ERROR;
+
+	ret = chmod(dst, mode);
+	if (ret)
+		return GE_ERROR;
+
+	return GE_OK;
+}
+
 void root_squash()
 {
 	uid_t uid = geteuid();
