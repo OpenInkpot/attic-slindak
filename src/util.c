@@ -88,29 +88,29 @@ extern char *program_invocation_name;
  */
 int spawn(char *cmd, char **argv)
 {
-        pid_t pid;
-        int i = 0;
-        int ret;
+	pid_t pid;
+	int i = 0;
+	int ret;
 
-        if (verbosity >= VERB_DEBUG) {
-                DBG("going to execute:");
-                while (argv[i])
-                        output(ERR, VERB_DEBUG, " %s", argv[i++]);
-                output(ERR, VERB_DEBUG, "\n");
-        }
+	if (verbosity >= VERB_DEBUG) {
+		DBG("going to execute:");
+		while (argv[i])
+			output(ERR, VERB_DEBUG, " %s", argv[i++]);
+		output(ERR, VERB_DEBUG, "\n");
+	}
 
-        pid = fork();
-        if (pid)
-                waitpid(-1, &ret, 0);
-        else {
-                ret = execve(cmd, argv, environ);
-                if (ret) {
-                        DBG("exec %s failed\n", cmd);
-                        exit(EXIT_FAILURE);
-                }
-        }
+	pid = fork();
+	if (pid)
+		waitpid(-1, &ret, 0);
+	else {
+		ret = execve(cmd, argv, environ);
+		if (ret) {
+			DBG("exec %s failed\n", cmd);
+			exit(EXIT_FAILURE);
+		}
+	}
 
-        return ret;
+	return ret;
 }
 
 void root_squash()
