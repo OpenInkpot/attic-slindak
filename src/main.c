@@ -146,8 +146,18 @@ int main(int argc, char **argv)
 	/* clean all the lists */
 	for (sn = 0; sn < nsuites; sn++)
 		for (cn = 0; SUITES[sn]->complist[cn]; cn++) {
+			char *dir;
+
 			fn = L_call("RenderSrcListFileName",
 					2, SUITES[sn]->name, SUITES[sn]->complist[cn]);
+
+			/* make sure the directory exists */
+			asprintf(&dir, "%s/dists/%s/%s/source",
+					repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn]);
+
+			mkdir_p(dir, 0755);
+			free(dir);
+
 			unlink(fn);
 			free(fn);
 
@@ -156,6 +166,14 @@ int main(int argc, char **argv)
 						3, SUITES[sn]->name,
 						SUITES[sn]->archlist[an],
 						SUITES[sn]->complist[cn]);
+
+				asprintf(&dir, "%s/dists/%s/%s/binary-%s",
+						repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn],
+						SUITES[sn]->archlist[an]);
+
+				mkdir_p(dir, 0755);
+				free(dir);
+
 				unlink(fn);
 				free(fn);
 			}
