@@ -60,6 +60,64 @@ void suite_remove_all()
 		suite_remove(nsuites);
 }
 
+static int lists_cleanup()
+{
+	int sn, an, cn, s;
+	char *fn;
+
+	/* clean all the lists */
+	for (sn = 0; sn < nsuites; sn++)
+		for (cn = 0; SUITES[sn]->complist[cn]; cn++) {
+			char *dir;
+
+			fn = L_call("RenderSrcListFileName",
+					2, SUITES[sn]->name, SUITES[sn]->complist[cn]);
+
+			/* make sure the directory exists */
+			s = asprintf(&dir, "%s/dists/%s/%s/source",
+					repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn]);
+
+			if (s == -1 || !fn) {
+				SHOUT("Can't allocate memory!\n");
+				free(fn);
+				return GE_ERROR;
+			}
+
+			mkdir_p(dir, 0755);
+			free(dir);
+
+			unlink(fn);
+			creat(fn, 0644);
+			free(fn);
+
+			for (an = 0; SUITES[sn]->archlist[an]; an++) {
+				fn = L_call("RenderListFileName",
+						3, SUITES[sn]->name,
+						SUITES[sn]->archlist[an],
+						SUITES[sn]->complist[cn]);
+
+				s = asprintf(&dir, "%s/dists/%s/%s/binary-%s",
+						repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn],
+						SUITES[sn]->archlist[an]);
+
+				if (s == -1 || !fn) {
+					SHOUT("Can't allocate memory!\n");
+					free(fn);
+					return GE_ERROR;
+				}
+
+				mkdir_p(dir, 0755);
+				free(dir);
+
+				unlink(fn);
+				creat(fn, 0644);
+				free(fn);
+			}
+		}
+
+	return GE_OK;
+}
+
 static int file_append(char *fn, char *text)
 {
 	FILE *f;
@@ -109,6 +167,8 @@ int pkg_append(char *path, char *suite, char *arch, char *comp, int src)
 int init_slind()
 {
 	memset(SUITES, 0, sizeof(SUITES));
+
+	return lists_cleanup();
 }
 
 void done_slind()

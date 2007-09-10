@@ -86,8 +86,8 @@ void check_file(char *path)
 
 int main(int argc, char **argv)
 {
-	int s, sn, an, cn;
-	char *c, *fn, o;
+	int s;
+	char *c, o;
 	poptContext optcon;
 	
 	output_init();
@@ -143,42 +143,6 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	/* clean all the lists */
-	for (sn = 0; sn < nsuites; sn++)
-		for (cn = 0; SUITES[sn]->complist[cn]; cn++) {
-			char *dir;
-
-			fn = L_call("RenderSrcListFileName",
-					2, SUITES[sn]->name, SUITES[sn]->complist[cn]);
-
-			/* make sure the directory exists */
-			asprintf(&dir, "%s/dists/%s/%s/source",
-					repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn]);
-
-			mkdir_p(dir, 0755);
-			free(dir);
-
-			unlink(fn);
-			free(fn);
-
-			for (an = 0; SUITES[sn]->archlist[an]; an++) {
-				fn = L_call("RenderListFileName",
-						3, SUITES[sn]->name,
-						SUITES[sn]->archlist[an],
-						SUITES[sn]->complist[cn]);
-
-				asprintf(&dir, "%s/dists/%s/%s/binary-%s",
-						repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn],
-						SUITES[sn]->archlist[an]);
-
-				mkdir_p(dir, 0755);
-				free(dir);
-
-				unlink(fn);
-				free(fn);
-			}
-		}
-				
 	traverse(repo_dir, check_file, NULL);
 
 	db_done();
