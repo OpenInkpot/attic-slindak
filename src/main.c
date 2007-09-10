@@ -79,6 +79,32 @@ void check_file(char *path)
 						dscf.arch, dscf.component, 1);
 
 				free(c);
+			} else { /* XXX: only devsuite */
+				char *ver;
+
+				if (strcmp(SUITES[sn]->name, "clydesdale"))
+					continue; /* XXX hardcore porn */
+
+				s = ov_find_version(dscf.pkgname, dscf.arch,
+						SUITES[sn]->name, &ver);
+				if (s != GE_OK) {
+					SAY("Adding package %s (%s, %s, %s)\n",
+							dscf.pkgname, dscf.version, dscf.arch,
+							SUITES[sn]->name);
+					ov_insert(dscf.pkgname, dscf.version, dscf.arch,
+							SUITES[sn]->name, dscf.component);
+				} else {
+					s = deb_ver_gt(dscf.version, ver);
+					if (s == GE_OK) {
+						SAY("Found newer version of %s (%s >> %s)\n",
+								dscf.pkgname, dscf.version, ver);
+						ov_update_suite(dscf.pkgname, ver, "", SUITES[sn]->name, "attic");
+						ov_insert(dscf.pkgname, dscf.version, dscf.arch,
+								SUITES[sn]->name, dscf.component);
+					}
+
+					free(ver);
+				}
 			}
 		}
 	}
