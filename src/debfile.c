@@ -10,7 +10,7 @@
 
 int deb_ver_gt(char *v1, char *v2)
 {
-	char *argv[] = { "--compare-versions", v1, "gt", v2, NULL };
+	char *argv[] = { "dpkg", "--compare-versions", v1, "gt", v2, NULL };
 	int ret;
 
 	ret = spawn(DPKG_BIN_PATH, argv);
@@ -90,7 +90,10 @@ int dscfile_read(char *path, struct dscfile *df)
 		} else if (!strcmp(tok, "Architecture:")) {
 			fscanf(f, "%s", tok);
 
-			strncpy(df->arch, tok, DF_ARCHLEN);
+			if (!strcmp(tok, "all") || !strcmp(tok, "any"))
+				df->arch[0] = '\0';
+			else
+				strncpy(df->arch, tok, DF_ARCHLEN);
 		} else if (!strcmp(tok, "Section:")) {
 			fscanf(f, "%s", tok);
 
