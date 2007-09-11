@@ -31,7 +31,7 @@ function generate_apt_conf ()
      -- src_list_path -- path to the source file list
      -- bin_override  -- path to the binary overrides
      -- src_override  -- path to the source overrides
-     apt_conf = string.gsub(apt_conf_template, "POOLTOP", settings["POOLTOP"])
+     apt_conf = string.gsub(apt_conf_template, "POOLTOP", Config["repo_dir"])
 
      for i, suite in ipairs(settings["SUITES"]) do
 	 -- Main logic.
