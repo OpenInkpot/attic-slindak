@@ -124,7 +124,7 @@ int L_call_aptconf()
 	/* settings = {} */
 	tbl = L_push_table("settings", LUA_GLOBALSINDEX);
 
-	L_push_pair_str(tbl, "POOLTOP", repo_dir);
+	/*L_push_pair_str(tbl, "POOLTOP", G.repo_dir);*/
 
 	/* settings["SUITES"] = {} */
 	ttbl = L_push_table("SUITES", tbl);
@@ -167,6 +167,20 @@ char *L_get_string(char *name, int table)
 
 	lua_getfield(L, table, name);
 	ret = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	if (!ret)
+		return NULL;
+
+	return strdup(ret);
+}
+
+char *L_get_confstr(char *field, char *table)
+{
+	char *ret;
+
+	lua_getfield(L, LUA_GLOBALSINDEX, table);
+	ret = L_get_string(field, -1);
 	lua_pop(L, 1);
 
 	if (!ret)

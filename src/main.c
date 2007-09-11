@@ -16,9 +16,7 @@
 #include "debfile.h"
 #include "util.h"
 
-char *repo_dir;
-char pool_dir[PATH_MAX];
-char odb_path[PATH_MAX];
+struct global_config G;
 
 static struct poptOption opts_table[] = {
 	{ "verbose",  'v', 0, 0, 'v', "turn on debugging output"   },
@@ -26,6 +24,43 @@ static struct poptOption opts_table[] = {
 	{ "help",     'h', 0, 0, 'h', "print help message"         },
 	POPT_TABLEEND
 };
+
+#define CONFIG_SET(name, table) \
+	do { \
+		if (!G.name) \
+			G.name = L_get_confstr(# name, table); \
+	} while (0);
+
+int config_init()
+{
+	int s;
+
+	CONFIG_SET(repo_dir, "Config");
+	CONFIG_SET(devel_suite, "Config");
+	CONFIG_SET(attic_suite, "Config");
+
+	s = asprintf(&G.pool_dir, "%s/pool", G.repo_dir);
+	if (s == -1)
+		return GE_ERROR;
+
+	s = asprintf(&G.odb_path, "%s/indices/overrides.db", G.repo_dir);
+	if (s == -1)
+		return GE_ERROR;
+
+	G.devel_suite = L_get_confstr("devel_suite", "Config");
+	G.attic_suite = L_get_confstr("attic_suite", "Config");
+
+	return GE_OK;
+}
+
+void config_done()
+{
+	free(G.repo_dir);
+	free(G.pool_dir);
+	free(G.odb_path);
+	free(G.devel_suite);
+	free(G.attic_suite);
+}
 
 void check_file(char *path)
 {
@@ -82,8 +117,8 @@ void check_file(char *path)
 			} else { /* XXX: only devsuite */
 				char *ver;
 
-				if (strcmp(SUITES[sn]->name, "clydesdale"))
-					continue; /* XXX hardcore porn */
+				if (strcmp(SUITES[sn]->name, G.devel_suite))
+					continue;
 
 				s = ov_find_version(dscf.pkgname, dscf.arch,
 						SUITES[sn]->name, &ver);
@@ -98,7 +133,8 @@ void check_file(char *path)
 					if (s == GE_OK) {
 						SAY("Found newer version of %s (%s >> %s)\n",
 								dscf.pkgname, dscf.version, ver);
-						ov_update_suite(dscf.pkgname, ver, "", SUITES[sn]->name, "attic");
+						ov_update_suite(dscf.pkgname, ver, "",
+								SUITES[sn]->name, G.attic_suite);
 						ov_insert(dscf.pkgname, dscf.version, dscf.arch,
 								SUITES[sn]->name, dscf.component);
 					}
@@ -118,6 +154,8 @@ int main(int argc, char **argv)
 	
 	output_init();
 	root_squash();
+
+	memset(&G, 0, sizeof(struct global_config));
 
 	optcon = poptGetContext(NULL, argc, argv, opts_table, 0);
 	poptSetOtherOptionHelp(optcon, "[<option>] <path-to-repository>");
@@ -151,17 +189,10 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	repo_dir = poptGetArg(optcon);
-	if (!repo_dir) {
-		SHOUT("A repository path is required\n");
-		exit(EXIT_FAILURE);
-	}
-
-	snprintf(pool_dir, PATH_MAX, "%s/pool", repo_dir);
-	snprintf(odb_path, PATH_MAX, "%s/indices/overrides.db", repo_dir);
-
 	init_slind();
 	L_init();
+
+	config_init();
 
 	s = db_init();
 	if (s != GE_OK) {
@@ -169,11 +200,14 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	traverse(repo_dir, check_file, NULL);
+	traverse(G.repo_dir, check_file, NULL);
 
 	db_done();
 	done_slind();
 	L_done();
+
+	config_done();
+
 	poptFreeContext(optcon);
 
 	system("apt-ftparchive generate /tmp/apt-ftparchive.conf");

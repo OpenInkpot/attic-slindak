@@ -35,9 +35,19 @@ extern int nsuites;
 #define GE_ERROR_IFNULL(x) do { if (!(x)) return GE_ERROR; } while (0)
 
 #include <limits.h>
-extern char *repo_dir;
-extern char pool_dir[PATH_MAX];
-extern char odb_path[PATH_MAX];
+
+struct global_config {
+	/* paths */
+	char *repo_dir;
+	char *pool_dir;
+	char *odb_path;
+
+	/* suites */
+	char *devel_suite;      /* current 'unstable' */
+	char *attic_suite;      /* dead n4r storage */
+};
+
+extern struct global_config G;
 
 #endif
 

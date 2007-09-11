@@ -75,7 +75,7 @@ static int lists_cleanup()
 
 			/* make sure the directory exists */
 			s = asprintf(&dir, "%s/dists/%s/%s/source",
-					repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn]);
+					G.repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn]);
 
 			if (s == -1 || !fn) {
 				SHOUT("Can't allocate memory!\n");
@@ -97,7 +97,7 @@ static int lists_cleanup()
 						SUITES[sn]->complist[cn]);
 
 				s = asprintf(&dir, "%s/dists/%s/%s/binary-%s",
-						repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn],
+						G.repo_dir, SUITES[sn]->name, SUITES[sn]->complist[cn],
 						SUITES[sn]->archlist[an]);
 
 				if (s == -1 || !fn) {

@@ -18,7 +18,7 @@ int db_init()
 {
 	int s;
 	
-	s = sqlite3_open(odb_path, &db);
+	s = sqlite3_open(G.odb_path, &db);
 	if (s != SQLITE_OK)
 		return GE_ERROR;
 
