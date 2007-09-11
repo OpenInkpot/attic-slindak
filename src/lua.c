@@ -106,7 +106,7 @@ char *L_call(char *fn, int argc, ...)
 	va_end(ap);
 
 	lua_pcall(L, argc, 1, 0);
-	ret = lua_tostring(L, -1);
+	ret = (char *)lua_tostring(L, -1);
 	lua_pop(L, 1);
 
 	if (!ret)
@@ -166,7 +166,7 @@ char *L_get_string(char *name, int table)
 	char *ret;
 
 	lua_getfield(L, table, name);
-	ret = lua_tostring(L, -1);
+	ret = (char *)lua_tostring(L, -1);
 	lua_pop(L, 1);
 
 	if (!ret)
@@ -239,7 +239,7 @@ int extl_suite_add(lua_State *L)
 		return 0;
 	}
 
-	suite = lua_tostring(L, -1);
+	suite = (char *)lua_tostring(L, -1);
 	lua_pop(L, 1);
 
 	s = get_suite_by_name(suite);
