@@ -1,6 +1,7 @@
 Config = {
   repo_dir = "/opt/slind/SLIND",
   devel_suite = "clydesdale",
+  attic_suite = "attic",
 }
 
 Suites = {
