@@ -10,6 +10,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include "common.h"
+#include "lua.h"
 #include "db.h"
 #include "debfile.h"
 
