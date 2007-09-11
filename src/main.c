@@ -63,7 +63,7 @@ void config_done()
 	free(G.attic_suite);
 }
 
-void check_file(char *path)
+void check_file(char *path, void *data)
 {
 	char *p = path;
 	char *suite;
@@ -147,7 +147,7 @@ void check_file(char *path)
 	}
 }
 
-int main(int argc, char **argv)
+int main(int argc, const char **argv)
 {
 	int s;
 	char *c, o;
