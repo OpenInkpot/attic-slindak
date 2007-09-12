@@ -20,6 +20,8 @@
 struct global_config G;
 
 static struct poptOption opts_table[] = {
+	{ "repodir",  'r', POPT_ARG_STRING, &G.repo_dir, 0,
+	  "repository base directory" },
 	{ "verbose",  'v', 0, 0, 'v', "turn on debugging output"   },
 	{ "version",  'V', 0, 0, 'V', "show our version number"    },
 	{ "help",     'h', 0, 0, 'h', "print help message"         },
@@ -159,7 +161,7 @@ int main(int argc, const char **argv)
 	memset(&G, 0, sizeof(struct global_config));
 
 	optcon = poptGetContext(NULL, argc, argv, opts_table, 0);
-	poptSetOtherOptionHelp(optcon, "[<option>] <path-to-repository>");
+	poptSetOtherOptionHelp(optcon, "[<option>]");
 
 	while ((o = poptGetNextOpt(optcon)) >= 0) {
 		switch (o) {

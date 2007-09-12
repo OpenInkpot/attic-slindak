@@ -124,8 +124,6 @@ int L_call_aptconf()
 	/* settings = {} */
 	tbl = L_push_table("settings", LUA_GLOBALSINDEX);
 
-	/*L_push_pair_str(tbl, "POOLTOP", G.repo_dir);*/
-
 	/* settings["SUITES"] = {} */
 	ttbl = L_push_table("SUITES", tbl);
 	
@@ -191,7 +189,15 @@ char *L_get_confstr(char *field, char *table)
 
 int L_validate_env()
 {
+	int tbl, ttbl;
 
+	lua_getfield(L, LUA_GLOBALSINDEX, LUA_TABLE_CONFIG);
+	tbl = lua_gettop(L);
+
+	if (G.repo_dir)
+		L_push_pair_str(tbl, "repo_dir", G.repo_dir);
+
+	return GE_OK;
 }
 
 int L_dofile(const char *path)
@@ -289,6 +295,7 @@ int L_init()
 	if (s)
 		return GE_ERROR;
 
+	L_validate_env();
 	L_call_aptconf();
 }
 
