@@ -21,7 +21,6 @@ Default
 
 function generate_apt_conf ()
     -- Settings is a table:
-    -- POOLTOP: The top directory for the pool.
     -- SUITES: A table with a list of suites that we generate Indexes for.
     -- SUITE_SETTINGS: A table with suites as keys. Each value should in turn be
     -- a table with following keys:
@@ -33,7 +32,7 @@ function generate_apt_conf ()
      -- src_override  -- path to the source overrides
      apt_conf = string.gsub(apt_conf_template, "POOLTOP", Config["repo_dir"])
 
-     for i, suite in ipairs(settings["SUITES"]) do
+     for suite, tab in pairs(Suites) do
 	 -- Main logic.
 	 -- Start a tree for this suite.
 	 apt_conf = apt_conf .. "tree \"dists/" .. suite .. "\"\n{\n"
@@ -41,8 +40,8 @@ function generate_apt_conf ()
 	 apt_conf = apt_conf .. "  BinCacheDB \"/tmp/" .. suite .. ".db\";\n"
 	 apt_conf = apt_conf .. "  FileList \"" .. suite_conf["bin_list_path"] .. "\";\n"
 	 apt_conf = apt_conf .. "  SourceFileList \"" .. suite_conf["src_list_path"] .. "\";\n"
-	 apt_conf = apt_conf .. "  Sections \"" .. table.concat(Suites[suite]["components"], " ") .. "\";\n"
-	 apt_conf = apt_conf .. "  Architectures \"" .. table.concat(Suites[suite]["arches"], " ") .. " source\";\n"
+	 apt_conf = apt_conf .. "  Sections \"" .. table.concat(tab["components"], " ") .. "\";\n"
+	 apt_conf = apt_conf .. "  Architectures \"" .. table.concat(tab["arches"], " ") .. " source\";\n"
 	 if suite_conf["bin_override"] then
 	     apt_conf = apt_conf .. "  BinOverride \"" .. suite_conf["bin_override"] .. "\";\n"
 	 end
