@@ -65,22 +65,113 @@ void config_done()
 	free(G.attic_suite);
 }
 
+struct file_entry {
+	struct file_entry *next;
+	int n;
+	char pathname[0];
+};
+
+struct file_entry debs_list = { .next = NULL, .n = 0 };
+struct file_entry dscs_list = { .next = NULL, .n = 0 };
+
+int new_file(char *name, struct file_entry *parent)
+{
+	struct file_entry *new;
+	size_t len;
+
+	len = strlen(name);
+	if (len > PATH_MAX)
+		return GE_ERROR;
+
+	new = malloc(len + 1 + sizeof(struct file_entry));
+	if (!new)
+		return GE_ERROR;
+
+	strcpy(new->pathname, name);
+
+	new->n = parent->next ? parent->next->n + 1 : 1;
+	new->next = parent->next;
+	parent->next = new;
+
+	return GE_OK;
+}
+
+int process_deb(char *path)
+{
+	int s;
+	struct debfile debf;
+	char *suite, *c;
+
+	s = debfile_read(path, &debf);
+	if (s != GE_OK)
+		return;
+
+	s = ov_find_component(debf.source, debf.version, debf.arch,
+			suite, &c);
+	if (s == GE_OK) {
+		DBG("%s=%s: dists/clydesdale/%s/binary-%s/Packages\n",
+				debf.debname, debf.version,
+				debf.component, debf.arch);
+		pkg_append(path, suite, debf.arch, debf.component, 0);
+		free(c);
+	}
+}
+
+int process_dsc(char *path)
+{
+	int s, sn;
+	char *c;
+	struct dscfile dscf;
+
+	dscfile_read(path, &dscf);
+
+	for (sn = 0; SUITES[sn]; sn++) {
+		s = ov_find_component(dscf.pkgname, dscf.version, dscf.arch,
+				SUITES[sn]->name, &c);
+		if (s == GE_OK) {
+			pkg_append(path, SUITES[sn]->name,
+					dscf.arch, dscf.component, 1);
+
+			free(c);
+		} else { /* XXX: only devsuite */
+			char *ver;
+
+			if (strcmp(SUITES[sn]->name, G.devel_suite))
+				continue;
+
+			s = ov_find_version(dscf.pkgname, dscf.arch,
+					SUITES[sn]->name, &ver);
+			if (s != GE_OK) {
+				SAY("Adding package %s (%s, %s, %s)\n",
+						dscf.pkgname, dscf.version, dscf.arch,
+						SUITES[sn]->name);
+				ov_insert(dscf.pkgname, dscf.version, dscf.arch,
+						SUITES[sn]->name, dscf.component);
+			} else {
+				s = deb_ver_gt(dscf.version, ver);
+				if (s == GE_OK) {
+					SAY("Found newer version of %s (%s >> %s)\n",
+							dscf.pkgname, dscf.version, ver);
+					ov_update_suite(dscf.pkgname, ver, "",
+							SUITES[sn]->name, G.attic_suite);
+					ov_insert(dscf.pkgname, dscf.version, dscf.arch,
+							SUITES[sn]->name, dscf.component);
+				}
+
+				free(ver);
+			}
+		}
+	}
+}
 void check_file(char *path, void *data)
 {
 	char *p = path;
 	char *suite;
-	struct debfile debf;
-	struct dscfile dscf;
-	char *c;
 	int s;
 
 	/* XXX: consider a simple '.deb' check sufficient? */
 	p += strlen(path) - 4;
 	if (!strcmp(p, ".deb")) {
-		s = debfile_read(path, &debf);
-		if (s != GE_OK)
-			return;
-
 		/* XXX: skip packages that are not placed in a suite-named
 		 * directory */
 		suite = parent_dir(path);
@@ -93,66 +184,22 @@ void check_file(char *path, void *data)
 			return;
 		}
 
-		s = ov_find_component(debf.source, debf.version, debf.arch,
-				suite, &c);
-		if (s == GE_OK) {
-			DBG("%s=%s: dists/clydesdale/%s/binary-%s/Packages\n",
-					debf.debname, debf.version,
-					debf.component, debf.arch);
-			pkg_append(path, suite, debf.arch, debf.component, 0);
-			free(c);
-		}
+		s = new_file(path, &debs_list);
+		if (s != GE_OK)
+			return;
 
 		free(suite);
 	} else if (!strcmp(p, ".dsc")) {
-		int sn;
-
-		dscfile_read(path, &dscf);
-
-		for (sn = 0; SUITES[sn]; sn++) {
-			s = ov_find_component(dscf.pkgname, dscf.version, dscf.arch,
-					SUITES[sn]->name, &c);
-			if (s == GE_OK) {
-				pkg_append(path, SUITES[sn]->name,
-						dscf.arch, dscf.component, 1);
-
-				free(c);
-			} else { /* XXX: only devsuite */
-				char *ver;
-
-				if (strcmp(SUITES[sn]->name, G.devel_suite))
-					continue;
-
-				s = ov_find_version(dscf.pkgname, dscf.arch,
-						SUITES[sn]->name, &ver);
-				if (s != GE_OK) {
-					SAY("Adding package %s (%s, %s, %s)\n",
-							dscf.pkgname, dscf.version, dscf.arch,
-							SUITES[sn]->name);
-					ov_insert(dscf.pkgname, dscf.version, dscf.arch,
-							SUITES[sn]->name, dscf.component);
-				} else {
-					s = deb_ver_gt(dscf.version, ver);
-					if (s == GE_OK) {
-						SAY("Found newer version of %s (%s >> %s)\n",
-								dscf.pkgname, dscf.version, ver);
-						ov_update_suite(dscf.pkgname, ver, "",
-								SUITES[sn]->name, G.attic_suite);
-						ov_insert(dscf.pkgname, dscf.version, dscf.arch,
-								SUITES[sn]->name, dscf.component);
-					}
-
-					free(ver);
-				}
-			}
-		}
+		s = new_file(path, &dscs_list);
+		if (s != GE_OK)
+			return;
 	}
 }
 
 int main(int argc, const char **argv)
 {
 	int s;
-	char *c, o;
+	char o;
 	poptContext optcon;
 	
 	output_init();
@@ -204,6 +251,22 @@ int main(int argc, const char **argv)
 	}
 
 	traverse(G.repo_dir, check_file, NULL);
+	do {
+		struct file_entry *entry = dscs_list.next;
+
+		SAY("Processing %d source packages.\n", dscs_list.next->n);
+		while (entry) {
+			process_dsc(entry->pathname);
+			entry = entry->next;
+		}
+
+		entry = debs_list.next;
+		SAY("Processing %d binary packages.\n", debs_list.next->n);
+		while (entry) {
+			process_deb(entry->pathname);
+			entry = entry->next;
+		}
+	} while (0);
 
 	db_done();
 	done_slind();
