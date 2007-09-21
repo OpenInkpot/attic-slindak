@@ -110,3 +110,49 @@ int dscfile_read(char *path, struct dscfile *df)
 	return GE_OK;
 }
 
+void display_deb_info(struct debfile *debf)
+{
+	char *suite;
+	int s;
+
+	s = ov_find_suite(debf->source, debf->version, debf->arch, &suite);
+	if (s != GE_OK)
+		return;
+
+	SAY(
+			"Binary package information:\n"
+			"\tName: %s\n"
+			"\tVersion: %s\n"
+			"\tSource: %s\n"
+			"\tArchitecture: %s\n"
+			"\tSection (component): %s\n"
+			"\tSuite: %s\n",
+			debf->debname, debf->version, debf->source,
+			debf->arch, debf->component, suite
+	   );
+
+	free(suite);
+}
+
+void display_dsc_info(struct dscfile *dscf)
+{
+	char *suite;
+	int s;
+
+	s = ov_find_suite(dscf->pkgname, dscf->version, "", &suite);
+	if (s != GE_OK)
+		return;
+
+	SAY(
+			"Binary package information:\n"
+			"\tName: %s\n"
+			"\tVersion: %s\n"
+			"\tSection (component): %s\n"
+			"\tSuite: %s\n",
+			dscf->pkgname, dscf->version,
+			dscf->component, suite
+	   );
+
+	free(suite);
+}
+

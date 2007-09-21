@@ -4,6 +4,18 @@
 #ifndef __DEBFILE_H__
 #define __DEBFILE_H__
 
+#define FILE_IS_DEB(path) ({    \
+		char *p = path;         \
+		p += strlen(path) - 4;  \
+		strcmp(p, ".deb") == 0; \
+	})
+
+#define FILE_IS_DSC(path) ({    \
+		char *p = path;         \
+		p += strlen(path) - 4;  \
+		strcmp(p, ".dsc") == 0; \
+	})
+
 #define DF_NAMELEN   256
 #define DF_VERLEN    64
 #define DF_ARCHLEN   32
