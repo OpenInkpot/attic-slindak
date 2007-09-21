@@ -268,9 +268,8 @@ int ov_find_suite(char *pkgname, char *version, char *arch,
 	asprintf(&req,
 			"pkgname='%s' "
 			"AND version='%s' "
-			"AND suite='%s'"
 			"%s",
-			pkgname, version, suite, arch_clause
+			pkgname, version, arch_clause
 		);
 
 	if (arch_clause != arch)
