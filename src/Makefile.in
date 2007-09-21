@@ -49,7 +49,7 @@ CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
-am_slindak_OBJECTS = slindak-main.$(OBJEXT) slindak-db.$(OBJEXT) \
+am_slindak_OBJECTS = slindak-slindak.$(OBJEXT) slindak-db.$(OBJEXT) \
 	slindak-overrides.$(OBJEXT) slindak-debfile.$(OBJEXT) \
 	slindak-slind.$(OBJEXT) slindak-lua.$(OBJEXT) \
 	slindak-util.$(OBJEXT) slindak-output.$(OBJEXT) \
@@ -193,7 +193,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-slindak_SOURCES = main.c db.c overrides.c debfile.c slind.c lua.c util.c output.c messages.c
+slindak_SOURCES = slindak.c db.c overrides.c debfile.c slind.c lua.c util.c output.c messages.c
 slindak_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAGS)
 slindak_LDADD = $(SQL_LIBS) $(LUA_LIBS) $(POPT_LIBS)
 all: all-am
@@ -209,9 +209,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/Makefile
+	  $(AUTOMAKE) --gnu  src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -270,11 +270,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-db.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-debfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-lua.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-messages.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-output.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-overrides.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-slind.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-slindak.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-util.Po@am__quote@
 
 .c.o:
@@ -298,19 +298,19 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-slindak-main.o: main.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-main.o -MD -MP -MF "$(DEPDIR)/slindak-main.Tpo" -c -o slindak-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-main.Tpo" "$(DEPDIR)/slindak-main.Po"; else rm -f "$(DEPDIR)/slindak-main.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='main.c' object='slindak-main.o' libtool=no @AMDEPBACKSLASH@
+slindak-slindak.o: slindak.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-slindak.o -MD -MP -MF "$(DEPDIR)/slindak-slindak.Tpo" -c -o slindak-slindak.o `test -f 'slindak.c' || echo '$(srcdir)/'`slindak.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-slindak.Tpo" "$(DEPDIR)/slindak-slindak.Po"; else rm -f "$(DEPDIR)/slindak-slindak.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='slindak.c' object='slindak-slindak.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-main.o `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-slindak.o `test -f 'slindak.c' || echo '$(srcdir)/'`slindak.c
 
-slindak-main.obj: main.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-main.obj -MD -MP -MF "$(DEPDIR)/slindak-main.Tpo" -c -o slindak-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-main.Tpo" "$(DEPDIR)/slindak-main.Po"; else rm -f "$(DEPDIR)/slindak-main.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='main.c' object='slindak-main.obj' libtool=no @AMDEPBACKSLASH@
+slindak-slindak.obj: slindak.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-slindak.obj -MD -MP -MF "$(DEPDIR)/slindak-slindak.Tpo" -c -o slindak-slindak.obj `if test -f 'slindak.c'; then $(CYGPATH_W) 'slindak.c'; else $(CYGPATH_W) '$(srcdir)/slindak.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-slindak.Tpo" "$(DEPDIR)/slindak-slindak.Po"; else rm -f "$(DEPDIR)/slindak-slindak.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='slindak.c' object='slindak-slindak.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-main.obj `if test -f 'main.c'; then $(CYGPATH_W) 'main.c'; else $(CYGPATH_W) '$(srcdir)/main.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-slindak.obj `if test -f 'slindak.c'; then $(CYGPATH_W) 'slindak.c'; else $(CYGPATH_W) '$(srcdir)/slindak.c'; fi`
 
 slindak-db.o: db.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-db.o -MD -MP -MF "$(DEPDIR)/slindak-db.Tpo" -c -o slindak-db.o `test -f 'db.c' || echo '$(srcdir)/'`db.c; \
