@@ -7,6 +7,7 @@
 #include <string.h>
 #include "common.h"
 #include "db.h"
+#include "util.h"
 
 /* selections are ordered by ... */
 #define ORDER_BY  (ov_columns[abs(order)])
@@ -28,7 +29,7 @@ struct fetch {
 
 /*
  * return " AND (arch='SOME_ARCH' OR arch='')" that is
- * allocated and requires free()'ing
+ * allocated and requires xfree()'ing
  */
 static inline char *ov_arch_clause(char *arch)
 {
@@ -114,7 +115,7 @@ int ov_update_version(char *pkgname, char *arch, char *suite, char *version)
 			version, pkgname, suite, arch_clause);
 
 	if (arch_clause != arch)
-		free(arch_clause);
+		xfree(arch_clause);
 
 	s = sqlite3_exec(db, req, NULL, NULL, &err);
 
@@ -159,7 +160,7 @@ int ov_update_suite(char *pkgname, char *version, char *arch,
 			to_suite, pkgname, from_suite, version, arch_clause);
 
 	if (arch_clause != arch)
-		free(arch_clause);
+		xfree(arch_clause);
 
 	s = sqlite3_exec(db, req, NULL, NULL, &err);
 
@@ -232,12 +233,12 @@ int ov_find_component(char *pkgname, char *version, char *arch, char *suite,
 		);
 
 	if (arch_clause != arch)
-		free(arch_clause);
+		xfree(arch_clause);
 
 	GE_ERROR_IFNULL(req);
 
 	s = ov_search(req, OV_ARCH, data);
-	free(req);
+	xfree(req);
 
 	if (s != GE_OK) {
 		component = NULL;
@@ -273,12 +274,12 @@ int ov_find_suite(char *pkgname, char *version, char *arch,
 		);
 
 	if (arch_clause != arch)
-		free(arch_clause);
+		xfree(arch_clause);
 
 	GE_ERROR_IFNULL(req);
 
 	ov_search(req, OV_ARCH, data);
-	free(req);
+	xfree(req);
 
 	*suite = strdup(data[OV_SUITE]);
 
@@ -308,12 +309,12 @@ int ov_find_version(char *pkgname, char *arch, char *suite, char **version)
 		);
 
 	if (arch_clause != arch)
-		free(arch_clause);
+		xfree(arch_clause);
 
 	GE_ERROR_IFNULL(req);
 
 	s = ov_search(req, -OV_ARCH, data);
-	free(req);
+	xfree(req);
 
 	if (s != GE_OK)
 		return s;
