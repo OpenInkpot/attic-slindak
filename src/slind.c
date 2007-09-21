@@ -26,8 +26,14 @@ int suite_add(char *name, char **arches, char **comps, int idx)
 		return GE_ERROR;
 
 	SUITES[idx] = malloc(sizeof(struct suite));
-	if (!SUITES[idx])
+	if (!SUITES[idx]) {
+		do {
+			free(SUITES[--idx]->name);
+			free(SUITES[idx]);
+		} while (idx);
+
 		return GE_ERROR;
+	}
 
 	SUITES[idx]->name = strdup(name);
 	memcpy(SUITES[idx]->archlist, arches, MAX_ARCHES * sizeof(char *));
