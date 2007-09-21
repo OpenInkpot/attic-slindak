@@ -18,8 +18,11 @@
 #include "util.h"
 
 struct global_config G;
+const char *cli_file = NULL;
 
 static struct poptOption opts_table[] = {
+	{ "info",     'I', POPT_ARG_STRING, &cli_file, 0,
+	  "obtain information on a package" },
 	{ "repodir",  'r', POPT_ARG_STRING, &G.repo_dir, 0,
 	  "repository base directory" },
 	{ "verbose",  'v', 0, 0, 'v', "turn on debugging output"   },
@@ -83,7 +86,7 @@ int new_file(char *name, struct file_entry *parent)
 	if (len > PATH_MAX)
 		return GE_ERROR;
 
-	new = malloc(len + 1 + sizeof(struct file_entry));
+	new = xmalloc(len + 1 + sizeof(struct file_entry));
 	if (!new)
 		return GE_ERROR;
 
@@ -165,13 +168,10 @@ int process_dsc(char *path)
 }
 void check_file(char *path, void *data)
 {
-	char *p = path;
 	char *suite;
 	int s;
 
-	/* XXX: consider a simple '.deb' check sufficient? */
-	p += strlen(path) - 4;
-	if (!strcmp(p, ".deb")) {
+	if (FILE_IS_DEB(path)) {
 		/* XXX: skip packages that are not placed in a suite-named
 		 * directory */
 		suite = parent_dir(path);
@@ -189,7 +189,7 @@ void check_file(char *path, void *data)
 			return;
 
 		free(suite);
-	} else if (!strcmp(p, ".dsc")) {
+	} else if (FILE_IS_DSC(path)) {
 		s = new_file(path, &dscs_list);
 		if (s != GE_OK)
 			return;
@@ -248,6 +248,28 @@ int main(int argc, const char **argv)
 	if (s != GE_OK) {
 		SHOUT("Can't open database\n");
 		exit(EXIT_FAILURE);
+	}
+
+	if (cli_file) {
+		struct debfile debf;
+		struct dscfile dscf;
+
+		if (FILE_IS_DEB(cli_file)) {
+			s = debfile_read(cli_file, &debf);
+			if (s != GE_OK)
+				exit(EXIT_FAILURE);
+
+			display_deb_info(&debf);
+		} else if (FILE_IS_DSC(cli_file)) {
+			s = dscfile_read(cli_file, &dscf);
+			if (s != GE_OK)
+				exit(EXIT_FAILURE);
+
+			display_dsc_info(&dscf);
+		} else
+			exit(EXIT_FAILURE);
+
+		exit(EXIT_SUCCESS);
 	}
 
 	traverse(G.repo_dir, check_file, NULL);
