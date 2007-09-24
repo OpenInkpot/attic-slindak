@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <sqlite3.h>
 #include "common.h"
+#include "configuration.h"
 
 sqlite3 *db;
 

@@ -36,18 +36,5 @@ extern int nsuites;
 
 #include <limits.h>
 
-struct global_config {
-	/* paths */
-	char *repo_dir;
-	char *pool_dir;
-	char *odb_path;
-
-	/* suites */
-	char *devel_suite;      /* current 'unstable' */
-	char *attic_suite;      /* dead n4r storage */
-};
-
-extern struct global_config G;
-
 #endif
 

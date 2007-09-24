@@ -8,6 +8,7 @@
 #include <lualib.h>
 #include <lauxlib.h>
 #include "common.h"
+#include "configuration.h"
 #include "debfile.h"
 
 static lua_State *L;
@@ -151,7 +152,7 @@ int L_call_aptconf()
 	lua_getfield(L, LUA_GLOBALSINDEX, "generate_apt_conf");
 	/*lua_getfield(L, LUA_GLOBALSINDEX, "settings");*/
 	lua_pcall(L, 0, 1, 0);
-	aptf = fopen("/tmp/apt-ftparchive.conf", "w");
+	aptf = fopen(G.apt_config, "w");
 	fprintf(aptf, "%s\n", lua_tostring(L, -1));
 	fclose(aptf);
 	lua_pop(L, 1);
@@ -296,7 +297,6 @@ int L_init()
 		return GE_ERROR;
 
 	L_validate_env();
-	L_call_aptconf();
 }
 
 void L_done()

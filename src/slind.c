@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include "common.h"
 #include "lua.h"
+#include "configuration.h"
 #include "db.h"
 #include "debfile.h"
 
