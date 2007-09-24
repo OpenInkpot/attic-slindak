@@ -135,6 +135,21 @@ int mkdir_p(char *dst, mode_t mode)
 	return GE_OK;
 }
 
+/*
+ * copy something from 'src' to 'dst'
+ */
+int copy(char *src, char *dst)
+{
+	char *argv[] = { "cp", src, dst, NULL };
+	int ret;
+
+	ret = spawn(CP_BIN_PATH, argv);
+	if (ret)
+		return GE_ERROR;
+
+	return GE_OK;
+}
+
 void root_squash()
 {
 	uid_t uid = geteuid();

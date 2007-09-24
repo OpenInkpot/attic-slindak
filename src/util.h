@@ -15,6 +15,8 @@ int spawn(char *cmd, char **argv);
 
 int mkdir_p(char *dst, mode_t mode);
 
+int copy(char *src, char *dst);
+
 void root_squash();
 
 #define mkpdir(p) do {                          \
