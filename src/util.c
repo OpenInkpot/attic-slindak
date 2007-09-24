@@ -17,7 +17,7 @@
  * Given a path, returns a parent directory,
  * that is allocated (needs free'ing).
  */
-char *parent_dir(char *path)
+char *parent_dir(char *path, int tailcut)
 {
 	char *s1, *s2 = NULL;
 	char *res = NULL;
@@ -26,9 +26,12 @@ char *parent_dir(char *path)
 	if (s1) {
 		*s1 = '\0';
 
-		s2 = strrchr(path, '/');
-		if (s2++)
-			res = strdup(s2);
+		if (tailcut) {
+			s2 = strrchr(path, '/');
+			if (s2++)
+				res = strdup(s2);
+		} else
+			res = strdup(path);
 
 		*s1 = '/';
 	}
