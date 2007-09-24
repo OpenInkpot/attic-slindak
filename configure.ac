@@ -29,6 +29,7 @@ AC_PATH_PROG(MV_BIN_PATH, mv)
 AC_PATH_PROG(RM_BIN_PATH, rm)
 AC_PATH_PROG(MKDIR_BIN_PATH, mkdir)
 AC_PATH_PROG(MD5SUM_BIN_PATH, md5sum)
+AC_PATH_PROG(APTFA_BIN_PATH, apt-ftparchive)
 AC_DEFINE_UNQUOTED([DPKG_BIN_PATH],   ["$DPKG_BIN_PATH"], ["Path to dpkg executable"])
 AC_DEFINE_UNQUOTED([GIT_BIN_PATH],    ["$GIT_BIN_PATH"], ["Path to git executable"])
 AC_DEFINE_UNQUOTED([TAR_BIN_PATH],    ["$TAR_BIN_PATH"], ["Path to tar executable"])
@@ -37,6 +38,7 @@ AC_DEFINE_UNQUOTED([MV_BIN_PATH],     ["$MV_BIN_PATH"], ["Path to mv executable"
 AC_DEFINE_UNQUOTED([RM_BIN_PATH],     ["$RM_BIN_PATH"], ["Path to rm executable"])
 AC_DEFINE_UNQUOTED([MKDIR_BIN_PATH],  ["$MKDIR_BIN_PATH"], ["Path to mkdir executable"])
 AC_DEFINE_UNQUOTED([MD5SUM_BIN_PATH], ["$MD5SUM_BIN_PATH"], ["Path to md5sum executable"])
+AC_DEFINE_UNQUOTED([APTFA_BIN_PATH],  ["$APTFA_BIN_PATH"], ["Path to apt-ftparchive executable"])
 AC_ARG_WITH(hacker,
 		AS_HELP_STRING([--with-hacker],
 			[enables hacker mode]),

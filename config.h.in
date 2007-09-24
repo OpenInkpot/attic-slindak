@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* "Path to apt-ftparchive executable" */
+#undef APTFA_BIN_PATH
+
 /* "Path to cp executable" */
 #undef CP_BIN_PATH
 
