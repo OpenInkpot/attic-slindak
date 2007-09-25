@@ -13,18 +13,6 @@
 #include "debfile.h"
 #include "util.h"
 
-char *guess_deb_suite(char *path, struct debfile *debf)
-{
-	int s;
-	char *suite;
-
-	s = ov_find_suite(debf->source, debf->version, debf->arch, &suite);
-	if (s != GE_OK)
-		return NULL;
-
-	return suite;
-}
-
 int inject_deb(struct debfile *debf, char *suite, char *path)
 {
 	int s;
@@ -125,7 +113,6 @@ int process_dsc(char *path)
 
 	dscfile_read(path, &dscf);
 
-	SAY("Processing %s\n", path);
 	for (sn = 0; SUITES[sn]; sn++) {
 		s = ov_find_component(dscf.pkgname, dscf.version, dscf.arch,
 				SUITES[sn]->name, &c);
