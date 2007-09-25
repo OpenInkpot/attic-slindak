@@ -106,6 +106,12 @@ int spawn(char *cmd, char **argv)
 	if (pid)
 		waitpid(-1, &ret, 0);
 	else {
+		close(1);
+		close(2);
+
+		dup2(fileno(OUT[LOG]), 1);
+		dup2(fileno(OUT[LOG]), 2);
+
 		ret = execve(cmd, argv, environ);
 		if (ret) {
 			DBG("exec %s failed\n", cmd);
