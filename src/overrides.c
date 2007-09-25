@@ -237,7 +237,7 @@ int ov_find_component(char *pkgname, char *version, char *arch, char *suite,
 
 	GE_ERROR_IFNULL(req);
 
-	s = ov_search(req, OV_ARCH, data);
+	s = ov_search(req, -OV_ARCH, data);
 	xfree(req);
 
 	if (s != GE_OK) {

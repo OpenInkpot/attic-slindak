@@ -30,6 +30,9 @@ static struct poptOption opts_table[] = {
 	  "repository base directory" },
 	{ "suite",    's', POPT_ARG_STRING, &G.users_suite, 0,
 	  "specify a name of a suite" },
+	{ "cleanup",  'C', POPT_ARG_NONE,   &G.cleanup, 0,
+	  "remove binary packages that do not match source packages "
+	  "known to overrides.db" },
 	{ "verbose",  'v', 0, 0, 'v', "turn on debugging output"   },
 	{ "version",  'V', 0, 0, 'V', "show our version number"    },
 	{ "help",     'h', 0, 0, 'h', "print help message"         },

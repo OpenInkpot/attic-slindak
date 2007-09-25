@@ -46,7 +46,9 @@ int debfile_read(char *path, struct debfile *df)
 		} else if (!strcmp(tok, "Architecture:")) {
 			fscanf(p, "%s", tok);
 
-			strncpy(df->arch, tok, DF_ARCHLEN);
+			/* for arch="all" leave df->arch empty */
+			if (strcmp(tok, "all"))
+				strncpy(df->arch, tok, DF_ARCHLEN);
 		} else if (!strcmp(tok, "Section:")) {
 			fscanf(p, "%s", tok);
 
@@ -62,6 +64,20 @@ int debfile_read(char *path, struct debfile *df)
 
 	if (df->source[0] == '\0')
 		strncpy(df->source, df->debname, DF_SRCLEN);
+
+	/* treat cross packages specially */
+	if (df->arch[0] == '\0' && strlen(df->debname) > 6) {
+		char *p = df->debname + strlen(df->debname) - 6;
+		int n = 0;
+
+		/* FIXME: there might be something-wacky-cross_XX.YY_all.deb */
+		if (!strcmp(p, "-cross")) {
+			while (*--p != '-' && p > df->debname);
+
+			while (*++p != '-')
+				df->crossarch[n++] = *p;
+		}
+	}
 
 	return GE_OK;
 }

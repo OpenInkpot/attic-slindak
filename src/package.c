@@ -55,8 +55,11 @@ int process_deb(char *path)
 		/* package's parent directory must reflect suite */
 		suite = parent_dir(path, 1);
 		if (!suite) {
-			SHOUT("Package in a wrong directory: %s\n", path);
-			/*unlink(path);*/
+			SHOUT("Package in a wrong directory: %s (use -C)\n", path);
+			if (G.cleanup) {
+				SAY("Removing %s\n", path);
+				unlink(path);
+			}
 			return GE_ERROR;
 		}
 
@@ -84,13 +87,22 @@ int process_deb(char *path)
 
 tryadd:
 	/* check if suite matches overrides.db */
-	s = ov_find_component(debf.source, debf.version, debf.arch,
+	s = ov_find_component(debf.source, debf.version,
+			debf.crossarch[0] ? debf.crossarch : debf.arch,
 			suite, &c);
 	if (s == GE_OK) {
 		DBG("adding %s=%s: [%s] [%s]\n",
 				debf.debname, debf.version,
 				debf.component, debf.arch);
-		pkg_append(path, suite, debf.arch, debf.component, 0);
+		if (!debf.arch[0]) {
+			int an, sn;
+
+			sn = get_suite_by_name(suite);
+			for (an = 0; SUITES[sn]->archlist[an]; an++)
+				pkg_append(path, suite, SUITES[sn]->archlist[an],
+						debf.component, 0);
+		} else
+			pkg_append(path, suite, debf.arch, debf.component, 0);
 		free(c);
 		free(suite);
 
@@ -100,8 +112,11 @@ tryadd:
 	free(suite);
 
 	/* it doesn't, thus should be removed in OM_POOL */
-	SHOUT("Package %s doesn't match overrides.db.\n", path);
-	/*unlink(path);*/
+	SHOUT("Package %s doesn't match overrides.db (use -C)\n", path);
+	if (G.cleanup) {
+		SAY("Removing %s\n", path);
+		unlink(path);
+	}
 
 	return GE_ERROR;
 }

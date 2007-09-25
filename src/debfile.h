@@ -26,6 +26,7 @@ struct debfile {
 	char debname[DF_NAMELEN];
 	char version[DF_VERLEN];
 	char arch[DF_ARCHLEN];
+	char crossarch[DF_ARCHLEN];
 	char component[DF_COMPLEN];
 	char source[DF_SRCLEN];
 };
