@@ -98,24 +98,23 @@ static void check_file(char *path, void *data)
 
 int scan_pool()
 {
-	struct file_entry *entry = dscs_list.next;
+	struct file_entry *entry;
 
 	traverse(G.repo_dir, check_file, NULL);
-	do {
 
-		SAY("Processing %d source packages.\n", dscs_list.next->n);
-		while (entry) {
-			process_dsc(entry->pathname);
-			entry = entry->next;
-		}
+	entry = dscs_list.next;
+	SAY("Processing %d source packages.\n", dscs_list.next->n);
+	while (entry) {
+		process_dsc(entry->pathname);
+		entry = entry->next;
+	}
 
-		entry = debs_list.next;
-		SAY("Processing %d binary packages.\n", debs_list.next->n);
-		while (entry) {
-			process_deb(entry->pathname);
-			entry = entry->next;
-		}
-	} while (0);
+	entry = debs_list.next;
+	SAY("Processing %d binary packages.\n", debs_list.next->n);
+	while (entry) {
+		process_deb(entry->pathname);
+		entry = entry->next;
+	}
 
 	return GE_OK;
 }
