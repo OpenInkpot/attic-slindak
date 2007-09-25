@@ -88,9 +88,6 @@ int main(int argc, const char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	if (G.op_mode == OM_POOL)
-		lists_cleanup();
-
 	OUT[LOG] = fopen(G.logfile, "w");
 	if (!OUT[LOG]) {
 		SHOUT("Can't open logfile\n");
@@ -139,6 +136,7 @@ int main(int argc, const char **argv)
 			process_deb(inj_file);
 		} else if (FILE_IS_DSC(inj_file)) {
 			SAY("Injecting source package %s\n", inj_file);
+			SHOUT("Not implemented yet.\n");
 		} else {
 			SHOUT("File is neither .deb nor .dsc. I'm puzzled.\n");
 			exit(EXIT_FAILURE);
@@ -148,6 +146,7 @@ int main(int argc, const char **argv)
 	}
 
 	G.op_mode = OM_POOL;
+	lists_cleanup();
 	scan_pool();
 	L_call_aptconf();
 
@@ -159,7 +158,7 @@ int main(int argc, const char **argv)
 
 	poptFreeContext(optcon);
 
-	SAY("Running apt-ftparchive to generate indices... ");
+	SAY2("Running apt-ftparchive to generate indices... ");
 	s = apt_ftparchive();
 	if (s != GE_OK) {
 		SHOUT("\nError running apt-ftparchive\n");
