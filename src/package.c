@@ -31,6 +31,7 @@ int inject_deb(struct debfile *debf, char *suite, char *path)
 		return GE_ERROR;
 
 	DBG("pool path %s", newpath);
+	mkdir_p(newpath, 0755);
 	copy(path, newpath);
 
 	pkg_append(path, suite, debf->arch, c, 0);
