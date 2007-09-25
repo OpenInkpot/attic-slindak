@@ -253,6 +253,7 @@ int ov_find_component(char *pkgname, char *version, char *arch, char *suite,
 int ov_find_suite(char *pkgname, char *version, char *arch,
 		char **suite)
 {
+	int s;
 	char *req;
 	char *err;
 	char *arch_clause;
@@ -277,8 +278,12 @@ int ov_find_suite(char *pkgname, char *version, char *arch,
 
 	GE_ERROR_IFNULL(req);
 
-	ov_search(req, OV_ARCH, data);
+	*suite = NULL;
+	s = ov_search(req, OV_ARCH, data);
 	xfree(req);
+
+	if (s == GE_EMPTY)
+		return GE_EMPTY;
 
 	*suite = strdup(data[OV_SUITE]);
 

@@ -34,7 +34,7 @@ extern int nsuites;
 
 #define GE_ERROR_IFNULL(x) do { if (!(x)) return GE_ERROR; } while (0)
 
-#include <limits.h>
+int lists_cleanup();
 
 #endif
 

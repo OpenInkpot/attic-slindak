@@ -68,10 +68,12 @@ void suite_remove_all()
 		suite_remove(nsuites);
 }
 
-static int lists_cleanup()
+int lists_cleanup()
 {
 	int sn, an, cn, s;
 	char *fn;
+
+	SAY("Cleaning up.\n");
 
 	/* clean all the lists */
 	for (sn = 0; sn < nsuites; sn++)
@@ -176,7 +178,7 @@ int init_slind()
 {
 	memset(SUITES, 0, sizeof(SUITES));
 
-	return lists_cleanup();
+	return GE_OK;
 }
 
 void done_slind()

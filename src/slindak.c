@@ -19,12 +19,17 @@
 #include "util.h"
 
 const char *cli_file = NULL;
+const char *inj_file = NULL;
 
 static struct poptOption opts_table[] = {
 	{ "info",     'I', POPT_ARG_STRING, &cli_file, 0,
-	  "obtain information on a package" },
+	  "obtain information on a package (may misbehave)" },
+	{ "inject",   'i', POPT_ARG_STRING, &inj_file, 0,
+	  "inject a package into a repository" },
 	{ "repodir",  'r', POPT_ARG_STRING, &G.repo_dir, 0,
 	  "repository base directory" },
+	{ "suite",    's', POPT_ARG_STRING, &G.users_suite, 0,
+	  "specify a name of a suite" },
 	{ "verbose",  'v', 0, 0, 'v', "turn on debugging output"   },
 	{ "version",  'V', 0, 0, 'V', "show our version number"    },
 	{ "help",     'h', 0, 0, 'h', "print help message"         },
@@ -83,6 +88,15 @@ int main(int argc, const char **argv)
 		exit(EXIT_FAILURE);
 	}
 
+	if (G.op_mode == OM_POOL)
+		lists_cleanup();
+
+	OUT[LOG] = fopen(G.logfile, "w");
+	if (!OUT[LOG]) {
+		SHOUT("Can't open logfile\n");
+		exit(EXIT_FAILURE);
+	}
+
 	s = db_init();
 	if (s != GE_OK) {
 		SHOUT("Can't open database\n");
@@ -93,6 +107,7 @@ int main(int argc, const char **argv)
 		struct debfile debf;
 		struct dscfile dscf;
 
+		G.op_mode = OM_INFO;
 		if (FILE_IS_DEB(cli_file)) {
 			s = debfile_read(cli_file, &debf);
 			if (s != GE_OK)
@@ -105,12 +120,34 @@ int main(int argc, const char **argv)
 				exit(EXIT_FAILURE);
 
 			display_dsc_info(&dscf);
-		} else
+		} else {
+			SHOUT("File is neither .deb nor .dsc. I'm puzzled.\n");
 			exit(EXIT_FAILURE);
+		}
 
 		exit(EXIT_SUCCESS);
 	}
 
+	if (inj_file) {
+		G.op_mode = OM_INJECT;
+
+		if (FILE_IS_DEB(inj_file)) {
+			struct debfile debf;
+
+			SAY("Injecting binary package %s\n", inj_file);
+
+			process_deb(inj_file);
+		} else if (FILE_IS_DSC(inj_file)) {
+			SAY("Injecting source package %s\n", inj_file);
+		} else {
+			SHOUT("File is neither .deb nor .dsc. I'm puzzled.\n");
+			exit(EXIT_FAILURE);
+		}
+
+		exit(EXIT_SUCCESS);
+	}
+
+	G.op_mode = OM_POOL;
 	scan_pool();
 	L_call_aptconf();
 
@@ -122,11 +159,15 @@ int main(int argc, const char **argv)
 
 	poptFreeContext(optcon);
 
+	SAY("Running apt-ftparchive to generate indices... ");
 	s = apt_ftparchive();
 	if (s != GE_OK) {
-		SHOUT("Error running apt-ftparchive\n");
+		SHOUT("\nError running apt-ftparchive\n");
 		exit(EXIT_FAILURE);
 	}
+	SAY("Done.\n");
+
+	fclose(OUT[LOG]);
 
 	return 0;
 }

@@ -32,6 +32,10 @@ int config_init()
 		return GE_ERROR;
 	mkpdir(G.apt_config);
 
+	s = asprintf(&G.logfile, "%s/scripts/slindak.log", G.repo_dir);
+	if (s == -1)
+		return GE_ERROR;
+
 	G.devel_suite = L_get_confstr("devel_suite", "Config");
 	G.attic_suite = L_get_confstr("attic_suite", "Config");
 
