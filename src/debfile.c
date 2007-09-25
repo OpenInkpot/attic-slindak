@@ -107,6 +107,9 @@ int dscfile_read(char *path, struct dscfile *df)
 
 	fclose(f);
 
+	if (df->component[0] == '\0')
+		strcpy(df->component, "host-tools");
+
 	return GE_OK;
 }
 
