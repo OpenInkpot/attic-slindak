@@ -8,11 +8,30 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 
 #include "common.h"
 #include "configuration.h"
 #include "debfile.h"
 #include "util.h"
+
+char *mk_pool_path(char *comp, char *pkgname, char *suite)
+{
+	char *newpath = NULL;
+	int s;
+
+	if (!strncmp(pkgname, "lib", 3))
+		s = asprintf(&newpath, "%s/%s/lib%c/%s/%s", G.pool_dir, comp,
+				pkgname[3], pkgname, suite);
+	else
+		s = asprintf(&newpath, "%s/%s/%c/%s/%s", G.pool_dir, comp,
+				pkgname[0], pkgname, suite);
+
+	if (s == -1)
+		return NULL;
+
+	return newpath;
+}
 
 /*
  * Files we might care about are stored in a singly-linked
