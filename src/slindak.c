@@ -33,6 +33,9 @@ static struct poptOption opts_table[] = {
 	{ "cleanup",  'C', POPT_ARG_NONE,   &G.cleanup, 0,
 	  "remove binary packages that do not match source packages "
 	  "known to overrides.db" },
+	{ "force",    'F', POPT_ARG_NONE,   &G.force, 0,
+	  "forced complete rebuild of all the indices, "
+	  "despices apt-ftparchive's caches." },
 	{ "verbose",  'v', 0, 0, 'v', "turn on debugging output"   },
 	{ "version",  'V', 0, 0, 'V', "show our version number"    },
 	{ "help",     'h', 0, 0, 'h', "print help message"         },

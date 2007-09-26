@@ -76,7 +76,13 @@ int lists_cleanup()
 	SAY("Cleaning up.\n");
 
 	/* clean all the lists */
-	for (sn = 0; sn < nsuites; sn++)
+	for (sn = 0; sn < nsuites; sn++) {
+		if (G.force) {
+			asprintf(&fn, "/tmp/%s.db", SUITES[sn]->name);
+			unlink(fn);
+			free(fn);
+		}
+			
 		for (cn = 0; SUITES[sn]->complist[cn]; cn++) {
 			char *dir;
 
@@ -124,6 +130,7 @@ int lists_cleanup()
 				free(fn);
 			}
 		}
+	}
 
 	return GE_OK;
 }

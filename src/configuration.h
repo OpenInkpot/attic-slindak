@@ -28,6 +28,7 @@ struct global_config {
 	/* general */
 	op_mode_t op_mode;      /* operation mode, that is */
 	int cleanup;            /* remove leftovers */
+	int force;              /* remove apt-ftparchive caches */
 };
 
 extern struct global_config G;
