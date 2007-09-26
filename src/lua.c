@@ -15,7 +15,7 @@ static lua_State *L;
 
 #if HACKER
 #define LUA_APT_CONF "lua/apt-conf.lua"
-#define LUA_MAIN_CONF "lua/config.lua"
+#define LUA_MAIN_CONF "lua/slindak-config.lua"
 #endif
 
 #ifndef LUA_APT_CONF
@@ -23,7 +23,7 @@ static lua_State *L;
 #endif
 
 #ifndef LUA_MAIN_CONF
-#define LUA_MAIN_CONF "/etc/config.lua"
+#define LUA_MAIN_CONF "/etc/slindak-config.lua"
 #endif
 
 #ifndef LUA_TABLE_SUITES
