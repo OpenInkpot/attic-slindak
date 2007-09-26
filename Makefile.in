@@ -205,7 +205,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = src
 dist_pkgdata_DATA = lua/apt-conf.lua
-sysconf_DATA = lua/config.lua
+sysconf_DATA = lua/slindak-config.lua
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
