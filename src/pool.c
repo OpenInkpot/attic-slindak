@@ -102,6 +102,9 @@ int scan_pool()
 
 	traverse(G.repo_dir, check_file, NULL);
 
+	if (!dscs_list.next)
+		return GE_ERROR;
+
 	entry = dscs_list.next;
 	SAY("Processing %d source packages.\n", dscs_list.next->n);
 	while (entry) {

@@ -153,7 +153,7 @@ int main(int argc, const char **argv)
 
 	G.op_mode = OM_POOL;
 	lists_cleanup();
-	scan_pool();
+	s = scan_pool();
 	L_call_aptconf();
 
 	db_done();
@@ -163,6 +163,9 @@ int main(int argc, const char **argv)
 	config_done();
 
 	poptFreeContext(optcon);
+
+	if (s != GE_OK)
+		return 0;
 
 	SAY2("Running apt-ftparchive to generate indices... ");
 	s = apt_ftparchive();
