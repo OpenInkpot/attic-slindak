@@ -102,7 +102,7 @@ int scan_pool()
 
 	traverse(G.repo_dir, check_file, NULL);
 
-	if (!dscs_list.next)
+	if (!dscs_list.next || !debs_list.next)
 		return GE_ERROR;
 
 	entry = dscs_list.next;
