@@ -102,7 +102,7 @@ int scan_pool()
 
 	traverse(G.repo_dir, check_file, NULL);
 
-	if (!dscs_list.next || !debs_list.next)
+	if (!dscs_list.next)
 		return GE_ERROR;
 
 	entry = dscs_list.next;
@@ -111,6 +111,9 @@ int scan_pool()
 		process_dsc(entry->pathname);
 		entry = entry->next;
 	}
+
+	if (!debs_list.next)
+		return GE_OK;
 
 	entry = debs_list.next;
 	SAY("Processing %d binary packages.\n", debs_list.next->n);
