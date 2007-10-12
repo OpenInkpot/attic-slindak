@@ -151,6 +151,9 @@ int process_dsc(char *path)
 						SUITES[sn]->name);
 				ov_insert(dscf.pkgname, dscf.version, dscf.arch,
 						SUITES[sn]->name, dscf.component);
+
+				pkg_append(path, SUITES[sn]->name,
+						dscf.arch, dscf.component, 1);
 			} else {
 				s = deb_ver_gt(dscf.version, ver);
 				if (s == GE_OK) {
@@ -160,6 +163,9 @@ int process_dsc(char *path)
 							SUITES[sn]->name, G.attic_suite);
 					ov_insert(dscf.pkgname, dscf.version, dscf.arch,
 							SUITES[sn]->name, dscf.component);
+
+					pkg_append(path, SUITES[sn]->name,
+							dscf.arch, dscf.component, 1);
 				}
 
 				free(ver);
