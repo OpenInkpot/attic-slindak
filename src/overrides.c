@@ -63,6 +63,19 @@ static int ov_fetch_cb(void *user, int cols, char **values, char **keys)
 	return GE_OK;
 }
 
+static int ov_fetch_count_cb(void *user, int cols, char **values, char **keys)
+{
+	char **out = (char **)user;
+
+	DBG("fetch_count: ");
+	_DBG("%s=\"%s\" ", keys[0], values[0]);
+	if (out)
+		out[0] = values[0];
+	_DBG("\n");
+
+	return GE_OK;
+}
+
 int ov_insert(char *pkgname, char *version, char *arch,
 		char *suite, char *component)
 {
@@ -190,7 +203,7 @@ int ov_search_count(char *where, char *count_what, int *count)
 			"WHERE %s", count_what, where);
 
 	DBG("sql req: \"%s\"\n", req);
-	s = sqlite3_exec(db, req, ov_fetch_cb, data, &err);
+	s = sqlite3_exec(db, req, ov_fetch_count_cb, data, &err);
 	if (s != SQLITE_OK) {
 		SHOUT("Error (%d) occured while selecting: %s,\n"
 				"query was: \"%s\"\n", s, err ? err : "", req);
