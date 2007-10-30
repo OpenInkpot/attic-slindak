@@ -87,6 +87,7 @@ int main(int argc, const char **argv)
 
 	init_slind();
 	L_init();
+	add_luacalls();
 
 	s = config_init();
 	if (s != GE_OK) {
