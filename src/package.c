@@ -26,7 +26,7 @@ int inject_deb(struct debfile *debf, char *suite, char *path)
 		return GE_EMPTY;
 	}
 
-	newpath = mk_pool_path(c, debf->source, suite);
+	newpath = mk_pool_path(debf->component, debf->source, suite);
 	if (!newpath)
 		return GE_ERROR;
 
