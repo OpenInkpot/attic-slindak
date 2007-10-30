@@ -177,6 +177,35 @@ int ov_update_suite(char *pkgname, char *version, char *arch,
 	return s;
 }
 
+int ov_search_count(char *where, char *count_what, int *count)
+{
+	char *req;
+	char *err;
+	char *data[OV_NCOLS];
+	int s;
+
+	data[0] = NULL;
+	req = sqlite3_mprintf(
+			"SELECT COUNT(%s) FROM overrides "
+			"WHERE %s", count_what, where);
+
+	DBG("sql req: \"%s\"\n", req);
+	s = sqlite3_exec(db, req, ov_fetch_cb, data, &err);
+	if (s != SQLITE_OK) {
+		SHOUT("Error (%d) occured while selecting: %s,\n"
+				"query was: \"%s\"\n", s, err ? err : "", req);
+
+		s = GE_ERROR;
+	} else
+		s = (data[0] ? GE_OK : GE_EMPTY);
+
+	*count = atoi(data[0]);
+
+	sqlite3_free(req);
+
+	return s;
+}
+
 int ov_search(char *where, int order, char **data)
 {
 	char *req;
@@ -286,6 +315,36 @@ int ov_find_suite(char *pkgname, char *version, char *arch,
 		return GE_EMPTY;
 
 	*suite = strdup(data[OV_SUITE]);
+
+	return GE_OK;
+}
+
+int ov_version_count(char *pkgname, char *arch, char *suite, int *count)
+{
+	char *req;
+	char *err;
+	char *data[OV_NCOLS];
+	int s;
+	int n;
+
+	GE_ERROR_IFNULL(pkgname);
+	GE_ERROR_IFNULL(suite);
+
+	asprintf(&req,
+			"pkgname='%s' "
+			"AND suite='%s'",
+			pkgname, suite
+		);
+
+	GE_ERROR_IFNULL(req);
+
+	s = ov_search_count(req, ov_columns[OV_VERSION], &n);
+	xfree(req);
+
+	if (s != GE_OK)
+		return s;
+
+	*count = n;
 
 	return GE_OK;
 }

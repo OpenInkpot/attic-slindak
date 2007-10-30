@@ -139,9 +139,25 @@ int process_dsc(char *path)
 			free(c);
 		} else { /* XXX: only devsuite */
 			char *ver;
+			int n;
 
 			if (strcmp(SUITES[sn]->name, G.devel_suite))
 				continue;
+
+			s = ov_version_count(dscf.pkgname, dscf.arch,
+					SUITES[sn]->name, &n);
+			if (s == GE_OK) {
+				if (n > 1) {
+					/* Most likely this means that there is a new source version
+					 * of the package which is overriden for some architectures,
+					 * and someone forgot to update overrides.db. The safest way
+					 * here is to bail and stop processing this dsc.
+					 */
+					SHOUT("Found more than one version of package %s,"
+							"resolve manually\n", dscf.pkgname);
+					return s;
+				}
+			}
 
 			s = ov_find_version(dscf.pkgname, dscf.arch,
 					SUITES[sn]->name, &ver);
