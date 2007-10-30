@@ -1,0 +1,11 @@
+*.o
+*.lo
+*.loT
+.deps
+.libs
+.*.swp
+*-stamp
+*.la
+debian
+autom4te.cache
+config.*
