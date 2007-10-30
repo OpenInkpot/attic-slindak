@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <sqlite3.h>
 #include "common.h"
-#include "configuration.h"
 
 sqlite3 *db;
 
@@ -15,11 +14,11 @@ static int sql_authoriser(void *a, int b, const char *c, const char *d,
 	return SQLITE_OK;
 }
 
-int db_init()
+int db_init(char *db_path)
 {
 	int s;
 	
-	s = sqlite3_open(G.odb_path, &db);
+	s = sqlite3_open(db_path, &db);
 	if (s != SQLITE_OK)
 		return GE_ERROR;
 

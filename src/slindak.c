@@ -100,7 +100,7 @@ int main(int argc, const char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	s = db_init();
+	s = db_init(G.odb_path);
 	if (s != GE_OK) {
 		SHOUT("Can't open database\n");
 		exit(EXIT_FAILURE);
