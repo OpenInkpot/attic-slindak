@@ -5,19 +5,7 @@
 #ifndef __UTIL_H__
 #define __UTIL_H__
 
-char *parent_dir(char *path, int tailcut);
-
-typedef void (*traverse_fn_t)(char *path, void *data);
-
-int traverse(char *path, traverse_fn_t callback, void *data);
-
-int spawn(char *cmd, char **argv);
-
-int mkdir_p(char *dst, mode_t mode);
-
-int copy(char *src, char *dst);
-
-void root_squash();
+#include "slindak.h"
 
 #define mkpdir(p) do {                          \
 		char *__p = parent_dir(p, 0);           \

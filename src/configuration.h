@@ -5,33 +5,28 @@
 #ifndef __CONFIGURATION_H__
 #define __CONFIGURATION_H__
 
-typedef enum {
-	OM_NONE = 0,
-	OM_POOL,
-	OM_INJECT,
-	OM_INFO
-} op_mode_t;
+#include "conf.h"
 
-struct global_config {
-	/* paths */
-	char *repo_dir;
-	char *pool_dir;
-	char *odb_path;
-	char *apt_config;       /* path to apt-ftparchive.conf */
-	char *logfile;
+#if HACKER
+#define LUA_APT_CONF "lua/apt-conf.lua"
+#define LUA_MAIN_CONF "lua/slindak-config.lua"
+#endif
 
-	/* suites */
-	char *devel_suite;      /* current 'unstable' */
-	char *attic_suite;      /* dead n4r storage */
-	char *users_suite;      /* -s option */
+#ifndef LUA_APT_CONF
+#define LUA_APT_CONF "/usr/share/slindak/apt-conf.lua"
+#endif
 
-	/* general */
-	op_mode_t op_mode;      /* operation mode, that is */
-	int cleanup;            /* remove leftovers */
-	int force;              /* remove apt-ftparchive caches */
-};
+#ifndef LUA_MAIN_CONF
+#define LUA_MAIN_CONF "/etc/slindak-config.lua"
+#endif
 
-extern struct global_config G;
+#ifndef LUA_TABLE_SUITES
+#define LUA_TABLE_SUITES "Suites"
+#endif
+
+#ifndef LUA_TABLE_CONFIG
+#define LUA_TABLE_CONFIG "Config"
+#endif
 
 #define CONFIG_SET(name, table) \
 	do { \

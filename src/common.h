@@ -15,24 +15,7 @@
 #define BUILD_DATE "N/A"
 #endif
 
-#define MAX_SUITES 8
-#define MAX_ARCHES 32
-#define MAX_COMPS  32
-
-struct suite {
-	char *name;
-	char *archlist[MAX_ARCHES];
-	char *complist[MAX_COMPS];
-};
-
-extern struct suite *SUITES[MAX_SUITES];
-extern int nsuites;
-
-#define GE_OK    (0)
-#define GE_ERROR (-1)
-#define GE_EMPTY (-2)
-
-#define GE_ERROR_IFNULL(x) do { if (!(x)) return GE_ERROR; } while (0)
+#include "slindak.h"
 
 int lists_cleanup();
 

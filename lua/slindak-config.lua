@@ -1,5 +1,5 @@
 Config = {
-  repo_dir = "/opt/slind/SLIND",
+  repo_dir = "/opt/slind/SLIND.bogus",
   devel_suite = "clydesdale",
   attic_suite = "attic",
 }

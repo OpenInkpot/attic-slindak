@@ -87,13 +87,14 @@ int main(int argc, const char **argv)
 
 	init_slind();
 	L_init();
-	add_luacalls();
 
 	s = config_init();
 	if (s != GE_OK) {
 		SHOUT("Error initializing configuration.\n");
 		exit(EXIT_FAILURE);
 	}
+
+	L_load_aptconf();
 
 	OUT[LOG] = fopen(G.logfile, "w");
 	if (!OUT[LOG]) {

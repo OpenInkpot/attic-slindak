@@ -2,8 +2,14 @@
  * vi: sw=4 ts=4 noexpandtab
  */
 
-#ifndef __LUA_HELPERS_H__
-#define __LUA_HELPERS_H__
+#ifndef __SLINDAK_LUA_HELPERS_H__
+#define __SLINDAK_LUA_HELPERS_H__
+
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+
+extern lua_State *L;
 
 #define L_pop_table(x) do { /*lua_pop(L, 2 * x);*/ } while (0)
 
@@ -19,5 +25,5 @@ int L_get_array(int index, char **array, int narr);
 int L_init();
 void L_done();
 
-#endif /* __UTIL_H__ */
+#endif /* __SLINDAK_LUA_HELPERS_H__ */
 
