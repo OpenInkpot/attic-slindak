@@ -4,6 +4,8 @@
 #ifndef __SLINDAK_OV_H__
 #define __SLINDAK_OV_H__
 
+typedef int (*ov_callback_fn)(void *, int, char **, char **);
+
 #define OV_PKGNAME   0
 #define OV_VERSION   1
 #define OV_SUITE     2
@@ -21,6 +23,14 @@ static char *ov_columns[OV_NCOLS] = {
 };
 
 #define OV_COLS "pkgname, version, suite, arch, component"
+
+int ov_search_all(char *where, void *user, ov_callback_fn callback);
+int ov_update_all(char *pkgname, char *arch, char *suite, char *version,
+		char *set_version, char *set_suite, char *set_component,
+		char *set_arch);
+int ov_insert(char *pkgname, char *version, char *arch,
+		char *suite, char *component);
+int ov_delete(char *pkgname, char *version, char *suite, char *arch);
 
 #endif /* __SLINDAK_OV_H__ */
 

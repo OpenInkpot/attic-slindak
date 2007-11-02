@@ -4,19 +4,8 @@
 #ifndef __HTML_STATIC__
 #define __HTML_STATIC__
 
-#define html_header_fmt "<html><head>"  \
-	"<title>SlindWeb -- %s</title>" \
-	"<link rel=\"stylesheet\" type=\"text/css\" href=\"/gitweb.css\"/>" \
-	"</head><body>" \
-	"<table><tr>" \
-	"<td><a class=\"title\" href=\"?act=list\">All records</td>" \
-	"<td><a class=\"title\" href=\"?act=new\">Add record</td>" \
-	"</tr></table>"
-
-#define html_footer_fmt "<p>%s</p></body></html>"
-
-#define SV(x, s) (strlen(x) ? x : s)
-#define Q(x) (SV(x, "&nbsp;"))
+#define SV(x, s) (strlen(x) ? (x) : s)
+#define Q(x) (SV(x ? x : "", "&nbsp;"))
 
 static inline char *sasprintf(char *fmt, ...)
 {
@@ -30,15 +19,10 @@ static inline char *sasprintf(char *fmt, ...)
 	return (__r == -1 ? NULL : __str);
 }
 
-#define O(fmt, args ...) (output_printf(fmt, ## args))
-int output_printf(char *fmt, ...);
-void flush_output();
-void init_output();
-char *html_table(char *class, char *content);
-char *html_tr(char *class, char *content);
-char *html_td(char *class, char *content);
-char *html_anchor(char *href, char *content);
-char *html_input(char type, char *name, char *value);
+#define O(fmt, args ...) (html_output_printf(fmt, ## args))
+int html_output_printf(char *fmt, ...);
+void flush_html_output();
+void init_html_output();
 
 #endif
 

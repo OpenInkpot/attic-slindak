@@ -103,6 +103,45 @@ int ov_insert(char *pkgname, char *version, char *arch,
 	return s;
 }
 
+int ov_update_all(char *pkgname, char *arch, char *suite, char *version,
+		char *set_version, char *set_suite, char *set_component,
+		char *set_arch)
+{
+	char *req;
+	char *err;
+	int s;
+
+	GE_ERROR_IFNULL(pkgname);
+	GE_ERROR_IFNULL(suite);
+	GE_ERROR_IFNULL(version);
+
+	if (!arch)
+		arch = "";
+
+	req = sqlite3_mprintf(
+			"UPDATE overrides SET version='%s', suite='%s', "
+			"component='%s', arch='%s' "
+			"WHERE pkgname='%s' "
+			"AND suite='%s' AND version='%s' AND arch='%s'",
+			set_version, set_suite, set_component, set_arch,
+			pkgname, suite, version, arch);
+	DBG("sql req: %s\n", req);
+
+	s = sqlite3_exec(db, req, NULL, NULL, &err);
+
+	if (s != SQLITE_OK) {
+		SHOUT("Error (%d) occured while updating the table: %s,\n"
+				"query was: \"%s\"\n", s, err ? err : "", req);
+
+		s = GE_ERROR;
+	} else
+		s = GE_OK;
+
+	sqlite3_free(req);
+
+	return s;
+}
+
 int ov_update_version(char *pkgname, char *arch, char *suite, char *version)
 {
 	char *req;
@@ -213,6 +252,29 @@ int ov_search_count(char *where, char *count_what, int *count)
 		s = (data[0] ? GE_OK : GE_EMPTY);
 
 	*count = atoi(data[0]);
+
+	sqlite3_free(req);
+
+	return s;
+}
+
+int ov_search_all(char *where, void *user, ov_callback_fn callback)
+{
+	char *req;
+	char *err;
+	int s;
+
+	req = sqlite3_mprintf("SELECT " OV_COLS " FROM overrides %s", where);
+
+	DBG("sql req: \"%s\"\n", req);
+	s = sqlite3_exec(db, req, callback, user, &err);
+	if (s != SQLITE_OK) {
+		SHOUT("Error (%d) occured while selecting: %s,\n"
+				"query was: \"%s\"\n", s, err ? err : "", req);
+
+		s = GE_ERROR;
+	} else
+		s = GE_OK;
 
 	sqlite3_free(req);
 
@@ -398,5 +460,39 @@ int ov_find_version(char *pkgname, char *arch, char *suite, char **version)
 	*version = strdup(data[OV_VERSION]);
 
 	return GE_OK;
+}
+
+int ov_delete(char *pkgname, char *version, char *suite, char *arch)
+{
+	char *req;
+	char *err;
+	int s;
+
+	GE_ERROR_IFNULL(pkgname);
+	GE_ERROR_IFNULL(version);
+	GE_ERROR_IFNULL(suite);
+
+	if (!arch)
+		arch = "";
+
+	req = sqlite3_mprintf(
+			"DELETE  FROM overrides "
+			"WHERE pkgname='%s' AND version='%s' AND suite='%s' "
+			"AND arch='%s'",
+			pkgname, version, suite, arch);
+
+	DBG("sql req: \"%s\"\n", req);
+	s = sqlite3_exec(db, req, NULL, NULL, &err);
+	if (s != SQLITE_OK) {
+		SHOUT("Error (%d) occured while selecting: %s,\n"
+				"query was: \"%s\"\n", s, err ? err : "", req);
+
+		s = GE_ERROR;
+	} else
+		s = GE_OK;
+
+	sqlite3_free(req);
+
+	return s;
 }
 

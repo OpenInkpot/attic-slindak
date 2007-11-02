@@ -1,5 +1,7 @@
-bin_PROGRAMS = slindak slindweb
+bin_PROGRAMS = slindak
 lib_LTLIBRARIES = libslindak.la
+cgidir = $(prefix)/lib/cgi-bin
+cgi_PROGRAMS = slindweb
 
 libslindak_la_SOURCES = \
 	configuration.c\
@@ -24,6 +26,8 @@ slindak_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAG
 slindak_LDADD = $(SQL_LIBS) $(LUA_LIBS) $(POPT_LIBS) -lslindak
 
 slindweb_SOURCES = \
+	cgi-actions.c \
+	html_output.c \
 	slindweb.c
 slindweb_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAGS) -I../include
 slindweb_LDADD = $(SQL_LIBS) $(LUA_LIBS) $(POPT_LIBS) $(CGI_LIBS) -lslindak

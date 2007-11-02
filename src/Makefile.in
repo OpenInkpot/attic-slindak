@@ -37,7 +37,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = slindak$(EXEEXT) slindweb$(EXEEXT)
+bin_PROGRAMS = slindak$(EXEEXT)
+cgi_PROGRAMS = slindweb$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -53,7 +54,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
+am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(cgidir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libslindak_la_LIBADD =
@@ -64,7 +66,8 @@ am_libslindak_la_OBJECTS = libslindak_la-configuration.lo \
 	libslindak_la-output.lo
 libslindak_la_OBJECTS = $(am_libslindak_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
-PROGRAMS = $(bin_PROGRAMS)
+cgiPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
+PROGRAMS = $(bin_PROGRAMS) $(cgi_PROGRAMS)
 am_slindak_OBJECTS = slindak-slindak.$(OBJEXT) \
 	slindak-aptconf.$(OBJEXT) slindak-lists.$(OBJEXT) \
 	slindak-messages.$(OBJEXT) slindak-package.$(OBJEXT) \
@@ -73,7 +76,8 @@ slindak_OBJECTS = $(am_slindak_OBJECTS)
 am__DEPENDENCIES_1 =
 slindak_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1)
-am_slindweb_OBJECTS = slindweb-slindweb.$(OBJEXT)
+am_slindweb_OBJECTS = slindweb-cgi-actions.$(OBJEXT) \
+	slindweb-html_output.$(OBJEXT) slindweb-slindweb.$(OBJEXT)
 slindweb_OBJECTS = $(am_slindweb_OBJECTS)
 slindweb_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
@@ -217,6 +221,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 lib_LTLIBRARIES = libslindak.la
+cgidir = $(prefix)/lib/cgi-bin
 libslindak_la_SOURCES = \
 	configuration.c\
 	db.c           \
@@ -240,6 +245,8 @@ slindak_SOURCES = \
 slindak_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAGS) -I../include
 slindak_LDADD = $(SQL_LIBS) $(LUA_LIBS) $(POPT_LIBS) -lslindak
 slindweb_SOURCES = \
+	cgi-actions.c \
+	html_output.c \
 	slindweb.c
 
 slindweb_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAGS) -I../include
@@ -334,6 +341,34 @@ clean-binPROGRAMS:
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
 	done
+install-cgiPROGRAMS: $(cgi_PROGRAMS)
+	@$(NORMAL_INSTALL)
+	test -z "$(cgidir)" || $(mkdir_p) "$(DESTDIR)$(cgidir)"
+	@list='$(cgi_PROGRAMS)'; for p in $$list; do \
+	  p1=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  if test -f $$p \
+	     || test -f $$p1 \
+	  ; then \
+	    f=`echo "$$p1" | sed 's,^.*/,,;$(transform);s/$$/$(EXEEXT)/'`; \
+	   echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(cgiPROGRAMS_INSTALL) '$$p' '$(DESTDIR)$(cgidir)/$$f'"; \
+	   $(INSTALL_PROGRAM_ENV) $(LIBTOOL) --mode=install $(cgiPROGRAMS_INSTALL) "$$p" "$(DESTDIR)$(cgidir)/$$f" || exit 1; \
+	  else :; fi; \
+	done
+
+uninstall-cgiPROGRAMS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(cgi_PROGRAMS)'; for p in $$list; do \
+	  f=`echo "$$p" | sed 's,^.*/,,;s/$(EXEEXT)$$//;$(transform);s/$$/$(EXEEXT)/'`; \
+	  echo " rm -f '$(DESTDIR)$(cgidir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(cgidir)/$$f"; \
+	done
+
+clean-cgiPROGRAMS:
+	@list='$(cgi_PROGRAMS)'; for p in $$list; do \
+	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
+	  echo " rm -f $$p $$f"; \
+	  rm -f $$p $$f ; \
+	done
 slindak$(EXEEXT): $(slindak_OBJECTS) $(slindak_DEPENDENCIES) 
 	@rm -f slindak$(EXEEXT)
 	$(LINK) $(slindak_LDFLAGS) $(slindak_OBJECTS) $(slindak_LDADD) $(LIBS)
@@ -361,6 +396,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-package.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-pool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-slindak.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindweb-cgi-actions.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindweb-html_output.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindweb-slindweb.Po@am__quote@
 
 .c.o:
@@ -524,6 +561,34 @@ slindak-pool.obj: pool.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-pool.obj `if test -f 'pool.c'; then $(CYGPATH_W) 'pool.c'; else $(CYGPATH_W) '$(srcdir)/pool.c'; fi`
 
+slindweb-cgi-actions.o: cgi-actions.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindweb_CFLAGS) $(CFLAGS) -MT slindweb-cgi-actions.o -MD -MP -MF "$(DEPDIR)/slindweb-cgi-actions.Tpo" -c -o slindweb-cgi-actions.o `test -f 'cgi-actions.c' || echo '$(srcdir)/'`cgi-actions.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindweb-cgi-actions.Tpo" "$(DEPDIR)/slindweb-cgi-actions.Po"; else rm -f "$(DEPDIR)/slindweb-cgi-actions.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='cgi-actions.c' object='slindweb-cgi-actions.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindweb_CFLAGS) $(CFLAGS) -c -o slindweb-cgi-actions.o `test -f 'cgi-actions.c' || echo '$(srcdir)/'`cgi-actions.c
+
+slindweb-cgi-actions.obj: cgi-actions.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindweb_CFLAGS) $(CFLAGS) -MT slindweb-cgi-actions.obj -MD -MP -MF "$(DEPDIR)/slindweb-cgi-actions.Tpo" -c -o slindweb-cgi-actions.obj `if test -f 'cgi-actions.c'; then $(CYGPATH_W) 'cgi-actions.c'; else $(CYGPATH_W) '$(srcdir)/cgi-actions.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindweb-cgi-actions.Tpo" "$(DEPDIR)/slindweb-cgi-actions.Po"; else rm -f "$(DEPDIR)/slindweb-cgi-actions.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='cgi-actions.c' object='slindweb-cgi-actions.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindweb_CFLAGS) $(CFLAGS) -c -o slindweb-cgi-actions.obj `if test -f 'cgi-actions.c'; then $(CYGPATH_W) 'cgi-actions.c'; else $(CYGPATH_W) '$(srcdir)/cgi-actions.c'; fi`
+
+slindweb-html_output.o: html_output.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindweb_CFLAGS) $(CFLAGS) -MT slindweb-html_output.o -MD -MP -MF "$(DEPDIR)/slindweb-html_output.Tpo" -c -o slindweb-html_output.o `test -f 'html_output.c' || echo '$(srcdir)/'`html_output.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindweb-html_output.Tpo" "$(DEPDIR)/slindweb-html_output.Po"; else rm -f "$(DEPDIR)/slindweb-html_output.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='html_output.c' object='slindweb-html_output.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindweb_CFLAGS) $(CFLAGS) -c -o slindweb-html_output.o `test -f 'html_output.c' || echo '$(srcdir)/'`html_output.c
+
+slindweb-html_output.obj: html_output.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindweb_CFLAGS) $(CFLAGS) -MT slindweb-html_output.obj -MD -MP -MF "$(DEPDIR)/slindweb-html_output.Tpo" -c -o slindweb-html_output.obj `if test -f 'html_output.c'; then $(CYGPATH_W) 'html_output.c'; else $(CYGPATH_W) '$(srcdir)/html_output.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindweb-html_output.Tpo" "$(DEPDIR)/slindweb-html_output.Po"; else rm -f "$(DEPDIR)/slindweb-html_output.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='html_output.c' object='slindweb-html_output.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindweb_CFLAGS) $(CFLAGS) -c -o slindweb-html_output.obj `if test -f 'html_output.c'; then $(CYGPATH_W) 'html_output.c'; else $(CYGPATH_W) '$(srcdir)/html_output.c'; fi`
+
 slindweb-slindweb.o: slindweb.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindweb_CFLAGS) $(CFLAGS) -MT slindweb-slindweb.o -MD -MP -MF "$(DEPDIR)/slindweb-slindweb.Tpo" -c -o slindweb-slindweb.o `test -f 'slindweb.c' || echo '$(srcdir)/'`slindweb.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindweb-slindweb.Tpo" "$(DEPDIR)/slindweb-slindweb.Po"; else rm -f "$(DEPDIR)/slindweb-slindweb.Tpo"; exit 1; fi
@@ -629,7 +694,7 @@ all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
 install-binPROGRAMS: install-libLTLIBRARIES
 
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(cgidir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -658,8 +723,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool mostlyclean-am
+clean-am: clean-binPROGRAMS clean-cgiPROGRAMS clean-generic \
+	clean-libLTLIBRARIES clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -677,7 +742,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-cgiPROGRAMS
 
 install-exec-am: install-binPROGRAMS install-libLTLIBRARIES
 
@@ -705,21 +770,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
-	uninstall-libLTLIBRARIES
+uninstall-am: uninstall-binPROGRAMS uninstall-cgiPROGRAMS \
+	uninstall-info-am uninstall-libLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libLTLIBRARIES clean-libtool ctags \
-	distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-binPROGRAMS \
-	install-data install-data-am install-exec install-exec-am \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-info-am \
+	clean-cgiPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-binPROGRAMS install-cgiPROGRAMS install-data \
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-libLTLIBRARIES install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-cgiPROGRAMS uninstall-info-am \
 	uninstall-libLTLIBRARIES
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

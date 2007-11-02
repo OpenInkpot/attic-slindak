@@ -2,6 +2,8 @@
 
 pkg := slindak
 dir := $(shell pwd)/debian/$(pkg)
+pkgweb := slindweb
+dirweb := $(shell pwd)/debian/$(pkgweb)
 
 DEB_HOST_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE 2>/dev/null)
 
@@ -20,7 +22,7 @@ clean:
 	-$(MAKE) distclean
 
 	rm -f debian/$(pkg).substvars {configure,build,install}-stamp debian/files
-	rm -rf $(dir)
+	rm -rf debian/slindak debian/slindweb debian/tmp
 
 build: build-stamp
 build-stamp: configure
@@ -32,14 +34,15 @@ install-stamp:
 	dh_testdir
 	dh_testroot
 
-	$(MAKE) install DESTDIR=$(dir)
-	dh_installdirs
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 	touch $@
 
 binary-arch: install
 	dh_testdir
 	dh_testroot
 
+	dh_installdirs
+	dh_install --sourcedir=$(CURDIR)/debian/tmp
 	dh_installchangelogs
 
 	dh_installdeb

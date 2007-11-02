@@ -12,3 +12,17 @@ Depends: ${shlibs:Depends}, apt-utils
 Description: generates package pool indices
  This is SLIND. The rest is TODO.
 
+Package: slindweb
+Section: host-tools
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: slindak web interface
+ This is SLIND. The rest is TODO.
+
+Package: libslindak0-dev
+Section: host-tools
+Architecture: any
+Depends: ${shlibs:Depends}, slindak
+Description: development files for libslindak
+ This is SLIND. The rest is TODO.
+

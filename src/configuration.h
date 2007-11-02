@@ -10,10 +10,16 @@
 #if HACKER
 #define LUA_APT_CONF "lua/apt-conf.lua"
 #define LUA_MAIN_CONF "lua/slindak-config.lua"
+
+#define LUA_HTML "lua/html.lua"
 #endif
 
 #ifndef LUA_APT_CONF
 #define LUA_APT_CONF "/usr/share/slindak/apt-conf.lua"
+#endif
+
+#ifndef LUA_HTML
+#define LUA_HTML "/usr/share/slindak/html.lua"
 #endif
 
 #ifndef LUA_MAIN_CONF

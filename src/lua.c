@@ -160,6 +160,8 @@ int L_init()
 		return GE_ERROR;
 
 	luaL_openlibs(L);
+
+	L_push_pair_str(LUA_GLOBALSINDEX, "BUILD_DATE", BUILD_DATE);
 }
 
 void L_done()
