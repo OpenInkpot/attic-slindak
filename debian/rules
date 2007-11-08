@@ -21,8 +21,8 @@ clean:
 	dh_testdir
 	-$(MAKE) distclean
 
-	rm -f debian/$(pkg).substvars {configure,build,install}-stamp debian/files
-	rm -rf debian/slindak debian/slindweb debian/tmp
+	rm -f debian/*.substvars {configure,build,install}-stamp debian/files
+	rm -rf debian/slindak debian/slindweb debian/tmp debian/{slindak,slindweb,libslindak0-dev}
 
 build: build-stamp
 build-stamp: configure
