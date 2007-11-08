@@ -1,0 +1,3 @@
+usr/bin/slindak
+usr/lib/libslindak.so.0
+usr/share/slindak/apt-conf.lua
