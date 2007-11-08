@@ -1,5 +1,4 @@
 usr/lib/libslindak.la
 usr/lib/libslindak.so
 usr/lib/libslindak.a
-usr/lib/libslindak.so.0.0.0
 usr/include/slindak/*.h
