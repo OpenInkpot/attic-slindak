@@ -60,10 +60,10 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libslindak_la_LIBADD =
 am_libslindak_la_OBJECTS = libslindak_la-configuration.lo \
-	libslindak_la-db.lo libslindak_la-overrides.lo \
-	libslindak_la-debfile.lo libslindak_la-slind.lo \
-	libslindak_la-util.lo libslindak_la-lua.lo \
-	libslindak_la-output.lo
+	libslindak_la-biglock.lo libslindak_la-db.lo \
+	libslindak_la-overrides.lo libslindak_la-debfile.lo \
+	libslindak_la-slind.lo libslindak_la-util.lo \
+	libslindak_la-lua.lo libslindak_la-output.lo
 libslindak_la_OBJECTS = $(am_libslindak_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 cgiPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -224,6 +224,7 @@ lib_LTLIBRARIES = libslindak.la
 cgidir = $(prefix)/lib/cgi-bin
 libslindak_la_SOURCES = \
 	configuration.c\
+	biglock.c      \
 	db.c           \
 	overrides.c    \
 	debfile.c      \
@@ -382,6 +383,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-biglock.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-configuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-debfile.Plo@am__quote@
@@ -427,6 +429,13 @@ libslindak_la-configuration.lo: configuration.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='configuration.c' object='libslindak_la-configuration.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -c -o libslindak_la-configuration.lo `test -f 'configuration.c' || echo '$(srcdir)/'`configuration.c
+
+libslindak_la-biglock.lo: biglock.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -MT libslindak_la-biglock.lo -MD -MP -MF "$(DEPDIR)/libslindak_la-biglock.Tpo" -c -o libslindak_la-biglock.lo `test -f 'biglock.c' || echo '$(srcdir)/'`biglock.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libslindak_la-biglock.Tpo" "$(DEPDIR)/libslindak_la-biglock.Plo"; else rm -f "$(DEPDIR)/libslindak_la-biglock.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='biglock.c' object='libslindak_la-biglock.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -c -o libslindak_la-biglock.lo `test -f 'biglock.c' || echo '$(srcdir)/'`biglock.c
 
 libslindak_la-db.lo: db.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -MT libslindak_la-db.lo -MD -MP -MF "$(DEPDIR)/libslindak_la-db.Tpo" -c -o libslindak_la-db.lo `test -f 'db.c' || echo '$(srcdir)/'`db.c; \

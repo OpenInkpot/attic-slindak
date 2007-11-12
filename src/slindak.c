@@ -17,6 +17,7 @@
 #include "db.h"
 #include "debfile.h"
 #include "util.h"
+#include "biglock.h"
 
 const char *cli_file = NULL;
 const char *inj_file = NULL;
@@ -154,6 +155,9 @@ int main(int argc, const char **argv)
 	}
 
 	G.op_mode = OM_POOL;
+
+	if (bl_take(G.repo_dir) != GE_OK) abort();
+
 	lists_cleanup();
 	s = scan_pool();
 	L_call_aptconf();
@@ -176,6 +180,7 @@ int main(int argc, const char **argv)
 		exit(EXIT_FAILURE);
 	}
 	SAY("Done.\n");
+	bl_release();
 
 	fclose(OUT[LOG]);
 

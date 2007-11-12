@@ -5,6 +5,7 @@ cgi_PROGRAMS = slindweb
 
 libslindak_la_SOURCES = \
 	configuration.c\
+	biglock.c      \
 	db.c           \
 	overrides.c    \
 	debfile.c      \
