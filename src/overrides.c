@@ -394,7 +394,7 @@ int ov_find_suite(char *pkgname, char *version, char *arch,
 	return GE_OK;
 }
 
-int ov_version_count(char *pkgname, char *arch, char *suite, int *count)
+int ov_version_count(char *pkgname, char *suite, int *count)
 {
 	char *req;
 	char *err;

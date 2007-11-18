@@ -144,21 +144,6 @@ int process_dsc(char *path)
 			if (strcmp(SUITES[sn]->name, G.devel_suite))
 				continue;
 
-			s = ov_version_count(dscf.pkgname, dscf.arch,
-					SUITES[sn]->name, &n);
-			if (s == GE_OK) {
-				if (n > 1) {
-					/* Most likely this means that there is a new source version
-					 * of the package which is overriden for some architectures,
-					 * and someone forgot to update overrides.db. The safest way
-					 * here is to bail and stop processing this dsc.
-					 */
-					SHOUT("Found more than one version of package %s,"
-							"resolve manually\n", dscf.pkgname);
-					return s;
-				}
-			}
-
 			s = ov_find_version(dscf.pkgname, dscf.arch,
 					SUITES[sn]->name, &ver);
 			if (s != GE_OK) {
@@ -171,6 +156,21 @@ int process_dsc(char *path)
 				pkg_append(path, SUITES[sn]->name,
 						dscf.arch, dscf.component, 1);
 			} else {
+				s = ov_version_count(dscf.pkgname,
+						SUITES[sn]->name, &n);
+				if (s == GE_OK) {
+					if (n > 1) {
+						/* Most likely this means that there is a new source version
+						 * of the package which is overriden for some architectures,
+						 * and someone forgot to update overrides.db. The safest way
+						 * here is to bail and stop processing this dsc.
+						 */
+						SHOUT("Package %s=%s should be added to overrides.db"
+								"manually\n", dscf.pkgname, dscf.version);
+						return s;
+					}
+				}
+
 				s = deb_ver_gt(dscf.version, ver);
 				if (s == GE_OK) {
 					SAY("Found newer version of %s (%s >> %s)\n",

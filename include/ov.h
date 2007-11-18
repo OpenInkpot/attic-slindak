@@ -24,6 +24,7 @@ static char *ov_columns[OV_NCOLS] = {
 
 #define OV_COLS "pkgname, version, suite, arch, component"
 
+int ov_version_count(char *pkgname, char *suite, int *count);
 int ov_search_all(char *where, void *user, ov_callback_fn callback);
 int ov_update_all(char *pkgname, char *arch, char *suite, char *version,
 		char *set_version, char *set_suite, char *set_component,
