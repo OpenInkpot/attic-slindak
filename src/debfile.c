@@ -95,26 +95,26 @@ int dscfile_read(char *path, struct dscfile *df)
 	while (!feof(f)) {
 		fscanf(f, "%s", tok);
 		
-		if (!strcmp(tok, "Package:")) {
+		if (!strcmp(tok, "Package:") && !df->pkgname[0]) {
 			fscanf(f, "%s", tok);
 
 			strncpy(df->pkgname, tok, DF_SRCLEN);
-		} else if (!strcmp(tok, "Version:")) {
+		} else if (!strcmp(tok, "Version:") && !df->version[0]) {
 			fscanf(f, "%s", tok);
 
 			strncpy(df->version, tok, DF_VERLEN);
-		} else if (!strcmp(tok, "Architecture:")) {
+		} else if (!strcmp(tok, "Architecture:") && !df->arch[0]) {
 			fscanf(f, "%s", tok);
 
 			if (!strcmp(tok, "all") || !strcmp(tok, "any"))
 				df->arch[0] = '\0';
 			else
 				strncpy(df->arch, tok, DF_ARCHLEN);
-		} else if (!strcmp(tok, "Section:")) {
+		} else if (!strcmp(tok, "Section:") && !df->component[0]) {
 			fscanf(f, "%s", tok);
 
 			strncpy(df->component, tok, DF_COMPLEN);
-		} else if (!strcmp(tok, "Source:")) {
+		} else if (!strcmp(tok, "Source:") && !df->pkgname[0]) {
 			fscanf(f, "%s", tok);
 
 			strncpy(df->pkgname, tok, DF_SRCLEN);
