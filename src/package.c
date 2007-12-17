@@ -130,63 +130,80 @@ int process_dsc(char *path)
 	dscfile_read(path, &dscf);
 
 	for (sn = 0; SUITES[sn]; sn++) {
-		s = ov_find_component(dscf.pkgname, dscf.version, dscf.arch,
-				SUITES[sn]->name, &c);
-		if (s == GE_OK) {
-			pkg_append(path, SUITES[sn]->name,
-					dscf.arch, dscf.component, 1);
+		char *__arch, *st = NULL;
 
-			free(c);
-		} else { /* XXX: only devsuite */
-			char *ver;
-			int n;
+		/*
+		 * dscf.arch contains a list of architectures for which
+		 * a package is intended to build, therefore we split it
+		 * into separate architecture names and add them to
+		 * overrides.db separately, is needed
+		 * XXX: this code needs lots of love
+		 */
+		__arch = strtok_r(dscf.arch, " ", &st);
+		do {
+			if (!__arch) __arch = "";
 
-			if (strcmp(SUITES[sn]->name, G.devel_suite))
-				continue;
-
-			s = ov_find_version(dscf.pkgname, dscf.arch,
-					SUITES[sn]->name, &ver);
-			if (s != GE_OK) {
-				SAY("Adding package %s (%s, %s, %s)\n",
-						dscf.pkgname, dscf.version, dscf.arch,
-						SUITES[sn]->name);
-				ov_insert(dscf.pkgname, dscf.version, dscf.arch,
-						SUITES[sn]->name, dscf.component);
-
+			s = ov_find_component(dscf.pkgname, dscf.version, __arch,
+					SUITES[sn]->name, &c);
+			if (s == GE_OK) {
 				pkg_append(path, SUITES[sn]->name,
-						dscf.arch, dscf.component, 1);
-			} else {
-				s = ov_version_count(dscf.pkgname,
-						SUITES[sn]->name, &n);
-				if (s == GE_OK) {
-					if (n > 1) {
-						/* Most likely this means that there is a new source version
-						 * of the package which is overriden for some architectures,
-						 * and someone forgot to update overrides.db. The safest way
-						 * here is to bail and stop processing this dsc.
-						 */
-						SHOUT("Package %s=%s should be added to overrides.db"
-								"manually\n", dscf.pkgname, dscf.version);
-						return s;
-					}
-				}
+						__arch, dscf.component, 1);
 
-				s = deb_ver_gt(dscf.version, ver);
-				if (s == GE_OK) {
-					SAY("Found newer version of %s (%s >> %s)\n",
-							dscf.pkgname, dscf.version, ver);
-					ov_update_suite(dscf.pkgname, ver, "",
-							SUITES[sn]->name, G.attic_suite);
-					ov_insert(dscf.pkgname, dscf.version, dscf.arch,
+				free(c);
+			} else { /* XXX: only devsuite */
+				char *ver;
+				int n;
+
+				if (strcmp(SUITES[sn]->name, G.devel_suite))
+					break;
+
+				s = ov_find_version(dscf.pkgname, __arch,
+						SUITES[sn]->name, &ver);
+				if (s != GE_OK) {
+					SAY("Adding package %s (%s, %s, %s)\n",
+							dscf.pkgname, dscf.version, __arch,
+							SUITES[sn]->name);
+
+					ov_insert(dscf.pkgname, dscf.version, __arch,
 							SUITES[sn]->name, dscf.component);
 
 					pkg_append(path, SUITES[sn]->name,
-							dscf.arch, dscf.component, 1);
-				}
+							__arch, dscf.component, 1);
+				} else {
+					s = ov_version_count(dscf.pkgname,
+							SUITES[sn]->name, &n);
+					if (s == GE_OK) {
+						if (n > 1) {
+							/* Most likely this means that there is a new source version
+							 * of the package which is overriden for some architectures,
+							 * and someone forgot to update overrides.db. The safest way
+							 * here is to bail and stop processing this dsc.
+							 */
+							SHOUT("Package %s=%s should be added to overrides.db"
+									"manually\n", dscf.pkgname, dscf.version);
+							return s;
+						}
+					}
 
-				free(ver);
+					s = deb_ver_gt(dscf.version, ver);
+					if (s == GE_OK) {
+						SAY("Found newer version of %s (%s >> %s)\n",
+								dscf.pkgname, dscf.version, ver);
+						ov_update_suite(dscf.pkgname, ver, "",
+								SUITES[sn]->name, G.attic_suite);
+						ov_insert(dscf.pkgname, dscf.version, __arch,
+								SUITES[sn]->name, dscf.component);
+
+						pkg_append(path, SUITES[sn]->name,
+								__arch, dscf.component, 1);
+					}
+
+					free(ver);
+				}
 			}
-		}
+
+			__arch = __arch[0] ? strtok_r(NULL, " ", &st) : NULL;
+		} while (__arch);
 	}
 }
 

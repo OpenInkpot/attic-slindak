@@ -18,7 +18,7 @@
 
 #define DF_NAMELEN   256
 #define DF_VERLEN    64
-#define DF_ARCHLEN   32
+#define DF_ARCHLEN   256
 #define DF_COMPLEN   64
 #define DF_SRCLEN    DF_NAMELEN
 

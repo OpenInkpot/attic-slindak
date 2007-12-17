@@ -104,7 +104,7 @@ int dscfile_read(char *path, struct dscfile *df)
 
 			strncpy(df->version, tok, DF_VERLEN);
 		} else if (!strcmp(tok, "Architecture:") && !df->arch[0]) {
-			fscanf(f, "%s", tok);
+			fscanf(f, " %255[^\n]\n", tok);
 
 			if (!strcmp(tok, "all") || !strcmp(tok, "any"))
 				df->arch[0] = '\0';
