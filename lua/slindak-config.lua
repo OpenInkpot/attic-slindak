@@ -12,7 +12,7 @@ Suites = {
 	    "uclibc-i386", "uclibc-arm",
 	    "uclibc-sh4a" },
     components = { "broken", "host-tools", "core",
-	    "gui", "security", "debug" },
+	    "gui", "security", "debug", "doc", "libdevel" },
   },
   percheron = {
     arches = { "i386", "powerpc", "arm", "mips",
@@ -21,7 +21,7 @@ Suites = {
 	    "uclibc-i386", "uclibc-arm",
 	    "uclibc-sh4a" },
     components = { "broken", "host-tools", "core",
-	    "gui", "security", "debug" },
+	    "gui", "security", "debug", "doc", "libdevel" },
   },
   attic = {
     arches = { "i386", "powerpc", "arm", "mips",
@@ -30,7 +30,7 @@ Suites = {
 	    "uclibc-i386", "uclibc-arm",
 	    "uclibc-sh4a" },
     components = { "broken", "host-tools", "core",
-	    "gui", "security", "debug" },
+	    "gui", "security", "debug", "doc", "libdevel" },
   }
 }
 
