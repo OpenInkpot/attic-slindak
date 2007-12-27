@@ -248,10 +248,10 @@ int ov_search_count(char *where, char *count_what, int *count)
 				"query was: \"%s\"\n", s, err ? err : "", req);
 
 		s = GE_ERROR;
-	} else
+	} else {
 		s = (data[0] ? GE_OK : GE_EMPTY);
-
-	*count = atoi(data[0]);
+		*count = atoi(data[0]);
+	}
 
 	sqlite3_free(req);
 
