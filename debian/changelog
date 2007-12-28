@@ -1,3 +1,9 @@
+slindak (0.1.1) unstable; urgency=low
+
+  * Fix segfault in version counting logic (closes: #67).
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Fri, 28 Dec 2007 12:28:36 +0300
+
 slindak (0.1) unstable; urgency=low
 
   * Initial upload.
