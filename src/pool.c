@@ -108,7 +108,10 @@ int scan_pool()
 	entry = dscs_list.next;
 	SAY("Processing %d source packages.\n", dscs_list.next->n);
 	while (entry) {
-		process_dsc(entry->pathname);
+		if (G.cleanup)
+			validate_dsc(entry->pathname);
+		else
+			process_dsc(entry->pathname);
 		entry = entry->next;
 	}
 
@@ -118,7 +121,10 @@ int scan_pool()
 	entry = debs_list.next;
 	SAY("Processing %d binary packages.\n", debs_list.next->n);
 	while (entry) {
-		process_deb(entry->pathname);
+		if (G.cleanup)
+			validate_deb(entry->pathname);
+		else
+			process_deb(entry->pathname);
 		entry = entry->next;
 	}
 

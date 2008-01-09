@@ -207,3 +207,64 @@ int process_dsc(char *path)
 	}
 }
 
+int validate_deb(char *path)
+{
+	int s;
+	struct debfile debf;
+	char *suite;
+
+	s = debfile_read(path, &debf);
+	if (s != GE_OK)
+		return;
+
+	if (G.op_mode != OM_POOL || !G.cleanup) {
+		/* no other operation mode should call this function */
+		SHOUT("slindak internal error at %s:%s\n", __FILE__, __LINE__);
+		exit(EXIT_FAILURE);
+	}
+
+	/* package's parent directory must reflect suite */
+	suite = parent_dir(path, 1);
+	if (!suite) {
+		SAY("Package in a wrong directory: %s, removing\n", path);
+		unlink(path);
+	}
+
+	return GE_OK;
+}
+
+int validate_dsc(char *path)
+{
+	int s, users = 0;
+	char *suite, *__arch, *st = NULL;
+	struct dscfile dscf;
+
+	dscfile_read(path, &dscf);
+
+	if (G.op_mode != OM_POOL || !G.cleanup) {
+		/* no other operation mode should call this function */
+		SHOUT("slindak internal error at %s:%s\n", __FILE__, __LINE__);
+		exit(EXIT_FAILURE);
+	}
+
+	__arch = strtok_r(dscf.arch, " ", &st);
+	do {
+		if (!__arch) __arch = "";
+
+		/* check if there's a record for this package in overrides.db */
+		s = ov_find_suite(dscf.pkgname, dscf.version, __arch, &suite);
+		users += (s == GE_OK);
+
+		__arch = __arch[0] ? strtok_r(NULL, " ", &st) : NULL;
+	} while (__arch);
+
+	if (!users) {
+		SAY("Found zero mentions of %s=%s in overrides, removing.\n",
+				dscf.pkgname, dscf.version);
+
+		unlink(path);
+	}
+
+	return GE_OK;
+}
+
