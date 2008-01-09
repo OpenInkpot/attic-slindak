@@ -1,3 +1,13 @@
+slindak (0.1.2) unstable; urgency=low
+
+  * New upstream version.
+
+  [ Alexander Shishkin ]
+  * remove unused source packages in cleanup mode
+  * add missing whitespace
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Wed,  9 Jan 2008 19:33:27 +0300
+
 slindak (0.1.1) unstable; urgency=low
 
   * Fix segfault in version counting logic (closes: #67).
