@@ -180,7 +180,7 @@ int process_dsc(char *path)
 							 * here is to bail and stop processing this dsc.
 							 */
 							SHOUT("Package %s=%s should be added to overrides.db"
-									"manually\n", dscf.pkgname, dscf.version);
+									" manually\n", dscf.pkgname, dscf.version);
 							return s;
 						}
 					}
