@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sqlite3.h>
+#include <limits.h>
 
 #include "common.h"
 #include "configuration.h"
@@ -259,10 +260,21 @@ int validate_dsc(char *path)
 	} while (__arch);
 
 	if (!users) {
+		char *dir = parent_dir(path, 0);
+
 		SAY("Found zero mentions of %s=%s in overrides, removing.\n",
 				dscf.pkgname, dscf.version);
-
 		unlink(path);
+
+		for (s = 0; s < dscf.nfiles; s++) {
+			char fpath[PATH_MAX];
+
+			snprintf(fpath, PATH_MAX, "%s/%s", dir, dscf.files[s]->name);
+			unlink(fpath);
+			DBG("REMOVING %s\n", fpath);
+		}
+
+		free(dir);
 	}
 
 	return GE_OK;
