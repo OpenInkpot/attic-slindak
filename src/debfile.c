@@ -118,6 +118,23 @@ int dscfile_read(char *path, struct dscfile *df)
 			fscanf(f, "%s", tok);
 
 			strncpy(df->pkgname, tok, DF_SRCLEN);
+		} else if (!strcmp(tok, "Files:")) {
+			struct pkgfile PF;
+
+			while (fscanf(f, " %32s %d %s\n",
+					&PF.md5sum, &PF.size, &PF.name) == 3) {
+				struct pkgfile *pf = malloc(sizeof(struct pkgfile));
+				GE_ERROR_IFNULL(pf);
+
+				DBG("## => File: %s, size: %d, md5: %s\n", PF.name, PF.size, PF.md5sum);
+				strncpy(pf->name, PF.name, FILENAME_MAX);
+				strncpy(pf->md5sum, PF.md5sum, 33);
+				pf->size = PF.size;
+
+				df->files[df->nfiles++] = pf;
+			}
+
+			break;
 		}
 	}
 

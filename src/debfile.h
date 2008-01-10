@@ -22,6 +22,12 @@
 #define DF_COMPLEN   64
 #define DF_SRCLEN    DF_NAMELEN
 
+struct pkgfile {
+	char name[FILENAME_MAX];
+	char md5sum[33];
+	size_t size;
+};
+
 struct debfile {
 	char debname[DF_NAMELEN];
 	char version[DF_VERLEN];
@@ -36,6 +42,8 @@ struct dscfile {
 	char version[DF_VERLEN];
 	char arch[DF_ARCHLEN];
 	char component[DF_COMPLEN];
+	struct pkgfile *files[3];
+	int nfiles;
 };
 
 int deb_ver_gt(char *v1, char *v2);
