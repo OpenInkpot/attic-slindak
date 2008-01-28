@@ -173,13 +173,16 @@ int main(int argc, const char **argv)
 	if (s != GE_OK)
 		return 0;
 
-	SAY2("Running apt-ftparchive to generate indices... ");
-	s = apt_ftparchive();
-	if (s != GE_OK) {
-		SHOUT("\nError running apt-ftparchive\n");
-		exit(EXIT_FAILURE);
+	if (!G.cleanup) {
+		SAY2("Running apt-ftparchive to generate indices... ");
+		s = apt_ftparchive();
+		if (s != GE_OK) {
+			SHOUT("\nError running apt-ftparchive\n");
+			exit(EXIT_FAILURE);
+		}
+		SAY("Done.\n");
 	}
-	SAY("Done.\n");
+
 	bl_release();
 
 	fclose(OUT[LOG]);
