@@ -50,7 +50,7 @@ int process_deb(char *path)
 
 	s = debfile_read(path, &debf);
 	if (s != GE_OK)
-		return;
+		return GE_ERROR;
 
 	if (G.op_mode == OM_POOL) {
 		/* package's parent directory must reflect suite */
@@ -128,7 +128,9 @@ int process_dsc(char *path)
 	char *c;
 	struct dscfile dscf;
 
-	dscfile_read(path, &dscf);
+	s = dscfile_read(path, &dscf);
+	if (s != GE_OK)
+		return GE_ERROR;
 
 	for (sn = 0; SUITES[sn]; sn++) {
 		char *__arch, *st = NULL;
@@ -212,11 +214,11 @@ int validate_deb(char *path)
 {
 	int s;
 	struct debfile debf;
-	char *suite;
+	char *suite, *c;
 
 	s = debfile_read(path, &debf);
 	if (s != GE_OK)
-		return;
+		return GE_ERROR;
 
 	if (G.op_mode != OM_POOL || !G.cleanup) {
 		/* no other operation mode should call this function */
@@ -229,7 +231,22 @@ int validate_deb(char *path)
 	if (!suite) {
 		SAY("Package in a wrong directory: %s, removing\n", path);
 		unlink(path);
+
+		goto out;
 	}
+
+	s = ov_find_component(debf.source, debf.version,
+			debf.crossarch[0] ? debf.crossarch : debf.arch,
+			suite, &c);
+	if (s != GE_OK) {
+		SAY("Found zero mentions of %s=%s in overrides, removing.\n",
+				debf.source, debf.version);
+
+		unlink(path);
+	}
+
+out:
+	free(suite);
 
 	return GE_OK;
 }
@@ -240,7 +257,9 @@ int validate_dsc(char *path)
 	char *suite, *__arch, *st = NULL;
 	struct dscfile dscf;
 
-	dscfile_read(path, &dscf);
+	s = dscfile_read(path, &dscf);
+	if (s != GE_OK)
+		return GE_ERROR;
 
 	if (G.op_mode != OM_POOL || !G.cleanup) {
 		/* no other operation mode should call this function */
