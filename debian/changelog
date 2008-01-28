@@ -1,3 +1,15 @@
+slindak (0.1.3) unstable; urgency=low
+
+  * New version.
+
+  [ Alexander Shishkin ]
+  * remember files list per each .dsc package
+  * remove all files related to a source package
+  * restore .deb cleanup functionality plus minor fixes
+  * do not call apt-ftparchive in cleanup mode
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Mon, 28 Jan 2008 19:49:06 +0300
+
 slindak (0.1.2) unstable; urgency=low
 
   * New upstream version.
