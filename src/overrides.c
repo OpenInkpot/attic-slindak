@@ -462,6 +462,27 @@ int ov_find_version(char *pkgname, char *arch, char *suite, char **version)
 	return GE_OK;
 }
 
+int ov_find_same_uver(char *pkgname, char *uver)
+{
+	char *req;
+	char *err;
+	int s, n;
+
+	GE_ERROR_IFNULL(pkgname);
+	GE_ERROR_IFNULL(uver);
+
+	asprintf(&req, "pkgname='%s' AND version LIKE '%s-%%'", pkgname, uver);
+	GE_ERROR_IFNULL(req);
+
+	s = ov_search_count(req, ov_columns[OV_VERSION], &n);
+	xfree(req);
+
+	if (s != GE_OK)
+		return s;
+
+	return (n ? GE_OK : GE_EMPTY);
+}
+
 int ov_delete(char *pkgname, char *version, char *suite, char *arch)
 {
 	char *req;
