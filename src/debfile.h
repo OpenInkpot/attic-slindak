@@ -16,6 +16,16 @@
 		strcmp(p, ".dsc") == 0; \
 	})
 
+#define FILE_IS_ORIG(path) ({                     \
+		char *p = path;                           \
+		int __r = 0;                              \
+		if (strlen(path) > 12) {                  \
+			p += strlen(path) - 12;               \
+			__r = strcmp(p, ".orig.tar.gz") == 0; \
+		}                                         \
+		__r;                                      \
+	})
+
 #define DF_NAMELEN   256
 #define DF_VERLEN    64
 #define DF_ARCHLEN   256
