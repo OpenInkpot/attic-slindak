@@ -253,7 +253,7 @@ out:
 
 int validate_dsc(char *path)
 {
-	int s, users = 0;
+	int i, s, users = 0;
 	char *suite, *__arch, *st = NULL;
 	struct dscfile dscf;
 
@@ -285,12 +285,40 @@ int validate_dsc(char *path)
 				dscf.pkgname, dscf.version);
 		unlink(path);
 
-		for (s = 0; s < dscf.nfiles; s++) {
+		for (i = 0; i < dscf.nfiles; i++) {
 			char fpath[PATH_MAX];
 
-			snprintf(fpath, PATH_MAX, "%s/%s", dir, dscf.files[s]->name);
-			unlink(fpath);
-			DBG("REMOVING %s\n", fpath);
+			snprintf(fpath, PATH_MAX, "%s/%s", dir, dscf.files[i]->name);
+
+			/*
+			 * for .orig.tar.gz files, check if other versions might be
+			 * using them before removing
+			 */
+			if (FILE_IS_ORIG(fpath)) {
+				char uver[DF_VERLEN], *p;
+
+				p = strchr(dscf.version, '-');
+				if (!p) {
+					SHOUT("Package %s is native, but has an orig tarball\n",
+							dscf.pkgname);
+
+					continue;
+				}
+
+				strncpy(uver, dscf.version, p - dscf.version);
+				uver[p - dscf.version] = '\0';
+				DBG("UPSTREAM VERSION: %s\n", uver);
+
+				s = ov_find_same_uver(dscf.pkgname, uver);
+				if (s != GE_OK) {
+					DBG("REMOVING %s\n", fpath);
+					unlink(fpath);
+				} else
+					DBG("NOT REMOVING %s\n", fpath);
+			} else {
+				unlink(fpath);
+				DBG("REMOVING %s\n", fpath);
+			}
 		}
 
 		free(dir);
