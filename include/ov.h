@@ -33,6 +33,7 @@ int ov_update_all(char *pkgname, char *arch, char *suite, char *version,
 int ov_insert(char *pkgname, char *version, char *arch,
 		char *suite, char *component);
 int ov_delete(char *pkgname, char *version, char *suite, char *arch);
+int ov_create_table();
 
 #endif /* __SLINDAK_OV_H__ */
 
