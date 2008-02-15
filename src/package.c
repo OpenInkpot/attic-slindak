@@ -14,6 +14,10 @@
 #include "debfile.h"
 #include "util.h"
 
+/*
+ * Match binary package against database and inject it into a proper
+ * location.
+ */
 int inject_deb(struct debfile *debf, char *suite, char *path)
 {
 	int s;
@@ -23,7 +27,8 @@ int inject_deb(struct debfile *debf, char *suite, char *path)
 	s = ov_find_component(debf->source, debf->version, debf->arch,
 			suite, &c);
 	if (s != GE_OK) {
-		SHOUT("Source package %s not known to overrides.db\n", debf->source);
+		SHOUT("While processing %s: source package %s not known to "
+				"overrides.db\n", path, debf->source);
 		return GE_EMPTY;
 	}
 
@@ -122,6 +127,16 @@ tryadd:
 	return GE_ERROR;
 }
 
+/*
+ * Process a source package
+ * ------------------------
+ * 1. Check for matching records in overrides.db for each suite, add
+ *    the package to corresponding package list(s).
+ * 2. Check for other versions of this package in devsuite, compare
+ *    versions, if our version is newer, move older one to attic and
+ *    replace it with our newer version in devsuite. Add to corresponding
+ *    package lists.
+ */
 int process_dsc(char *path)
 {
 	int s, sn;
