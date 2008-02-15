@@ -1,3 +1,13 @@
+slindak (0.1.5) unstable; urgency=low
+
+  * New version. 
+  [ Alexander Shishkin ]
+  * add database creation functions
+  * slindak: add database query functionality
+  * slindak: make error message more verbose when injection fails
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Fri, 15 Feb 2008 18:02:18 +0300
+
 slindak (0.1.4) unstable; urgency=low
 
   * New version.
