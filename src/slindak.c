@@ -21,16 +21,24 @@
 
 const char *cli_file = NULL;
 const char *inj_file = NULL;
+const char *cli_query = NULL;
+const char *cli_qfmt = NULL;
 
 static struct poptOption opts_table[] = {
 	{ "info",     'I', POPT_ARG_STRING, &cli_file, 0,
 	  "obtain information on a package (may misbehave)" },
 	{ "inject",   'i', POPT_ARG_STRING, &inj_file, 0,
 	  "inject a package into a repository" },
+	{ "query",    'q', POPT_ARG_STRING, &cli_query, 0,
+	  "query package information from database" },
+	{ "queryfmt", 'Q', POPT_ARG_STRING, &cli_qfmt, 0,
+	  "output format string for query results" },
 	{ "repodir",  'r', POPT_ARG_STRING, &G.repo_dir, 0,
 	  "repository base directory" },
 	{ "suite",    's', POPT_ARG_STRING, &G.users_suite, 0,
 	  "specify a name of a suite" },
+	{ "arch",     'a', POPT_ARG_STRING, &G.users_arch, 0,
+	  "specify target architecture name" },
 	{ "cleanup",  'C', POPT_ARG_NONE,   &G.cleanup, 0,
 	  "remove binary packages that do not match source packages "
 	  "known to overrides.db" },
@@ -107,6 +115,14 @@ int main(int argc, const char **argv)
 	if (s != GE_OK) {
 		SHOUT("Can't open database\n");
 		exit(EXIT_FAILURE);
+	}
+
+	if (cli_query) {
+		G.op_mode = OM_QUERY;
+
+		s = query_pkginfo(cli_query, G.users_suite, G.users_arch, cli_qfmt);
+
+		exit(s == GE_OK ? EXIT_SUCCESS : EXIT_FAILURE);
 	}
 
 	if (cli_file) {

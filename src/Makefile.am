@@ -20,6 +20,7 @@ slindak_SOURCES = \
 	slindak.c      \
 	aptconf.c      \
 	lists.c        \
+	query.c        \
 	messages.c     \
 	package.c      \
 	pool.c

@@ -9,6 +9,7 @@ typedef enum {
 	OM_NONE = 0,
 	OM_POOL,
 	OM_INJECT,
+	OM_QUERY,
 	OM_INFO
 } op_mode_t;
 
@@ -24,6 +25,7 @@ struct global_config {
 	char *devel_suite;      /* current 'unstable' */
 	char *attic_suite;      /* dead n4r storage */
 	char *users_suite;      /* -s option */
+	char *users_arch;       /* -a option */
 
 	/* general */
 	op_mode_t op_mode;      /* operation mode, that is */

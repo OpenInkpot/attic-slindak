@@ -70,8 +70,8 @@ cgiPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS) $(cgi_PROGRAMS)
 am_slindak_OBJECTS = slindak-slindak.$(OBJEXT) \
 	slindak-aptconf.$(OBJEXT) slindak-lists.$(OBJEXT) \
-	slindak-messages.$(OBJEXT) slindak-package.$(OBJEXT) \
-	slindak-pool.$(OBJEXT)
+	slindak-query.$(OBJEXT) slindak-messages.$(OBJEXT) \
+	slindak-package.$(OBJEXT) slindak-pool.$(OBJEXT)
 slindak_OBJECTS = $(am_slindak_OBJECTS)
 am__DEPENDENCIES_1 =
 slindak_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -239,6 +239,7 @@ slindak_SOURCES = \
 	slindak.c      \
 	aptconf.c      \
 	lists.c        \
+	query.c        \
 	messages.c     \
 	package.c      \
 	pool.c
@@ -397,6 +398,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-messages.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-package.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-pool.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-query.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindak-slindak.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindweb-cgi-actions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slindweb-html_output.Po@am__quote@
@@ -527,6 +529,20 @@ slindak-lists.obj: lists.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='lists.c' object='slindak-lists.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-lists.obj `if test -f 'lists.c'; then $(CYGPATH_W) 'lists.c'; else $(CYGPATH_W) '$(srcdir)/lists.c'; fi`
+
+slindak-query.o: query.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-query.o -MD -MP -MF "$(DEPDIR)/slindak-query.Tpo" -c -o slindak-query.o `test -f 'query.c' || echo '$(srcdir)/'`query.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-query.Tpo" "$(DEPDIR)/slindak-query.Po"; else rm -f "$(DEPDIR)/slindak-query.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='query.c' object='slindak-query.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-query.o `test -f 'query.c' || echo '$(srcdir)/'`query.c
+
+slindak-query.obj: query.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-query.obj -MD -MP -MF "$(DEPDIR)/slindak-query.Tpo" -c -o slindak-query.obj `if test -f 'query.c'; then $(CYGPATH_W) 'query.c'; else $(CYGPATH_W) '$(srcdir)/query.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/slindak-query.Tpo" "$(DEPDIR)/slindak-query.Po"; else rm -f "$(DEPDIR)/slindak-query.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='query.c' object='slindak-query.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -c -o slindak-query.obj `if test -f 'query.c'; then $(CYGPATH_W) 'query.c'; else $(CYGPATH_W) '$(srcdir)/query.c'; fi`
 
 slindak-messages.o: messages.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-messages.o -MD -MP -MF "$(DEPDIR)/slindak-messages.Tpo" -c -o slindak-messages.o `test -f 'messages.c' || echo '$(srcdir)/'`messages.c; \

@@ -18,6 +18,8 @@
 #include "slindak.h"
 
 int lists_cleanup();
+int query_pkginfo(const char *pkgname, char *suite, char *arch,
+		const char *fmt);
 
 #endif
 
