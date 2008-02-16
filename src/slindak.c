@@ -57,9 +57,6 @@ int main(int argc, const char **argv)
 	char o;
 	poptContext optcon;
 	
-	output_init();
-	root_squash();
-
 	memset(&G, 0, sizeof(struct global_config));
 
 	optcon = poptGetContext(NULL, argc, argv, opts_table, 0);

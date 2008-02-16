@@ -12,7 +12,8 @@ libslindak_la_SOURCES = \
 	slind.c        \
 	util.c         \
 	lua.c          \
-	output.c
+	output.c       \
+	library.c
 libslindak_la_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAGS) -I../include
 libslindak_la_LDFLAGS = -Wl,-soname=$(SLINDAK_SONAME)
 

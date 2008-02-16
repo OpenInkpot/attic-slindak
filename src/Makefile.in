@@ -63,7 +63,8 @@ am_libslindak_la_OBJECTS = libslindak_la-configuration.lo \
 	libslindak_la-biglock.lo libslindak_la-db.lo \
 	libslindak_la-overrides.lo libslindak_la-debfile.lo \
 	libslindak_la-slind.lo libslindak_la-util.lo \
-	libslindak_la-lua.lo libslindak_la-output.lo
+	libslindak_la-lua.lo libslindak_la-output.lo \
+	libslindak_la-library.lo
 libslindak_la_OBJECTS = $(am_libslindak_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 cgiPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -231,7 +232,8 @@ libslindak_la_SOURCES = \
 	slind.c        \
 	util.c         \
 	lua.c          \
-	output.c
+	output.c       \
+	library.c
 
 libslindak_la_CFLAGS = -DBUILD_DATE="\"$(BUILD_DATE)\"" -DHACKER=$(HACKER) $(LUA_CFLAGS) -I../include
 libslindak_la_LDFLAGS = -Wl,-soname=$(SLINDAK_SONAME)
@@ -388,6 +390,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-configuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-debfile.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-library.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-lua.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-output.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-overrides.Plo@am__quote@
@@ -487,6 +490,13 @@ libslindak_la-output.lo: output.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='output.c' object='libslindak_la-output.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -c -o libslindak_la-output.lo `test -f 'output.c' || echo '$(srcdir)/'`output.c
+
+libslindak_la-library.lo: library.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -MT libslindak_la-library.lo -MD -MP -MF "$(DEPDIR)/libslindak_la-library.Tpo" -c -o libslindak_la-library.lo `test -f 'library.c' || echo '$(srcdir)/'`library.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libslindak_la-library.Tpo" "$(DEPDIR)/libslindak_la-library.Plo"; else rm -f "$(DEPDIR)/libslindak_la-library.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='library.c' object='libslindak_la-library.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -c -o libslindak_la-library.lo `test -f 'library.c' || echo '$(srcdir)/'`library.c
 
 slindak-slindak.o: slindak.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(slindak_CFLAGS) $(CFLAGS) -MT slindak-slindak.o -MD -MP -MF "$(DEPDIR)/slindak-slindak.Tpo" -c -o slindak-slindak.o `test -f 'slindak.c' || echo '$(srcdir)/'`slindak.c; \
