@@ -123,6 +123,21 @@ int spawn(char *cmd, char **argv)
 }
 
 /*
+ * remove a directory (with all contents)
+ */
+int rm_rf(char *dir)
+{
+	char *argv[] = { "rm", "-rf", dir, NULL };
+	int ret;
+
+	ret = spawn(RM_BIN_PATH, argv);
+	if (ret)
+		return GE_ERROR;
+
+	return GE_OK;
+}
+
+/*
  * create a directory (with all the missing parent directories)
  */
 int mkdir_p(char *dst, mode_t mode)
