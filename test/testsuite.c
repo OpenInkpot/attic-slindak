@@ -14,6 +14,8 @@ void do_pkg_tests();
 
 int main()
 {
+	OUT[LOG] = fopen("/dev/null", "w");
+
 	printf("Slindak test suite started.\n");
 	do_pkg_tests();
 	printf("Slindak test suite finished.\n");
