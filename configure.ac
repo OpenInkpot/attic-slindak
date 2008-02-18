@@ -30,6 +30,8 @@ AC_PATH_PROG(RM_BIN_PATH, rm)
 AC_PATH_PROG(MKDIR_BIN_PATH, mkdir)
 AC_PATH_PROG(MD5SUM_BIN_PATH, md5sum)
 AC_PATH_PROG(APTFA_BIN_PATH, apt-ftparchive)
+AC_PATH_PROG(DPKGDEB_BIN_PATH, dpkg-deb)
+AC_PATH_PROG(DPKGSRC_BIN_PATH, dpkg-source)
 AC_DEFINE_UNQUOTED([DPKG_BIN_PATH],   ["$DPKG_BIN_PATH"], ["Path to dpkg executable"])
 AC_DEFINE_UNQUOTED([GIT_BIN_PATH],    ["$GIT_BIN_PATH"], ["Path to git executable"])
 AC_DEFINE_UNQUOTED([TAR_BIN_PATH],    ["$TAR_BIN_PATH"], ["Path to tar executable"])
@@ -39,6 +41,8 @@ AC_DEFINE_UNQUOTED([RM_BIN_PATH],     ["$RM_BIN_PATH"], ["Path to rm executable"
 AC_DEFINE_UNQUOTED([MKDIR_BIN_PATH],  ["$MKDIR_BIN_PATH"], ["Path to mkdir executable"])
 AC_DEFINE_UNQUOTED([MD5SUM_BIN_PATH], ["$MD5SUM_BIN_PATH"], ["Path to md5sum executable"])
 AC_DEFINE_UNQUOTED([APTFA_BIN_PATH],  ["$APTFA_BIN_PATH"], ["Path to apt-ftparchive executable"])
+AC_DEFINE_UNQUOTED([DPKGDEB_BIN_PATH],["$DPKGDEB_BIN_PATH"], ["Path to dpkg-deb executable"])
+AC_DEFINE_UNQUOTED([DPKGSRC_BIN_PATH],["$DPKGSRC_BIN_PATH"], ["Path to dpkg-source executable"])
 AC_ARG_WITH(hacker,
 		AS_HELP_STRING([--with-hacker],
 			[enables hacker mode]),
@@ -63,4 +67,5 @@ AC_CONFIG_HEADERS([config.h])
 AC_OUTPUT([
 	Makefile
 	src/Makefile
+	test/Makefile
 ])

@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS=foreign
-SUBDIRS= src
+SUBDIRS= src test
 
 dist_pkgdata_DATA = lua/apt-conf.lua lua/html.lua
 pkginclude_HEADERS = \

@@ -113,6 +113,8 @@ CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DPKGDEB_BIN_PATH = @DPKGDEB_BIN_PATH@
+DPKGSRC_BIN_PATH = @DPKGSRC_BIN_PATH@
 DPKG_BIN_PATH = @DPKG_BIN_PATH@
 ECHO = @ECHO@
 ECHO_C = @ECHO_C@
@@ -209,7 +211,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = src
+SUBDIRS = src test
 dist_pkgdata_DATA = lua/apt-conf.lua lua/html.lua
 pkginclude_HEADERS = \
 	include/conf.h        \

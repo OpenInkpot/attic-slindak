@@ -6,6 +6,12 @@
 /* "Path to cp executable" */
 #undef CP_BIN_PATH
 
+/* "Path to dpkg-deb executable" */
+#undef DPKGDEB_BIN_PATH
+
+/* "Path to dpkg-source executable" */
+#undef DPKGSRC_BIN_PATH
+
 /* "Path to dpkg executable" */
 #undef DPKG_BIN_PATH
 
