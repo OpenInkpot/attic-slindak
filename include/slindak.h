@@ -42,6 +42,10 @@ int mkdir_p(char *dst, mode_t mode);
 
 int copy(char *src, char *dst);
 
+int dpkg_deb(char *path);
+
+int dpkg_source(char *dir, char *where);
+
 void root_squash();
 
 #endif /* __SLINDAK_H__ */

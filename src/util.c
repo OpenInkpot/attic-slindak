@@ -171,6 +171,35 @@ int copy(char *src, char *dst)
 	return GE_OK;
 }
 
+/*
+ * call 'dpkg-deb' to build a binary package
+ */
+int dpkg_deb(char *path)
+{
+	char *argv[] = { "dpkg-deb", "-b", path, NULL };
+	int ret;
+
+	ret = spawn(DPKGDEB_BIN_PATH, argv);
+
+	return ret;
+}
+
+/*
+ * call 'dpkg-source' to build a source package
+ */
+int dpkg_source(char *dir, char *where)
+{
+	char *argv[] = { "dpkg-source", "-b", dir, NULL };
+	char *pwd = get_current_dir_name();
+	int ret;
+
+	chdir(where);
+	ret = spawn(DPKGSRC_BIN_PATH, argv);
+	chdir(pwd);
+
+	return ret;
+}
+
 void root_squash()
 {
 	uid_t uid = geteuid();
