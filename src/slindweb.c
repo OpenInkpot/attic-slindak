@@ -21,10 +21,8 @@ int main(int argc, const char **argv)
 	int s;
 	char o;
 	char *act, *debug, *title;
-	
-	output_init();
+
 	OUT[STD] = OUT[LOG] = stderr;
-	root_squash();
 
 	memset(&G, 0, sizeof(struct global_config));
 
