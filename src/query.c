@@ -64,15 +64,13 @@ int query_pkginfo(const char *pkgname, char *suite,
 	int s;
 
 	GE_ERROR_IFNULL(suite);
-	GE_ERROR_IFNULL(fmt);
 
 	if (!fmt) fmt = QF_DEFAULT;
 	if (!arch) arch = "all";
 
 	s = ov_find_version(pkgname, arch, suite, &ver);
 	if (s != GE_OK) {
-		SAY("Package %s [%s] not found in '%s' suite.\n", pkgname,
-				arch, suite);
+		SAY("NOTFOUND\n");
 		return GE_ERROR;
 	}
 
