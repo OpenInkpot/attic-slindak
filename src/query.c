@@ -57,6 +57,41 @@ static void query_printf(const char *fmt, const char *pkgname,
 	SAY(buf);
 }
 
+static int query_fetch_cb(void *user, int cols, char **values, char **keys)
+{
+	const char *fmt = (const char *)user;
+
+	query_printf(fmt, values[0], values[1], values[2], values[3], values[4]);
+	SAY("\n");
+
+	return GE_OK;
+}
+
+int query_pkglist(const char *component, char *suite,
+		char *arch, const char *fmt)
+{
+	char *where;
+	int s;
+
+	GE_ERROR_IFNULL(suite);
+
+	if (!fmt) fmt = QF_DEFAULT;
+	if (!arch) arch = "all";
+
+	s = asprintf(&where,
+			"WHERE suite='%s'"
+			"  AND component='%s'"
+			"  AND (arch='%s' OR arch='')",
+			suite, component, arch);
+	if (s == -1)
+		return GE_ERROR;
+
+	s = ov_search_all(where, fmt, query_fetch_cb);
+	free(where);
+
+	return s;
+}
+
 int query_pkginfo(const char *pkgname, char *suite,
 		char *arch, const char *fmt)
 {

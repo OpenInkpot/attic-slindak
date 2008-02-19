@@ -23,6 +23,7 @@ const char *cli_file = NULL;
 const char *inj_file = NULL;
 const char *cli_query = NULL;
 const char *cli_qfmt = NULL;
+const char *cli_list = NULL;
 
 static struct poptOption opts_table[] = {
 	{ "info",     'I', POPT_ARG_STRING, &cli_file, 0,
@@ -33,6 +34,8 @@ static struct poptOption opts_table[] = {
 	  "query package information from database" },
 	{ "queryfmt", 'Q', POPT_ARG_STRING, &cli_qfmt, 0,
 	  "output format string for query results" },
+	{ "list",     'l', POPT_ARG_STRING, &cli_list, 0,
+	  "list packages with given component known to database" },
 	{ "repodir",  'r', POPT_ARG_STRING, &G.repo_dir, 0,
 	  "repository base directory" },
 	{ "suite",    's', POPT_ARG_STRING, &G.users_suite, 0,
@@ -118,6 +121,14 @@ int main(int argc, const char **argv)
 		G.op_mode = OM_QUERY;
 
 		s = query_pkginfo(cli_query, G.users_suite, G.users_arch, cli_qfmt);
+
+		exit(s == GE_OK ? EXIT_SUCCESS : EXIT_FAILURE);
+	}
+
+	if (cli_list) {
+		G.op_mode = OM_QUERY;
+
+		s = query_pkglist(cli_list, G.users_suite, G.users_arch, cli_qfmt);
 
 		exit(s == GE_OK ? EXIT_SUCCESS : EXIT_FAILURE);
 	}
