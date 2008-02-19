@@ -9,31 +9,11 @@
 #include <sqlite3.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <unistd.h>
 #include "slindak.h"
+#include "debfile.h"
 
-int dpkg_deb_b(char *path)
-{
-	char *argv[] = { "dpkg-deb", "-b", path, NULL };
-	int ret;
-
-	ret = spawn(DPKGDEB_BIN_PATH, argv);
-	if (ret)
-		return GE_ERROR;
-
-	return GE_OK;
-}
-
-int dpkg_source_b(char *path)
-{
-	char *argv[] = { "dpkg-source", "-b", path, NULL };
-	int ret;
-
-	ret = spawn(DPKGSRC_BIN_PATH, argv);
-	if (ret)
-		return GE_ERROR;
-
-	return GE_OK;
-}
+char repodir[PATH_MAX];
 
 int slindak(char *path)
 {
@@ -44,6 +24,7 @@ int slindak(char *path)
 
 	pwd = get_current_dir_name();
 	snprintf(slindak_path, PATH_MAX, "%s/src/slindak", pwd);
+	free(pwd);
 
 	ret = spawn(slindak_path, argv);
 	if (ret)
@@ -61,9 +42,41 @@ int slindak_i(char *path, char *debpath, char *suite)
 
 	pwd = get_current_dir_name();
 	snprintf(slindak_path, PATH_MAX, "%s/src/slindak", pwd);
+	free(pwd);
 
 	ret = spawn(slindak_path, argv);
 	if (ret)
+		return GE_ERROR;
+
+	return GE_OK;
+}
+
+int slindak_q(char *path, char *pkgname, char *suite, char *arch, char *ver)
+{
+	FILE *p;
+	char slindak_cmd[PATH_MAX];
+	char *pwd;
+	int ret;
+
+	pwd = get_current_dir_name();
+	if (arch)
+		snprintf(slindak_cmd, PATH_MAX,
+				"%s/src/slindak -r %s -q %s -s %s -a %s -Q %%v",
+				pwd, path, pkgname, suite, arch);
+	else
+		snprintf(slindak_cmd, PATH_MAX,
+				"%s/src/slindak -r %s -q %s -s %s -Q %%v",
+				pwd, path, pkgname, suite);
+	free(pwd);
+
+	p = popen(slindak_cmd, "r");
+	if (!p)
+		return GE_ERROR;
+
+	ret = fscanf(p, "%s", ver);
+	pclose(p);
+
+	if (ret <= 0)
 		return GE_ERROR;
 
 	return GE_OK;
@@ -88,6 +101,7 @@ int mk_src_package(
 	pwd = get_current_dir_name();
 	snprintf(tmpdir_r, PATH_MAX, "%s/slindak-test-suite_%s_XXXXXX",
 			pwd, name);
+	free(pwd);
 
 	tmpdir = mkdtemp(tmpdir_r);
 	if (!tmpdir) {
@@ -101,7 +115,7 @@ int mk_src_package(
 		goto out_rm;
 	}
 
-	snprintf(pkgdir, PATH_MAX, "%s/%s", tmpdir, name);
+	snprintf(pkgdir, PATH_MAX, "%s/%s-%s", tmpdir, name, version);
 	snprintf(debdir, PATH_MAX, "%s/debian", pkgdir);
 	ret = mkdir_p(debdir, 0755);
 	if (ret) {
@@ -117,11 +131,12 @@ int mk_src_package(
 	}
 
 	if (!arch) arch = "all";
-	fprintf(f, "Source: %s\nSection: %s\nArchitecture: %s\n"
-			"Maintainer: John Doe <johndoe@slind.org>\n\n"
-			"Package: %s\n"
+	fprintf(f, "Source: %s\nSection: %s\n"
+			"Maintainer: John Doe <johndoe@slind.org>\n"
+			"Standards-Version: 3.6.2\n\n"
+			"Package: %s\nArchitecture: %s\n"
 			"Description: a bogus package for slindak testing\n Cheers!\n",
-			name, component, arch, name
+			name, component, name, arch
 		   );
 	fclose(f);
 
@@ -139,21 +154,19 @@ int mk_src_package(
 		   );
 	fclose(f);
 
-	ret = dpkg_source_b(debdir);
+	mkdir_p("/tmp/slindak-test/pool/core/t/testpkg1", 0755);
+	ret = dpkg_source(pkgdir, "/tmp/slindak-test/pool/core/t/testpkg1");
 	if (ret) {
 		SHOUT("Failed to generate %s source package.\n", name);
 		goto out_rm;
 	}
 
-	/*snprintf(binpkg, PATH_MAX, "%s.deb", pkgdir);
-	slindak_i("/tmp/slindak-test", binpkg, "clydesdale");*/
-
 out_rm:
-	/*ret = rm_rf(tmpdir_r);
+	ret = rm_rf(tmpdir_r);
 	if (ret) {
 		SHOUT("Failed to remove %s [%d].\n", tmpdir_r, ret);
 		return GE_ERROR;
-	}*/
+	}
 
 	return GE_OK;
 }
@@ -177,6 +190,7 @@ int mk_deb_package(
 	pwd = get_current_dir_name();
 	snprintf(tmpdir_r, PATH_MAX, "%s/slindak-test-suite_%s_XXXXXX",
 			pwd, name);
+	free(pwd);
 
 	tmpdir = mkdtemp(tmpdir_r);
 	if (!tmpdir) {
@@ -213,14 +227,14 @@ int mk_deb_package(
 		   );
 	fclose(f);
 
-	ret = dpkg_deb_b(pkgdir);
+	ret = dpkg_deb(pkgdir);
 	if (ret) {
 		SHOUT("Failed to generate %s.deb.\n", name);
 		goto out_rm;
 	}
 
 	snprintf(binpkg, PATH_MAX, "%s.deb", pkgdir);
-	slindak_i("/tmp/slindak-test", binpkg, "clydesdale");
+	slindak_i(repodir, binpkg, "clydesdale");
 
 out_rm:
 	ret = rm_rf(tmpdir_r);
@@ -232,10 +246,16 @@ out_rm:
 	return GE_OK;
 }
 
+#include "0000_base.test.c"
+#include "0001_base.test.c"
+
 void do_pkg_tests()
 {
-	slindak("/tmp/slindak-test");
-	mk_src_package("testpkg1", "0.1", "core", NULL);
-	mk_deb_package("testpkg1", "0.1", "core", NULL);
+	strcpy(repodir, "/tmp/slindak-test");
+	rm_rf(repodir);
+	slindak(repodir);
+
+	printf("TEST1: %s\n", do_test1() == GE_OK ? "OK" : "FAILED");
+	printf("TEST2: %s\n", do_test2() == GE_OK ? "OK" : "FAILED");
 }
 
