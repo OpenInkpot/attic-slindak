@@ -61,10 +61,10 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libslindak_la_LIBADD =
 am_libslindak_la_OBJECTS = libslindak_la-configuration.lo \
 	libslindak_la-biglock.lo libslindak_la-db.lo \
-	libslindak_la-overrides.lo libslindak_la-debfile.lo \
-	libslindak_la-slind.lo libslindak_la-util.lo \
-	libslindak_la-lua.lo libslindak_la-output.lo \
-	libslindak_la-library.lo
+	libslindak_la-overrides.lo libslindak_la-binary_cache.lo \
+	libslindak_la-debfile.lo libslindak_la-slind.lo \
+	libslindak_la-util.lo libslindak_la-lua.lo \
+	libslindak_la-output.lo libslindak_la-library.lo
 libslindak_la_OBJECTS = $(am_libslindak_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 cgiPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -230,6 +230,7 @@ libslindak_la_SOURCES = \
 	biglock.c      \
 	db.c           \
 	overrides.c    \
+	binary_cache.c \
 	debfile.c      \
 	slind.c        \
 	util.c         \
@@ -270,9 +271,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/Makefile
+	  $(AUTOMAKE) --gnu  src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -389,6 +390,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-biglock.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-binary_cache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-configuration.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-db.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libslindak_la-debfile.Plo@am__quote@
@@ -457,6 +459,13 @@ libslindak_la-overrides.lo: overrides.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='overrides.c' object='libslindak_la-overrides.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -c -o libslindak_la-overrides.lo `test -f 'overrides.c' || echo '$(srcdir)/'`overrides.c
+
+libslindak_la-binary_cache.lo: binary_cache.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -MT libslindak_la-binary_cache.lo -MD -MP -MF "$(DEPDIR)/libslindak_la-binary_cache.Tpo" -c -o libslindak_la-binary_cache.lo `test -f 'binary_cache.c' || echo '$(srcdir)/'`binary_cache.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libslindak_la-binary_cache.Tpo" "$(DEPDIR)/libslindak_la-binary_cache.Plo"; else rm -f "$(DEPDIR)/libslindak_la-binary_cache.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binary_cache.c' object='libslindak_la-binary_cache.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -c -o libslindak_la-binary_cache.lo `test -f 'binary_cache.c' || echo '$(srcdir)/'`binary_cache.c
 
 libslindak_la-debfile.lo: debfile.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libslindak_la_CFLAGS) $(CFLAGS) -MT libslindak_la-debfile.lo -MD -MP -MF "$(DEPDIR)/libslindak_la-debfile.Tpo" -c -o libslindak_la-debfile.lo `test -f 'debfile.c' || echo '$(srcdir)/'`debfile.c; \

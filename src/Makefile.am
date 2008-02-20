@@ -8,6 +8,7 @@ libslindak_la_SOURCES = \
 	biglock.c      \
 	db.c           \
 	overrides.c    \
+	binary_cache.c \
 	debfile.c      \
 	slind.c        \
 	util.c         \

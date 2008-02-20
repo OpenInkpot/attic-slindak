@@ -22,11 +22,6 @@ static int ov_select_cb(void *user, int cols, char **values, char **keys)
 	return GE_OK;
 }
 
-struct fetch {
-	int size;
-	char ***data;
-};
-
 /*
  * return " AND (arch='SOME_ARCH' OR arch='')" that is
  * allocated and requires xfree()'ing
@@ -530,39 +525,6 @@ int ov_create_table()
 			"arch char(32) NOT NULL,"
 			"component varchar NOT NULL,"
 			"UNIQUE(pkgname, version, suite, arch));");
-
-	DBG("sql req: \"%s\"\n", req);
-	s = sqlite3_exec(db, req, NULL, NULL, &err);
-	if (s != SQLITE_OK) {
-		SHOUT("Error (%d) occured while selecting: %s,\n"
-				"query was: \"%s\"\n", s, err ? err : "", req);
-
-		s = GE_ERROR;
-	} else
-		s = GE_OK;
-
-	sqlite3_free(req);
-
-	return s;
-}
-
-int bin_create_table()
-{
-	char *req;
-	char *err;
-	int s;
-
-	req = sqlite3_mprintf("CREATE TABLE binary_cache ("
-			"pkgname varchar NOT NULL,"
-			"version varchar NOT NULL,"
-			"suite  char(24) NOT NULL,"
-			"pool_file varchar NOT NULL,"
-			"deb_name varchar NOT NULL,"
-			"deb_section varchar NOT NULL,"
-			"deb_size int NOT NULL,"
-			"deb_md5 char(32) NOT NULL,"
-			"deb_control text NOT NULL,"
-			"UNIQUE(pkgname, suite, arch, deb_name, deb_section));");
 
 	DBG("sql req: \"%s\"\n", req);
 	s = sqlite3_exec(db, req, NULL, NULL, &err);

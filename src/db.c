@@ -20,7 +20,7 @@ static int sql_authoriser(void *a, int b, const char *c, const char *d,
 int db_init(char *db_path)
 {
 	int s, call_create = 0;
-	
+
 	s = access(db_path, R_OK | W_OK);
 	if (s == -1) {
 		switch (errno) {
@@ -41,6 +41,7 @@ int db_init(char *db_path)
 
 	if (call_create)
 		ov_create_table();
+	bc_create_table();
 
 	return GE_OK;
 }

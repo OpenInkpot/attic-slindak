@@ -13,6 +13,7 @@ int db_init();
 void db_done();
 
 #include "ov.h"
+#include "bc.h"
 
 #endif
 

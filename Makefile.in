@@ -218,6 +218,7 @@ pkginclude_HEADERS = \
 	include/db.h          \
 	include/lua-helpers.h \
 	include/ov.h          \
+	include/bc.h          \
 	include/slindak.h
 
 sysconf_DATA = lua/slindak-config.lua
