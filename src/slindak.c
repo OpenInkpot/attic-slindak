@@ -59,7 +59,7 @@ int main(int argc, const char **argv)
 	int s;
 	char o;
 	poptContext optcon;
-	
+
 	memset(&G, 0, sizeof(struct global_config));
 
 	optcon = poptGetContext(NULL, argc, argv, opts_table, 0);
