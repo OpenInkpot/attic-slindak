@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include "common.h"
 #include "debfile.h"
+#include "conf.h"
 
 int deb_ver_gt(char *v1, char *v2)
 {
@@ -42,7 +43,19 @@ int debfile_read(char *path, struct debfile *df)
 	GE_ERROR_IFNULL(p);
 
 	memset(df, 0, sizeof(struct debfile));
-	strncpy(df->pool_file, path, PATH_MAX);
+
+	/* make sure the file is within our repo, just in case */
+	s = strlen(G.repo_dir);
+	if (strncmp(path, G.repo_dir, s)) {
+		SHOUT("slindak internal error at %s:%d\n", __FILE__, __LINE__);
+		abort();
+	}
+
+	/* cut away slashes */
+	for (; path[s] == '/'; s++);
+	/* get in-pool path to the package */
+	strncpy(df->pool_file, &path[s], PATH_MAX);
+
 	df->deb_size = sbuf.st_size;
 
 	s = md5sum(path, df->deb_md5);
