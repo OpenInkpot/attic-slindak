@@ -4,6 +4,8 @@
 #ifndef __DEBFILE_H__
 #define __DEBFILE_H__
 
+#include <limits.h> /* PATH_MAX */
+
 #define FILE_IS_DEB(path) ({    \
 		char *p = path;         \
 		p += strlen(path) - 4;  \
@@ -30,6 +32,7 @@
 #define DF_VERLEN    64
 #define DF_ARCHLEN   256
 #define DF_COMPLEN   64
+#define DF_MD5LEN    33
 #define DF_SRCLEN    DF_NAMELEN
 
 struct pkgfile {
@@ -45,6 +48,11 @@ struct debfile {
 	char crossarch[DF_ARCHLEN];
 	char component[DF_COMPLEN];
 	char source[DF_SRCLEN];
+	char pool_file[PATH_MAX];
+	char *suite;
+	off_t deb_size;
+	char deb_md5[DF_MD5LEN];
+	char *deb_control;
 };
 
 struct dscfile {

@@ -22,7 +22,7 @@ static int bc_select_cb(void *user, int cols, char **values, char **keys)
 	return GE_OK;
 }
 
-int bc_search_all(char *where, void *user, ov_callback_fn callback)
+int bc_search_all(char *where, void *user, bc_callback_fn callback)
 {
 	char *req;
 	char *err;
@@ -45,13 +45,66 @@ int bc_search_all(char *where, void *user, ov_callback_fn callback)
 	return s;
 }
 
+int bc_clear()
+{
+	char *req;
+	char *err;
+	int s;
+
+	req = sqlite3_mprintf("DELETE FROM binary_cache");
+
+	DBG("sql req: \"%s\"\n", req);
+	s = sqlite3_exec(db, req, NULL, NULL, &err);
+	if (s != SQLITE_OK) {
+		SHOUT("Error (%d) occured while deleting: %s,\n"
+				"query was: \"%s\"\n", s, err ? err : "", req);
+
+		s = GE_ERROR;
+	} else
+		s = GE_OK;
+
+	sqlite3_free(req);
+
+	return s;
+}
+
+int bc_insert_debf(struct debfile *debf)
+{
+	char *req;
+	char *err;
+	int s;
+
+	req = sqlite3_mprintf(
+			"INSERT INTO binary_cache (" BC_COLS ") "
+			"VALUES ('%s', '%s', '%s', '%s', '%s', "
+			"'%s', '%s', '%d', '%s', '%s')",
+			debf->source, debf->version, debf->suite,
+			debf->pool_file, debf->debname, debf->component,
+			debf->arch, debf->deb_size, debf->deb_md5, debf->deb_control);
+
+	s = sqlite3_exec(db, req, NULL, NULL, &err);
+
+	if (s != SQLITE_OK) {
+		SHOUT("Error (%d) occured while updating the table: %s,\n"
+				"query was: \"%s\"\n", s, err ? err : "", req);
+
+		s = GE_ERROR;
+	} else
+		s = GE_OK;
+
+	sqlite3_free(req);
+
+	return s;
+}
+
 int bc_create_table()
 {
 	char *req;
 	char *err;
 	int s;
 
-	s = bc_search_all("", NULL, NULL);
+	/*s = bc_search_all("", NULL, NULL);*/
+	s = bc_clear();
 	if (s == GE_OK) {
 		DBG("binary_cache table seems to exist in overrides.db\n");
 		return GE_OK;

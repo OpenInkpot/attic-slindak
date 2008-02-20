@@ -32,10 +32,13 @@ static char *bc_columns[BC_NCOLS] = {
 	"deb_control"
 };
 
+#include "debfile.h" /* XXX: debfile.h is not visible and exported */
+
 #define BC_COLS "pkgname, version, suite, pool_file, deb_name, " \
 				"deb_section, deb_arch, deb_size, deb_md5, deb_control"
 
 int bc_create_table();
+int bc_insert_debf(struct debfile *debf);
 
 #endif /* __SLINDAK_BC_H__ */
 

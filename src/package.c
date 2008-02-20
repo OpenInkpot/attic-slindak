@@ -51,7 +51,7 @@ int process_deb(char *path)
 {
 	int s;
 	struct debfile debf;
-	char *suite, *c;
+	char *c;
 
 	s = debfile_read(path, &debf);
 	if (s != GE_OK)
@@ -59,13 +59,9 @@ int process_deb(char *path)
 
 	if (G.op_mode == OM_POOL) {
 		/* package's parent directory must reflect suite */
-		suite = parent_dir(path, 1);
-		if (!suite) {
+		debf.suite = parent_dir(path, 1);
+		if (!debf.suite) {
 			SHOUT("Package in a wrong directory: %s (use -C)\n", path);
-			if (G.cleanup) {
-				SAY("Removing %s\n", path);
-				unlink(path);
-			}
 			return GE_ERROR;
 		}
 
@@ -95,7 +91,7 @@ tryadd:
 	/* check if suite matches overrides.db */
 	s = ov_find_component(debf.source, debf.version,
 			debf.crossarch[0] ? debf.crossarch : debf.arch,
-			suite, &c);
+			debf.suite, &c);
 	if (s == GE_OK) {
 		DBG("adding %s=%s: [%s] [%s]\n",
 				debf.debname, debf.version,
@@ -103,26 +99,21 @@ tryadd:
 		if (!debf.arch[0]) {
 			int an, sn;
 
-			sn = get_suite_by_name(suite);
+			sn = get_suite_by_name(debf.suite);
 			for (an = 0; SUITES[sn]->archlist[an]; an++)
-				pkg_append(path, suite, SUITES[sn]->archlist[an],
+				pkg_append(path, debf.suite, SUITES[sn]->archlist[an],
 						debf.component, 0);
 		} else
-			pkg_append(path, suite, debf.arch, debf.component, 0);
+			pkg_append(path, debf.suite, debf.arch, debf.component, 0);
+		bc_insert_debf(&debf);
 		free(c);
-		free(suite);
+		free(debf.suite);
 
 		return GE_OK;
 	}
 
-	free(suite);
-
 	/* it doesn't, thus should be removed in OM_POOL */
 	SHOUT("Package %s doesn't match overrides.db (use -C)\n", path);
-	if (G.cleanup) {
-		SAY("Removing %s\n", path);
-		unlink(path);
-	}
 
 	return GE_ERROR;
 }
@@ -242,26 +233,24 @@ int validate_deb(char *path)
 	}
 
 	/* package's parent directory must reflect suite */
-	suite = parent_dir(path, 1);
-	if (!suite) {
+	debf.suite = parent_dir(path, 1);
+	if (!debf.suite) {
 		SAY("Package in a wrong directory: %s, removing\n", path);
 		unlink(path);
+		free(debf.suite);
 
-		goto out;
+		return GE_ERROR;
 	}
 
 	s = ov_find_component(debf.source, debf.version,
 			debf.crossarch[0] ? debf.crossarch : debf.arch,
-			suite, &c);
+			debf.suite, &c);
 	if (s != GE_OK) {
 		SAY("Found zero mentions of %s=%s in overrides, removing.\n",
 				debf.source, debf.version);
 
 		unlink(path);
 	}
-
-out:
-	free(suite);
 
 	return GE_OK;
 }

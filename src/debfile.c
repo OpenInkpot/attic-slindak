@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include "common.h"
 #include "debfile.h"
 
@@ -25,16 +28,34 @@ int debfile_read(char *path, struct debfile *df)
 	FILE *p;
 	char cmd[PATH_MAX];
 	char tok[256];
+	struct stat sbuf;
+	int s;
+
+	s = stat(path, &sbuf);
+	if (s) {
+		SHOUT("Can't stat %s\n", path);
+		return GE_ERROR;
+	}
 
 	snprintf(cmd, PATH_MAX, "/usr/bin/dpkg --info %s", path);
 	p = popen(cmd, "r");
 	GE_ERROR_IFNULL(p);
 
 	memset(df, 0, sizeof(struct debfile));
+	strncpy(df->pool_file, path, PATH_MAX);
+	df->deb_size = sbuf.st_size;
+
+	s = md5sum(path, df->deb_md5);
+	if (s != GE_OK) {
+		SHOUT("Can't fetch md5 for %s\n", path);
+		return GE_ERROR;
+	}
+
+	df->deb_control = "sum control eenfo hear"; /* XXX OMG WTF LOL KTHX */
 
 	while (!feof(p)) {
 		fscanf(p, "%s", tok);
-		
+
 		if (!strcmp(tok, "Package:")) {
 			fscanf(p, "%s", tok);
 
@@ -94,7 +115,7 @@ int dscfile_read(char *path, struct dscfile *df)
 
 	while (!feof(f)) {
 		fscanf(f, "%s", tok);
-		
+
 		if (!strcmp(tok, "Package:") && !df->pkgname[0]) {
 			fscanf(f, "%s", tok);
 
