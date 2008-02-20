@@ -42,6 +42,8 @@ int mkdir_p(char *dst, mode_t mode);
 
 int copy(char *src, char *dst);
 
+int md5sum(char *file, char *buf);
+
 int dpkg_deb(char *path);
 
 int dpkg_source(char *dir, char *where);

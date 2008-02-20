@@ -172,6 +172,26 @@ int copy(char *src, char *dst)
 }
 
 /*
+ * calculate md5 hash of a 'file'
+ */
+int md5sum(char *file, char *buf)
+{
+	FILE *p;
+	char cmd[PATH_MAX];
+
+	/* TODO: access(file) */
+	snprintf(cmd, PATH_MAX, "%s %s", MD5SUM_BIN_PATH, file);
+	p = popen(cmd, "r");
+	if (!p)
+		return GE_ERROR;
+
+	fscanf(p, "%32s", buf);
+	pclose(p);
+
+	return 0;
+}
+
+/*
  * call 'dpkg-deb' to build a binary package
  */
 int dpkg_deb(char *path)
