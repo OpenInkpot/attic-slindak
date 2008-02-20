@@ -248,6 +248,8 @@ out_rm:
 
 #include "0000_base.test.c"
 #include "0001_base.test.c"
+#include "0002_base.test.c"
+#include "0003_base.test.c"
 
 void do_pkg_tests()
 {
@@ -257,5 +259,7 @@ void do_pkg_tests()
 
 	printf("TEST1: %s\n", do_test1() == GE_OK ? "OK" : "FAILED");
 	printf("TEST2: %s\n", do_test2() == GE_OK ? "OK" : "FAILED");
+	printf("TEST3: %s\n", do_test3() == GE_OK ? "OK" : "FAILED");
+	printf("TEST4: %s\n", do_test4() == GE_OK ? "OK" : "FAILED");
 }
 
