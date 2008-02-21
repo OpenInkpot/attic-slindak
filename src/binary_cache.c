@@ -45,6 +45,42 @@ int bc_search_all(char *where, void *user, bc_callback_fn callback)
 	return s;
 }
 
+int bcov_search_all(char *suite, char *arch, int existing, void *user,
+		bc_callback_fn callback)
+{
+	char *req;
+	char *err;
+	int s;
+
+	req = sqlite3_mprintf(
+			"SELECT " OV_COLS " FROM overrides O "
+			" WHERE O.suite='%q' "
+			"   AND (O.arch='%q' OR O.arch='') "
+			"   AND %s EXISTS ( "
+			"SELECT 1 FROM binary_cache B "
+			" WHERE O.pkgname=B.pkgname "
+			"   AND O.suite=B.suite "
+			"   AND O.version=B.version "
+			"   AND (B.deb_arch='%q' OR B.deb_arch='')) "
+			" ORDER BY pkgname ASC",
+			suite, arch, existing ? "" : "NOT", arch
+			);
+
+	DBG("sql req: \"%s\"\n", req);
+	s = sqlite3_exec(db, req, callback, user, &err);
+	if (s != SQLITE_OK) {
+		SHOUT("Error (%d) occured while selecting: %s,\n"
+				"query was: \"%s\"\n", s, err ? err : "", req);
+
+		s = GE_ERROR;
+	} else
+		s = GE_OK;
+
+	sqlite3_free(req);
+
+	return s;
+}
+
 int bc_clear()
 {
 	char *req;
@@ -104,8 +140,7 @@ int bc_create_table()
 	char *err;
 	int s;
 
-	/*s = bc_search_all("", NULL, NULL);*/
-	s = bc_clear();
+	s = bc_search_all("", NULL, NULL);
 	if (s == GE_OK) {
 		DBG("binary_cache table seems to exist in overrides.db\n");
 		return GE_OK;

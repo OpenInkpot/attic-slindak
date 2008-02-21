@@ -24,6 +24,8 @@ const char *inj_file = NULL;
 const char *cli_query = NULL;
 const char *cli_qfmt = NULL;
 const char *cli_list = NULL;
+const int *cli_bin_inc = 0;
+const int *cli_bin_excl = 0;
 
 static struct poptOption opts_table[] = {
 	{ "info",     'I', POPT_ARG_STRING, &cli_file, 0,
@@ -36,6 +38,12 @@ static struct poptOption opts_table[] = {
 	  "output format string for query results" },
 	{ "list",     'l', POPT_ARG_STRING, &cli_list, 0,
 	  "list packages with given component known to database" },
+	{ "binary",   'b', POPT_ARG_NONE,   &cli_bin_inc, 0,
+	  "list only those packages that have at least one "
+	  "binary package built from them" },
+	{ "nobinary", 'B', POPT_ARG_NONE,   &cli_bin_excl, 0,
+	  "list only those packages that have no "
+	  "binary packages built from them" },
 	{ "repodir",  'r', POPT_ARG_STRING, &G.repo_dir, 0,
 	  "repository base directory" },
 	{ "suite",    's', POPT_ARG_STRING, &G.users_suite, 0,
@@ -128,7 +136,10 @@ int main(int argc, const char **argv)
 	if (cli_list) {
 		G.op_mode = OM_QUERY;
 
-		s = query_pkglist(cli_list, G.users_suite, G.users_arch, cli_qfmt);
+		s = (cli_bin_inc || cli_bin_excl)
+			? query_deblist(cli_bin_inc, G.users_suite, G.users_arch,
+					cli_qfmt)
+			: query_pkglist(cli_list, G.users_suite, G.users_arch, cli_qfmt);
 
 		exit(s == GE_OK ? EXIT_SUCCESS : EXIT_FAILURE);
 	}
@@ -179,6 +190,7 @@ int main(int argc, const char **argv)
 	}
 
 	G.op_mode = OM_POOL;
+	bc_clear();
 
 	if (bl_take(G.repo_dir) != GE_OK) abort();
 

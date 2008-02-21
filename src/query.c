@@ -92,6 +92,22 @@ int query_pkglist(const char *component, char *suite,
 	return s;
 }
 
+int query_deblist(int exists, char *suite,
+		char *arch, const char *fmt)
+{
+	char *where;
+	int s;
+
+	GE_ERROR_IFNULL(suite);
+
+	if (!fmt) fmt = QF_DEFAULT;
+	if (!arch) arch = "all";
+
+	s = bcov_search_all(suite, arch, exists, fmt, query_fetch_cb);
+
+	return s;
+}
+
 int query_pkginfo(const char *pkgname, char *suite,
 		char *arch, const char *fmt)
 {

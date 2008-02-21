@@ -39,6 +39,8 @@ static char *bc_columns[BC_NCOLS] = {
 
 int bc_create_table();
 int bc_insert_debf(struct debfile *debf);
+int bcov_search_all(char *suite, char *arch, int existing, void *user,
+		bc_callback_fn callback);
 
 #endif /* __SLINDAK_BC_H__ */
 
