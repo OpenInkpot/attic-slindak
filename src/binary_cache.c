@@ -76,11 +76,12 @@ int bc_insert_debf(struct debfile *debf)
 
 	req = sqlite3_mprintf(
 			"INSERT INTO binary_cache (" BC_COLS ") "
-			"VALUES ('%s', '%s', '%s', '%s', '%s', "
-			"'%s', '%s', '%d', '%s', '%s')",
+			"VALUES ('%q', '%q', '%q', '%q', '%q', "
+			"'%q', '%q', '%d', '%q', '%q')",
 			debf->source, debf->version, debf->suite,
 			debf->pool_file, debf->debname, debf->component,
 			debf->arch, debf->deb_size, debf->deb_md5, debf->deb_control);
+	DBG("sql req: \"%s\"\n", req);
 
 	s = sqlite3_exec(db, req, NULL, NULL, &err);
 

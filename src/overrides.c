@@ -80,7 +80,7 @@ int ov_insert(char *pkgname, char *version, char *arch,
 
 	req = sqlite3_mprintf(
 			"INSERT INTO overrides (" OV_COLS ") "
-			"VALUES ('%s', '%s', '%s', '%s', '%s')",
+			"VALUES ('%q', '%q', '%q', '%q', '%q')",
 			pkgname, version, suite, arch, component);
 
 	s = sqlite3_exec(db, req, NULL, NULL, &err);
@@ -114,10 +114,10 @@ int ov_update_all(char *pkgname, char *arch, char *suite, char *version,
 		arch = "";
 
 	req = sqlite3_mprintf(
-			"UPDATE overrides SET version='%s', suite='%s', "
-			"component='%s', arch='%s' "
-			"WHERE pkgname='%s' "
-			"AND suite='%s' AND version='%s' AND arch='%s'",
+			"UPDATE overrides SET version='%q', suite='%q', "
+			"component='%q', arch='%q' "
+			"WHERE pkgname='%q' "
+			"AND suite='%q' AND version='%q' AND arch='%q'",
 			set_version, set_suite, set_component, set_arch,
 			pkgname, suite, version, arch);
 	DBG("sql req: %s\n", req);
@@ -156,9 +156,9 @@ int ov_update_version(char *pkgname, char *arch, char *suite, char *version)
 	}
 
 	req = sqlite3_mprintf(
-			"UPDATE overrides SET version='%s' "
-			"WHERE pkgname='%s' "
-			"AND suite='%s'%s",
+			"UPDATE overrides SET version='%q' "
+			"WHERE pkgname='%q' "
+			"AND suite='%q'%s",
 			version, pkgname, suite, arch_clause);
 
 	if (arch_clause != arch)
@@ -200,10 +200,10 @@ int ov_update_suite(char *pkgname, char *version, char *arch,
 	}
 
 	req = sqlite3_mprintf(
-			"UPDATE overrides SET suite='%s' "
-			"WHERE pkgname='%s' "
-			"AND suite='%s' "
-			"AND version='%s'%s",
+			"UPDATE overrides SET suite='%q' "
+			"WHERE pkgname='%q' "
+			"AND suite='%q' "
+			"AND version='%q'%s",
 			to_suite, pkgname, from_suite, version, arch_clause);
 
 	if (arch_clause != arch)
@@ -493,8 +493,8 @@ int ov_delete(char *pkgname, char *version, char *suite, char *arch)
 
 	req = sqlite3_mprintf(
 			"DELETE  FROM overrides "
-			"WHERE pkgname='%s' AND version='%s' AND suite='%s' "
-			"AND arch='%s'",
+			"WHERE pkgname='%q' AND version='%q' AND suite='%q' "
+			"AND arch='%q'",
 			pkgname, version, suite, arch);
 
 	DBG("sql req: \"%s\"\n", req);
