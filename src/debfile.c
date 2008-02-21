@@ -45,16 +45,20 @@ int debfile_read(char *path, struct debfile *df)
 	memset(df, 0, sizeof(struct debfile));
 
 	/* make sure the file is within our repo, just in case */
-	s = strlen(G.repo_dir);
-	if (strncmp(path, G.repo_dir, s)) {
-		SHOUT("slindak internal error at %s:%d\n", __FILE__, __LINE__);
-		abort();
-	}
+	if (G.op_mode == OM_POOL) {
+		s = strlen(G.repo_dir);
+		if (strncmp(path, G.repo_dir, s)) {
+			SHOUT("slindak internal error at %s:%d\n"
+					"package path=\"%s\" pool path=\"%s\"",
+					__FILE__, __LINE__, path, G.repo_dir);
+			abort();
+		}
 
-	/* cut away slashes */
-	for (; path[s] == '/'; s++);
-	/* get in-pool path to the package */
-	strncpy(df->pool_file, &path[s], PATH_MAX);
+		/* cut away slashes */
+		for (; path[s] == '/'; s++);
+		/* get in-pool path to the package */
+		strncpy(df->pool_file, &path[s], PATH_MAX);
+	}
 
 	df->deb_size = sbuf.st_size;
 
