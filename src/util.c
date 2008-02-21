@@ -231,7 +231,7 @@ size_t vread_pipe(char **out, const char *openstr)
 	p = popen(openstr, "r");
 	if (!p)
 		return GE_ERROR;
-	
+
 	while (!feof(p) && r) {
 		buf = realloc(buf, len + BUFSIZ);
 		if (!buf)
@@ -243,6 +243,7 @@ size_t vread_pipe(char **out, const char *openstr)
 
 	pclose(p);
 
+	buf[len] = '\0';
 	*out = buf;
 
 	return len;
