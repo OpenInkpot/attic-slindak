@@ -64,7 +64,9 @@ int debfile_read(char *path, struct debfile *df)
 		return GE_ERROR;
 	}
 
-	df->deb_control = "sum control eenfo hear"; /* XXX OMG WTF LOL KTHX */
+	read_pipe(&df->deb_control, "/usr/bin/dpkg --info %s", path);
+	if (!df->deb_control)
+		return GE_ERROR;
 
 	while (!feof(p)) {
 		fscanf(p, "%s", tok);
@@ -114,6 +116,15 @@ int debfile_read(char *path, struct debfile *df)
 	}
 
 	return GE_OK;
+}
+
+void debfile_free(struct debfile *debf)
+{
+	if (debf->suite)
+		free(debf->suite);
+
+	if (debf->deb_control)
+		free(debf->deb_control);
 }
 
 int dscfile_read(char *path, struct dscfile *df)

@@ -67,6 +67,7 @@ struct dscfile {
 int deb_ver_gt(char *v1, char *v2);
 
 int debfile_read(char *path, struct debfile *df);
+void debfile_free(struct debfile *debf);
 int dscfile_read(char *path, struct dscfile *df);
 
 #endif
