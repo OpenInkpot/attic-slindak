@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <stdarg.h>
 #include "common.h"
 #include "util.h"
 
@@ -218,6 +219,49 @@ int dpkg_source(char *dir, char *where)
 	chdir(pwd);
 
 	return ret;
+}
+
+size_t vread_pipe(char **out, const char *openstr)
+{
+	FILE *p;
+	char *buf = NULL;
+	size_t len = 0;
+	int r = 1;
+
+	p = popen(openstr, "r");
+	if (!p)
+		return GE_ERROR;
+	
+	while (!feof(p) && r) {
+		buf = realloc(buf, len + BUFSIZ);
+		if (!buf)
+			return GE_ERROR;
+
+		len +=
+		r = read(fileno(p), buf + len, BUFSIZ);
+	}
+
+	pclose(p);
+
+	*out = buf;
+
+	return len;
+}
+
+size_t read_pipe(char **out, const char *fmt, ...)
+{
+	va_list args;
+	char *opstr;
+	int s;
+
+	va_start(args, fmt);
+	s = vasprintf(&opstr, fmt, args);
+	va_end(args);
+
+	if (s == -1)
+		return GE_ERROR;
+
+	return vread_pipe(out, opstr);
 }
 
 void root_squash()

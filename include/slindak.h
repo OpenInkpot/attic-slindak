@@ -48,6 +48,10 @@ int dpkg_deb(char *path);
 
 int dpkg_source(char *dir, char *where);
 
+size_t vread_pipe(char **out, const char *openstr);
+
+size_t read_pipe(char **out, const char *fmt, ...);
+
 void root_squash();
 
 #endif /* __SLINDAK_H__ */
