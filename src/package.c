@@ -106,14 +106,16 @@ tryadd:
 		} else
 			pkg_append(path, debf.suite, debf.arch, debf.component, 0);
 		bc_insert_debf(&debf);
+
 		free(c);
-		free(debf.suite);
+		debfile_free(&debf);
 
 		return GE_OK;
 	}
 
 	/* it doesn't, thus should be removed in OM_POOL */
 	SHOUT("Package %s doesn't match overrides.db (use -C)\n", path);
+	debfile_free(&debf);
 
 	return GE_ERROR;
 }
