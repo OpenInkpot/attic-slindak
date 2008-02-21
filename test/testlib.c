@@ -154,8 +154,15 @@ int mk_src_package(
 		   );
 	fclose(f);
 
-	mkdir_p("/tmp/slindak-test/pool/core/t/testpkg1", 0755);
-	ret = dpkg_source(pkgdir, "/tmp/slindak-test/pool/core/t/testpkg1");
+	if (!strncmp(name, "lib", 3))
+		snprintf(srcpkg, PATH_MAX, "%s/pool/%s/lib%c/%s",
+				repodir, component, name[0], name);
+	else
+		snprintf(srcpkg, PATH_MAX, "%s/pool/%s/%c/%s",
+				repodir, component, name[0], name);
+
+	mkdir_p(srcpkg, 0755);
+	ret = dpkg_source(pkgdir, srcpkg);
 	if (ret) {
 		SHOUT("Failed to generate %s source package.\n", name);
 		goto out_rm;
@@ -251,6 +258,7 @@ out_rm:
 #include "0002_base.test.c"
 #include "0003_base.test.c"
 #include "0004_base.test.c"
+#include "0005_base.test.c"
 
 void do_pkg_tests()
 {
@@ -263,5 +271,6 @@ void do_pkg_tests()
 	printf("TEST3: %s\n", do_test3() == GE_OK ? "OK" : "FAILED");
 	printf("TEST4: %s\n", do_test4() == GE_OK ? "OK" : "FAILED");
 	printf("TEST5: %s\n", do_test5() == GE_OK ? "OK" : "FAILED");
+	printf("TEST6: %s\n", do_test6() == GE_OK ? "OK" : "FAILED");
 }
 
