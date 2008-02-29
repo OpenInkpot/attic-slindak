@@ -1,3 +1,29 @@
+slindak (0.1.7) unstable; urgency=low
+
+  * New version.
+  [ Alexander Shishkin ]
+  * slindweb: add binary package browser
+  * kill excessive whitespace
+  * slindak: add list query functionality
+  * version bump
+  * add two more tests
+  * kill trailing whitespace
+  * move binary_cache functionality to a separate module
+  * add md5sum() helper from grasp
+  * add one more test that has to do with binary packages
+  * collect binary packages' information in overrides.db
+  * use in-pool paths for binary_cache entries
+  * add a couple of helpers for reading from a pipe
+  * use real control data for deb_control field
+  * do free allocated strings from struct debfile
+  * add one more test
+  * validate pool path only in 'OM_POOL' mode
+  * vread_pipe(): explicitly terminate resulting buffer with '\0'
+  * do escape strings in sql requests
+  * slindak: extend database query functionality
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Thu, 21 Feb 2008 19:09:46 +0300
+
 slindak (0.1.6) unstable; urgency=low
 
   * New version.
