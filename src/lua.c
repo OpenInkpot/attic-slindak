@@ -36,7 +36,7 @@ int L_push_str_vstr(int table, char *key, char *fmt, ...)
 	va_list ap;
 	char *buf;
 	int len;
-	
+
 	va_start(ap, fmt);
 	len = vasprintf(&buf, fmt, ap);
 	va_end(ap);

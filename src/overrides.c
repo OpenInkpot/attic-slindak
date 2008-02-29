@@ -319,7 +319,7 @@ int ov_find_component(char *pkgname, char *version, char *arch, char *suite,
 	GE_ERROR_IFNULL(version);
 	GE_ERROR_IFNULL(arch);
 	GE_ERROR_IFNULL(suite);
- 
+
 	arch_clause = ov_arch_clause(arch);
 	GE_ERROR_IFNULL(arch_clause);
 

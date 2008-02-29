@@ -12,7 +12,7 @@ static inline char *sasprintf(char *fmt, ...)
 	va_list ap;
 	char *__str;
 	int __r;
-	
+
 	va_start(ap, fmt);
 	__r = vasprintf(&__str, fmt, ap);
 	va_end(ap);
