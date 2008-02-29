@@ -15,6 +15,8 @@
 #include "debfile.h"
 #include "util.h"
 #include "html_static.h"
+#include "lua-helpers.h"
+#include "cgi-actions.h"
 
 int main(int argc, const char **argv)
 {
@@ -28,6 +30,7 @@ int main(int argc, const char **argv)
 
 	init_slind();
 	L_init();
+	lua_register(L, "CgiEscapeSpecialChars", extl_cgi_escape_special_chars);
 
 	s = config_init();
 	if (s != GE_OK) {
@@ -41,7 +44,6 @@ int main(int argc, const char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	/*G.op_mode = OM_POOL;*/
 	L_dofile(LUA_HTML);
 
 	init_html_output();
@@ -54,31 +56,13 @@ int main(int argc, const char **argv)
 		verbosity = VERB_DEBUG;
 
 	act = cgi_param("act");
-	if (!act || !strcmp(act, "list")) {
-		action_list();
-		title = strdup("Source Packages");
-	} else if (!strcmp(act, "edit")) {
-		action_edit();
-		title = strdup("Edit Package Details");
-    } else if (!strcmp(act, "commit")) {
-		action_commit();
-    } else if (!strcmp(act, "del")) {
-		action_del();
-		title = strdup("Delete Package");
-	} else if (!strcmp(act, "new")) {
-		action_new();
-		title = strdup("Add Package");
-	} else {
-		action_list();
-		title = strdup("Source Packages");
-	}
+	title = cgiaction_do(act ? act : cgi_actions[0].name);
 
 	cgi_init_headers();
 	puts(L_call("HtmlHeader", 1, title));
 	flush_html_output();
 	puts(L_call("HtmlFooter", 0));
 
-	free(title);
 	done_html_output();
 
 	db_done();

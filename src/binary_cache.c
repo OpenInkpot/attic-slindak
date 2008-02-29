@@ -45,6 +45,58 @@ int bc_search_all(char *where, void *user, bc_callback_fn callback)
 	return s;
 }
 
+static int bc_fetch_count_cb(void *user, int cols, char **values, char **keys)
+{
+	int *n = (int *)user;
+	int i;
+
+	*n = atol(values[0]);
+
+	return GE_OK;
+}
+
+int bc_debs_count(char *pkgname, char *version, char *suite,
+		char *arch, int *count)
+{
+	char *req;
+	char *err;
+	int s;
+
+	if (!arch[0])
+		req = sqlite3_mprintf(
+				"SELECT COUNT(deb_name) FROM binary_cache "
+				" WHERE pkgname='%q' "
+				"   AND version='%q' "
+				"   AND suite='%q'",
+				pkgname, version, suite
+				);
+	else
+		req = sqlite3_mprintf(
+				"SELECT COUNT(deb_name) FROM binary_cache "
+				" WHERE pkgname='%q' "
+				"   AND version='%q' "
+				"   AND (deb_arch='%q' OR deb_arch='') "
+				"   AND suite='%q'",
+				pkgname, version, arch, suite
+				);
+	if (!req)
+		return GE_ERROR;
+
+	DBG("sql req: \"%s\"\n", req);
+	s = sqlite3_exec(db, req, bc_fetch_count_cb, count, &err);
+	if (s != SQLITE_OK) {
+		SHOUT("Error (%d) occured while selecting: %s,\n"
+				"query was: \"%s\"\n", s, err ? err : "", req);
+
+		s = GE_ERROR;
+	} else
+		s = GE_OK;
+
+	sqlite3_free(req);
+
+	return s;
+}
+
 int bcov_search_all(char *suite, char *arch, int existing, void *user,
 		bc_callback_fn callback)
 {
@@ -61,7 +113,7 @@ int bcov_search_all(char *suite, char *arch, int existing, void *user,
 			" WHERE O.pkgname=B.pkgname "
 			"   AND O.suite=B.suite "
 			"   AND O.version=B.version "
-			"   AND (B.deb_arch='%q' OR B.deb_arch='')) "
+			"   AND (B.deb_arch='%q')) "
 			" ORDER BY pkgname ASC",
 			suite, arch, existing ? "" : "NOT", arch
 			);

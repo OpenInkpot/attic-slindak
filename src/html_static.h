@@ -20,6 +20,7 @@ static inline char *sasprintf(char *fmt, ...)
 }
 
 #define O(fmt, args ...) (html_output_printf(fmt, ## args))
+int html_output_puts(char *str);
 int html_output_printf(char *fmt, ...);
 void flush_html_output();
 void init_html_output();

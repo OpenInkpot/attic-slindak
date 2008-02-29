@@ -10,6 +10,19 @@
 static char *output;
 static char *outp;
 
+int html_output_puts(char *str)
+{
+	size_t len = strlen(str);
+
+	if (outp - output >= BUFSZ)
+		return 0;
+
+	memcpy(outp, str, len);
+	outp += len;
+
+	return len;
+}
+
 int html_output_printf(char *fmt, ...)
 {
 	va_list ap;
