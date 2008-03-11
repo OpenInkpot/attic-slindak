@@ -210,7 +210,7 @@ int bc_create_table()
 			"deb_size int NOT NULL,"
 			"deb_md5 char(32) NOT NULL,"
 			"deb_control text NOT NULL,"
-			"UNIQUE(pkgname, suite, deb_arch, deb_name, deb_section));");
+			"UNIQUE(pkgname, suite, deb_arch, deb_name, deb_section, version));");
 
 	DBG("sql req: \"%s\"\n", req);
 	s = sqlite3_exec(db, req, NULL, NULL, &err);
