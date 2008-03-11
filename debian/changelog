@@ -1,3 +1,13 @@
+slindak (0.1.8) unstable; urgency=low
+
+  * New version.
+  [ Alexander Shishkin ]
+  * broaden primary key definition for binary_cache
+  * silndak: acquire biglock before the first db access
+  * slindak: be bigendian-/unsigned char- friendly
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Tue, 11 Mar 2008 19:37:29 +0300
+
 slindak (0.1.7) unstable; urgency=low
 
   * New version.
