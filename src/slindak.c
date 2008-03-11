@@ -65,7 +65,7 @@ static struct poptOption opts_table[] = {
 int main(int argc, const char **argv)
 {
 	int s;
-	char o;
+	int o;
 	poptContext optcon;
 
 	memset(&G, 0, sizeof(struct global_config));
