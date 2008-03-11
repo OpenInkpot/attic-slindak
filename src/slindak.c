@@ -119,6 +119,8 @@ int main(int argc, const char **argv)
 		exit(EXIT_FAILURE);
 	}
 
+	if (bl_take(G.repo_dir) != GE_OK) abort();
+
 	s = db_init(G.odb_path);
 	if (s != GE_OK) {
 		SHOUT("Can't open database\n");
@@ -191,8 +193,6 @@ int main(int argc, const char **argv)
 
 	G.op_mode = OM_POOL;
 	bc_clear();
-
-	if (bl_take(G.repo_dir) != GE_OK) abort();
 
 	lists_cleanup();
 	s = scan_pool();
