@@ -62,6 +62,24 @@ static struct poptOption opts_table[] = {
 	POPT_TABLEEND
 };
 
+void prologue(void)
+{
+	OUT[LOG] = fopen(G.logfile, "w");
+	if (!OUT[LOG]) {
+		SHOUT("Can't open logfile\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (bl_take(G.repo_dir) != GE_OK) abort();
+}
+
+void epilogue(void)
+{
+	bl_release();
+
+	fclose(OUT[LOG]);
+}
+
 int main(int argc, const char **argv)
 {
 	int s;
@@ -102,30 +120,38 @@ int main(int argc, const char **argv)
 		exit(EXIT_FAILURE);
 	}
 
+	libslindak_lock();
 	init_slind();
+	push_cleaner(done_slind);
+
 	L_init();
+	push_cleaner(L_done);
 
 	s = config_init();
 	if (s != GE_OK) {
 		SHOUT("Error initializing configuration.\n");
+		libslindak_unlock();
 		exit(EXIT_FAILURE);
 	}
+
+	push_cleaner(config_done);
+	libslindak_unlock();
 
 	L_load_aptconf();
 
-	OUT[LOG] = fopen(G.logfile, "w");
-	if (!OUT[LOG]) {
-		SHOUT("Can't open logfile\n");
-		exit(EXIT_FAILURE);
-	}
-
-	if (bl_take(G.repo_dir) != GE_OK) abort();
+	libslindak_lock();
+	prologue();
+	push_cleaner(epilogue);
 
 	s = db_init(G.odb_path);
 	if (s != GE_OK) {
 		SHOUT("Can't open database\n");
+		libslindak_unlock();
 		exit(EXIT_FAILURE);
 	}
+
+	push_cleaner(db_done);
+	libslindak_unlock();
 
 	if (cli_query) {
 		G.op_mode = OM_QUERY;
@@ -198,12 +224,6 @@ int main(int argc, const char **argv)
 	s = scan_pool();
 	L_call_aptconf();
 
-	db_done();
-	done_slind();
-	L_done();
-
-	config_done();
-
 	poptFreeContext(optcon);
 
 	if (s != GE_OK)
@@ -218,10 +238,6 @@ int main(int argc, const char **argv)
 		}
 		SAY("Done.\n");
 	}
-
-	bl_release();
-
-	fclose(OUT[LOG]);
 
 	return 0;
 }
