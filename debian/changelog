@@ -1,3 +1,14 @@
+slindak (0.1.9) unstable; urgency=low
+
+  * New version.
+  * [ Alexander Shishkin ]
+  * library: better means for cleanup calls
+  * slindak: make use of new cleanup functionality
+  * make gcc and sparse happy (mass commit)
+  * add 'media' component to default configuration file
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Thu, 13 Mar 2008 19:22:12 +0300
+
 slindak (0.1.8) unstable; urgency=low
 
   * New version.
