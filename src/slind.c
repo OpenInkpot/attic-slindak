@@ -62,20 +62,20 @@ void suite_remove(int idx)
 	free(SUITES[idx]);
 }
 
-void suite_remove_all()
+void suite_remove_all(void)
 {
 	while (nsuites--)
 		suite_remove(nsuites);
 }
 
-int init_slind()
+int init_slind(void)
 {
 	memset(SUITES, 0, sizeof(SUITES));
 
 	return GE_OK;
 }
 
-void done_slind()
+void done_slind(void)
 {
 	suite_remove_all();
 }
@@ -91,14 +91,17 @@ int get_suite_by_name(char *suite)
 	return GE_ERROR;
 }
 
-/* interface function for lua */
+/*
+ * interface function for lua (to suite_add())
+ * XXX: used once in configuration.c
+ */
 int extl_suite_add(lua_State *L)
 {
 	char *suite;
 	char *archlist[MAX_ARCHES];
 	char *complist[MAX_COMPS];
 	int argc = lua_gettop(L);
-	int s, tbl;
+	int s;
 
 	if (argc != 1) {
 		SHOUT("%s requires 1 argument\n", __FUNCTION__);

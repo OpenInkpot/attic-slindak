@@ -1,6 +1,8 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
+#define __IN_ACTION__
 #include <stdlib.h>
 #include <stdio.h>
 #include <libcgi/cgi.h>
@@ -10,7 +12,7 @@
 #include "output.h"
 #include "lua-helpers.h"
 #include "html_static.h"
-#include "ov.h"
+#include "db.h"
 #include "debfile.h"
 #include "cgi-actions.h"
 
@@ -53,7 +55,6 @@ int extl_cgi_escape_special_chars(lua_State *L)
 static int ov_fetch_html(void *user, int cols, char **values, char **keys)
 {
 	char *html;
-	int i;
 
 	html = L_call("HtmlListTableRow", 5, Q(values[0]), Q(values[1]),
 			Q(values[2]), values[3], Q(values[4]));
@@ -78,7 +79,7 @@ static int ov_fetch_html(void *user, int cols, char **values, char **keys)
 #define CHECK_OVCOL(__o)               \
 	(grep_string(__o, ov_columns, OV_NCOLS) != -1)
 
-void action_list()
+void action_list(void)
 {
 	char *html;
 	char *order = cgi_param("order");
@@ -110,7 +111,7 @@ void action_list()
 	free(html);
 }
 
-void action_edit()
+void action_edit(void)
 {
 	char *html, *comp;
 	char *pkg = cgi_param("pkg");
@@ -141,7 +142,7 @@ void action_edit()
 	free(suite);
 }
 
-void action_new()
+void action_new(void)
 {
 	char *html;
 
@@ -151,7 +152,7 @@ void action_new()
 	free(html);
 }
 
-void action_commit()
+void action_commit(void)
 {
 	char *pkgname = cgi_param("pkg");
 	char *version = cgi_param("ver");
@@ -197,7 +198,7 @@ void action_commit()
 		CGI_redirect("?act=list");
 }
 
-void action_del()
+void action_del(void)
 {
 	char *pkgname = cgi_param("pkg");
 	char *version = cgi_param("ver");
@@ -227,7 +228,6 @@ static int bc_fetch_html(void *user, int cols, char **values, char **keys)
 {
 	char *html;
 	char *arch = (char *)user;
-	int i;
 
 	html = L_call("HtmlDebListTablePkg", 4, Q(values[0]), Q(values[1]),
 			Q(values[2]), Q(arch));
@@ -239,7 +239,7 @@ static int bc_fetch_html(void *user, int cols, char **values, char **keys)
 	return GE_OK;
 }
 
-void action_deblist()
+void action_deblist(void)
 {
 	char *html;
 	char *suite = cgi_param("suite");
@@ -275,7 +275,6 @@ void action_deblist()
 static int bc_fetchdeb_html(void *user, int cols, char **values, char **keys)
 {
 	char *html;
-	int i;
 
 	html = L_call("HtmlDebSrcListItem", 6, Q(values[4]), Q(values[1]),
 			Q(values[3]), Q(values[5]), Q(values[7]), Q(values[8]));
@@ -287,20 +286,20 @@ static int bc_fetchdeb_html(void *user, int cols, char **values, char **keys)
 	return GE_OK;
 }
 
-void action_debsrcview()
+void action_debsrcview(void)
 {
 	char *html;
 	char *pkg = cgi_param("pkg");
 	char *arch = cgi_param("arch");
 	char *suite = cgi_param("suite");
 	char *ver, *where;
-	int s, sn, an;
+	int s, sn;
 
 	if (!CHECK_PKG(pkg)) CGI_redirect("?act=bail&e=inval");
 	if (!CHECK_SUITE(suite)) CGI_redirect("?act=bail&e=inval");
 	sn = get_suite_by_name(suite);
 	if (sn == GE_ERROR) CGI_redirect("?act=bail&e=inval");
-	if (!arch || !CHECK_ARCH(arch, sn) && strcmp(arch, "DEFAULT")) arch = "";
+	if (!arch || (!CHECK_ARCH(arch, sn) && strcmp(arch, "DEFAULT"))) arch = "";
 
 	s = ov_find_version(pkg, arch, suite, &ver);
 	if (s != GE_OK)
@@ -342,7 +341,6 @@ void action_debsrcview()
 static int bc_debcontrol_html(void *user, int cols, char **values, char **keys)
 {
 	char *html;
-	int i;
 
 	html = L_call("HtmlDebControlPage", 1, Q(values[9]));
 	html_output_puts(html);
@@ -351,7 +349,7 @@ static int bc_debcontrol_html(void *user, int cols, char **values, char **keys)
 	return GE_OK;
 }
 
-void action_debcontrol()
+void action_debcontrol(void)
 {
 	char *where;
 	char *hash = cgi_param("h");
@@ -366,12 +364,12 @@ void action_debcontrol()
 		CGI_redirect("?act=bail");
 }
 
-void action_srcview()
+void action_srcview(void)
 {
 	char *html;
 	char *pkg = cgi_param("pkg");
 	char *suite = cgi_param("suite");
-	char *ver, *defver = "", *where;
+	char *ver, *defver = "";
 	int s, sn, an, count;
 
 	if (!CHECK_PKG(pkg)) CGI_redirect("?act=bail&e=inval");
@@ -411,7 +409,7 @@ void action_srcview()
 	return;
 }
 
-void action_bail()
+void action_bail(void)
 {
 	char *error = cgi_param("e");
 	char *html;
@@ -428,7 +426,6 @@ void action_bail()
 static int ov_searchres_html(void *user, int cols, char **values, char **keys)
 {
 	char *html;
-	int i;
 
 	html = L_call("HtmlSearchResItem", 5, Q(values[0]), Q(values[1]),
 			Q(values[2]), values[3], Q(values[4]));
@@ -440,11 +437,10 @@ static int ov_searchres_html(void *user, int cols, char **values, char **keys)
 	return GE_OK;
 }
 
-void action_searchres()
+void action_searchres(void)
 {
 	char *html, *where;
 	char *pkg = cgi_param("pkg");
-	int s;
 
 	html = L_call("HtmlSearchResHeader", 1, pkg);
 	html_output_puts(html);

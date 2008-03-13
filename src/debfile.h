@@ -7,19 +7,19 @@
 #include <limits.h> /* PATH_MAX */
 
 #define FILE_IS_DEB(path) ({    \
-		char *p = path;         \
+		const char *p = path;   \
 		p += strlen(path) - 4;  \
 		strcmp(p, ".deb") == 0; \
 	})
 
 #define FILE_IS_DSC(path) ({    \
-		char *p = path;         \
+		const char *p = path;   \
 		p += strlen(path) - 4;  \
 		strcmp(p, ".dsc") == 0; \
 	})
 
 #define FILE_IS_ORIG(path) ({                     \
-		char *p = path;                           \
+		const char *p = path;                     \
 		int __r = 0;                              \
 		if (strlen(path) > 12) {                  \
 			p += strlen(path) - 12;               \
@@ -66,9 +66,11 @@ struct dscfile {
 
 int deb_ver_gt(char *v1, char *v2);
 
-int debfile_read(char *path, struct debfile *df);
+int debfile_read(const char *path, struct debfile *df);
 void debfile_free(struct debfile *debf);
-int dscfile_read(char *path, struct dscfile *df);
+int dscfile_read(const char *path, struct dscfile *df);
+void display_deb_info(struct debfile *debf);
+void display_dsc_info(struct dscfile *dscf);
 
 #endif
 

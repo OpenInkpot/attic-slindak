@@ -1,9 +1,14 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include "common.h"
 #include "lua.h"
 #include "configuration.h"
@@ -75,7 +80,7 @@ int lists_cleanup()
 	return GE_OK;
 }
 
-static int file_append(char *fn, char *text)
+static int file_append(const char *fn, const char *text)
 {
 	FILE *f;
 	f = fopen(fn, "a");
@@ -87,7 +92,8 @@ static int file_append(char *fn, char *text)
 	return GE_OK;
 }
 
-int pkg_append(char *path, char *suite, char *arch, char *comp, int src)
+int pkg_append(const char *path, char *suite, char *arch, char *comp,
+		int src)
 {
 	char *fn;
 	int sn, an;

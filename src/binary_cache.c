@@ -7,20 +7,12 @@
 #include <string.h>
 #include "common.h"
 #include "db.h"
+#include "bc.h"
 #include "util.h"
 
 /* selections are ordered by ... */
 #define ORDER_BY  (bc_columns[abs(order)])
 #define ORDER_DIR (order >= 0 ? "ASC" : "DESC")
-
-static int row_count = 0;
-static int bc_select_cb(void *user, int cols, char **values, char **keys)
-{
-	int i;
-
-	DBG("select: %s=%s\n", keys[0], values[0]);
-	return GE_OK;
-}
 
 int bc_search_all(char *where, void *user, bc_callback_fn callback)
 {
@@ -48,7 +40,6 @@ int bc_search_all(char *where, void *user, bc_callback_fn callback)
 static int bc_fetch_count_cb(void *user, int cols, char **values, char **keys)
 {
 	int *n = (int *)user;
-	int i;
 
 	*n = atol(values[0]);
 
@@ -133,7 +124,7 @@ int bcov_search_all(char *suite, char *arch, int existing, void *user,
 	return s;
 }
 
-int bc_clear()
+int bc_clear(void)
 {
 	char *req;
 	char *err;
@@ -186,7 +177,7 @@ int bc_insert_debf(struct debfile *debf)
 	return s;
 }
 
-int bc_create_table()
+int bc_create_table(void)
 {
 	char *req;
 	char *err;

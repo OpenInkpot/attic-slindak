@@ -6,7 +6,7 @@
 
 int bl_take(const char *lockdir);
 
-void bl_release();
+int bl_release();
 
 #endif /* __BIGLOCK_H__ */
 

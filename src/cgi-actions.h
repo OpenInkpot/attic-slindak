@@ -26,6 +26,7 @@ extern int client_authd;
 #define FINAL_ACT \
 	{ .name = NULL, .act_fn = NULL, .title = NULL, .auth_req = 0 }
 
+#ifdef __IN_ACTION__
 static int valid_string(char *str, int max, int min)
 {
 	if (!str) return 0;
@@ -49,6 +50,7 @@ static int grep_string(char *str, char **arr, int sz)
 
 	return -1;
 }
+#endif
 
 int extl_cgi_escape_special_chars(lua_State *L);
 const char *cgiaction_do(const char *act_name);

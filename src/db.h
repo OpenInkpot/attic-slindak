@@ -9,8 +9,8 @@
 /* overrides.db sqlite3 handle, db.c */
 extern sqlite3 *db;
 
-int db_init();
-void db_done();
+int db_init(char *db_path);
+void db_done(void);
 
 #include "ov.h"
 #include "bc.h"

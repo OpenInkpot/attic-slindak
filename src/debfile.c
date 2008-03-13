@@ -11,6 +11,7 @@
 #include "common.h"
 #include "debfile.h"
 #include "conf.h"
+#include "ov.h"
 
 int deb_ver_gt(char *v1, char *v2)
 {
@@ -24,7 +25,7 @@ int deb_ver_gt(char *v1, char *v2)
 	return GE_OK;
 }
 
-int debfile_read(char *path, struct debfile *df)
+int debfile_read(const char *path, struct debfile *df)
 {
 	FILE *p;
 	char cmd[PATH_MAX];
@@ -131,7 +132,7 @@ void debfile_free(struct debfile *debf)
 		free(debf->deb_control);
 }
 
-int dscfile_read(char *path, struct dscfile *df)
+int dscfile_read(const char *path, struct dscfile *df)
 {
 	FILE *f;
 	char tok[256];
@@ -171,7 +172,7 @@ int dscfile_read(char *path, struct dscfile *df)
 			struct pkgfile PF;
 
 			while (fscanf(f, " %32s %d %s\n",
-					&PF.md5sum, &PF.size, &PF.name) == 3) {
+					PF.md5sum, &PF.size, PF.name) == 3) {
 				struct pkgfile *pf = malloc(sizeof(struct pkgfile));
 				GE_ERROR_IFNULL(pf);
 

@@ -26,10 +26,18 @@ static char *ov_columns[OV_NCOLS] = {
 
 int ov_version_count(char *pkgname, char *suite, int *count);
 int ov_find_same_uver(char *pkgname, char *uver);
+int ov_find_version(char *pkgname, char *arch, char *suite,
+		char **version);
+int ov_find_component(char *pkgname, char *version, char *arch, char *suite,
+		char **component);
+int ov_find_suite(char *pkgname, char *version, char *arch,
+		char **suite);
 int ov_search_all(char *where, void *user, ov_callback_fn callback);
 int ov_update_all(char *pkgname, char *arch, char *suite, char *version,
 		char *set_version, char *set_suite, char *set_component,
 		char *set_arch);
+int ov_update_suite(char *pkgname, char *version, char *arch,
+		char *from_suite, char *to_suite);
 int ov_insert(char *pkgname, char *version, char *arch,
 		char *suite, char *component);
 int ov_delete(char *pkgname, char *version, char *suite, char *arch);

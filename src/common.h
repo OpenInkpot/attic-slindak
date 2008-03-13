@@ -18,10 +18,14 @@
 #include "slindak.h"
 
 int lists_cleanup();
-int query_pkginfo(const char *pkgname, char *suite, char *arch,
-		const char *fmt);
-int init_slind();
-void done_slind();
+int pkg_append(const char *path, char *suite, char *arch, char *comp,
+		int src);
+
+/* initialize/deinitialize suites
+ * these functions should be a part of a bigger construction,
+ * thus might be gone from here anytime soon */
+int init_slind(void);
+void done_slind(void);
 
 #endif
 

@@ -3,7 +3,7 @@
  */
 #include "common.h"
 
-void version()
+void version(void)
 {
 	SAY(
 		"%s %s for %s compiled on %s\n",
@@ -11,7 +11,7 @@ void version()
 	   );
 }
 
-void help()
+void help(void)
 {
 	SAY(
 		"%s is a collection of tools targeted at maintenance of slind\n"

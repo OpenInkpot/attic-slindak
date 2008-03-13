@@ -1,6 +1,7 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +9,7 @@
 #include <sqlite3.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <stdarg.h>
@@ -18,7 +20,7 @@
  * Given a path, returns a parent directory,
  * that is allocated (needs free'ing).
  */
-char *parent_dir(char *path, int tailcut)
+char *parent_dir(const char *path, int tailcut)
 {
 	char *s1, *s2 = NULL;
 	char *res = NULL;
@@ -90,7 +92,7 @@ extern char *program_invocation_name;
  * execute a thing (fork, exec, wait)
  * (from grasp, src/system.c)
  */
-int spawn(char *cmd, char **argv)
+int spawn(const char *cmd, char *const argv[])
 {
 	pid_t pid;
 	int i = 0;
@@ -160,9 +162,9 @@ int mkdir_p(char *dst, mode_t mode)
 /*
  * copy something from 'src' to 'dst'
  */
-int copy(char *src, char *dst)
+int copy(const char *src, const char *dst)
 {
-	char *argv[] = { "cp", src, dst, NULL };
+	char *const argv[] = { "cp", (char *)src, (char *)dst, NULL };
 	int ret;
 
 	ret = spawn(CP_BIN_PATH, argv);
@@ -175,7 +177,7 @@ int copy(char *src, char *dst)
 /*
  * calculate md5 hash of a 'file'
  */
-int md5sum(char *file, char *buf)
+int md5sum(const char *file, char *buf)
 {
 	FILE *p;
 	char cmd[PATH_MAX];

@@ -10,7 +10,8 @@
 
 extern lua_State *L;
 
-int L_call_aptconf()
+/* TODO: doesn't this fall into L_call() usecase? */
+int L_call_aptconf(void)
 {
 	int tbl, ttbl;
 	int i;
@@ -21,7 +22,7 @@ int L_call_aptconf()
 
 	/* settings["SUITES"] = {} */
 	ttbl = L_push_table("SUITES", tbl);
-	
+
 	for (i = 0; i < nsuites; i++)
 		L_push_int_str(ttbl, i + 1, SUITES[i]->name);
 
@@ -29,7 +30,7 @@ int L_call_aptconf()
 
 	/* settings["SUITE_SETTINGS"] = {} */
 	ttbl = L_push_table("SUITE_SETTINGS", tbl);
-	
+
 	for (i = 0; i < nsuites; i++) {
 		int ltbl;
 
@@ -52,9 +53,11 @@ int L_call_aptconf()
 	lua_pop(L, 1);
 
 	L_pop_table(1);
+
+	return GE_ERROR;
 }
 
-int L_load_aptconf()
+int L_load_aptconf(void)
 {
 	int s;
 

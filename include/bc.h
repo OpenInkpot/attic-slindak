@@ -37,8 +37,12 @@ static char *bc_columns[BC_NCOLS] = {
 #define BC_COLS "pkgname, version, suite, pool_file, deb_name, " \
 				"deb_section, deb_arch, deb_size, deb_md5, deb_control"
 
-int bc_create_table();
+int bc_create_table(void);
+int bc_clear(void);
 int bc_insert_debf(struct debfile *debf);
+int bc_search_all(char *where, void *user, bc_callback_fn callback);
+int bc_debs_count(char *pkgname, char *version, char *suite,
+		char *arch, int *count);
 int bcov_search_all(char *suite, char *arch, int existing, void *user,
 		bc_callback_fn callback);
 

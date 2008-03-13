@@ -7,7 +7,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include "common.h"
+#include "db.h"
 #include "ov.h"
+#include "bc.h"
 
 sqlite3 *db;
 
@@ -46,7 +48,7 @@ int db_init(char *db_path)
 	return GE_OK;
 }
 
-void db_done()
+void db_done(void)
 {
 	sqlite3_close(db);
 }

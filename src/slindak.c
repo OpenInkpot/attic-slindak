@@ -18,14 +18,17 @@
 #include "debfile.h"
 #include "util.h"
 #include "biglock.h"
+#include "query.h"
+#include "package.h"
+#include "pool.h"
 
-const char *cli_file = NULL;
-const char *inj_file = NULL;
-const char *cli_query = NULL;
-const char *cli_qfmt = NULL;
-const char *cli_list = NULL;
-const int *cli_bin_inc = 0;
-const int *cli_bin_excl = 0;
+static const char *cli_file = NULL;
+static const char *inj_file = NULL;
+static const char *cli_query = NULL;
+static const char *cli_qfmt = NULL;
+static const char *cli_list = NULL;
+static int cli_bin_inc = 0;
+static int cli_bin_excl = 0;
 
 static struct poptOption opts_table[] = {
 	{ "info",     'I', POPT_ARG_STRING, &cli_file, 0,
@@ -38,10 +41,10 @@ static struct poptOption opts_table[] = {
 	  "output format string for query results" },
 	{ "list",     'l', POPT_ARG_STRING, &cli_list, 0,
 	  "list packages with given component known to database" },
-	{ "binary",   'b', POPT_ARG_NONE,   &cli_bin_inc, 0,
+	{ "binary",   'b', POPT_ARG_NONE,   NULL,      'b',
 	  "list only those packages that have at least one "
 	  "binary package built from them" },
-	{ "nobinary", 'B', POPT_ARG_NONE,   &cli_bin_excl, 0,
+	{ "nobinary", 'B', POPT_ARG_NONE,   NULL,      'B',
 	  "list only those packages that have no "
 	  "binary packages built from them" },
 	{ "repodir",  'r', POPT_ARG_STRING, &G.repo_dir, 0,
@@ -56,13 +59,17 @@ static struct poptOption opts_table[] = {
 	{ "force",    'F', POPT_ARG_NONE,   &G.force, 0,
 	  "forced complete rebuild of all the indices, "
 	  "despices apt-ftparchive's caches." },
-	{ "verbose",  'v', 0, 0, 'v', "turn on debugging output"   },
-	{ "version",  'V', 0, 0, 'V', "show our version number"    },
-	{ "help",     'h', 0, 0, 'h', "print help message"         },
+	{ "verbose",  'v', 0, NULL, 'v', "turn on debugging output"   },
+	{ "version",  'V', 0, NULL, 'V', "show our version number"    },
+	{ "help",     'h', 0, NULL, 'h', "print help message"         },
 	POPT_TABLEEND
 };
 
-void prologue(void)
+/* from messages.c */
+void help(void);
+void version(void);
+
+static void prologue(void)
 {
 	OUT[LOG] = fopen(G.logfile, "w");
 	if (!OUT[LOG]) {
@@ -73,7 +80,7 @@ void prologue(void)
 	if (bl_take(G.repo_dir) != GE_OK) abort();
 }
 
-void epilogue(void)
+static void epilogue(void)
 {
 	bl_release();
 
@@ -93,6 +100,14 @@ int main(int argc, const char **argv)
 
 	while ((o = poptGetNextOpt(optcon)) >= 0) {
 		switch (o) {
+			case 'b':
+				cli_bin_inc++;
+				break;
+
+			case 'B':
+				cli_bin_excl++;
+				break;
+
 			case 'h':
 				help();
 				poptPrintHelp(optcon, OUT[STD], 0);
@@ -201,8 +216,6 @@ int main(int argc, const char **argv)
 		G.op_mode = OM_INJECT;
 
 		if (FILE_IS_DEB(inj_file)) {
-			struct debfile debf;
-
 			SAY("Injecting binary package %s\n", inj_file);
 
 			process_deb(inj_file);

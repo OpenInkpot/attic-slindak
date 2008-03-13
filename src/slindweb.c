@@ -1,6 +1,7 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -21,8 +22,8 @@
 int main(int argc, const char **argv)
 {
 	int s;
-	char o;
-	char *act, *debug, *title;
+	char *act, *debug;
+	const char *title;
 
 	OUT[STD] = OUT[LOG] = stderr;
 

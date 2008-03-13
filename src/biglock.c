@@ -1,6 +1,7 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -48,12 +49,12 @@ acquire:
 			goto acquire;
 		} else if (errno == EINTR) /* some signal arrived */
 			goto acquire;
-		
+
 		SHOUT("Can't acquire %s lock: %d\n", fn, errno);
 		s = GE_ERROR;
 		goto out_cold;
 	}
-	
+
 	s = GE_OK;
 
 out_cold:
@@ -65,7 +66,7 @@ out_cold:
 /*
  * release previously taken lock
  */
-void bl_release()
+int bl_release(void)
 {
 	struct flock fl = {
 		.l_type   = F_UNLCK,

@@ -1,8 +1,10 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdarg.h>
 #include "html_static.h"
 
@@ -39,17 +41,17 @@ int html_output_printf(char *fmt, ...)
 	return len;
 }
 
-void flush_html_output()
+void flush_html_output(void)
 {
 	puts(output);
 }
 
-void init_html_output()
+void init_html_output(void)
 {
 	outp = output = malloc(BUFSZ);
 }
 
-void done_html_output()
+void done_html_output(void)
 {
 	free(output);
 }

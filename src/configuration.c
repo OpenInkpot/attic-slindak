@@ -1,6 +1,9 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <lua.h>
 #include <lualib.h>
@@ -13,7 +16,7 @@ struct global_config G;
 
 int extl_suite_add(lua_State *L);
 
-static int config_load()
+static int config_load(void)
 {
 	int tbl, s;
 
@@ -35,10 +38,9 @@ static int config_load()
 	return GE_OK;
 }
 
-int config_init()
+int config_init(void)
 {
 	int s;
-	char *d;
 
 	s = config_load();
 	if (s != GE_OK) {
@@ -74,7 +76,7 @@ int config_init()
 	return GE_OK;
 }
 
-void config_done()
+void config_done(void)
 {
 	free(G.repo_dir);
 	free(G.pool_dir);

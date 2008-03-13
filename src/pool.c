@@ -5,6 +5,7 @@
 /*
  * Mass operation on all recognizable objects in a pool
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,6 +14,7 @@
 #include "common.h"
 #include "configuration.h"
 #include "debfile.h"
+#include "package.h"
 #include "util.h"
 
 char *mk_pool_path(char *comp, char *pkgname, char *suite)
@@ -96,7 +98,7 @@ static void check_file(char *path, void *data)
 	}
 }
 
-int scan_pool()
+int scan_pool(void)
 {
 	struct file_entry *entry;
 

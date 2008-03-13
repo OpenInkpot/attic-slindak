@@ -1,6 +1,7 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -20,7 +21,8 @@ static void query_printf(const char *fmt, const char *pkgname,
 		char *version, char *suite, char *arch, char *component)
 {
 	char buf[QUERY_BUFSIZE];
-	char *s, *d = buf;
+	const char *s;
+	char *d = buf;
 	int mod = 0;
 
 	for (s = fmt; *s && d - buf < QUERY_BUFSIZE; s++) {
@@ -86,7 +88,7 @@ int query_pkglist(const char *component, char *suite,
 	if (s == -1)
 		return GE_ERROR;
 
-	s = ov_search_all(where, fmt, query_fetch_cb);
+	s = ov_search_all(where, (void *)fmt, query_fetch_cb);
 	free(where);
 
 	return s;
@@ -95,7 +97,6 @@ int query_pkglist(const char *component, char *suite,
 int query_deblist(int exists, char *suite,
 		char *arch, const char *fmt)
 {
-	char *where;
 	int s;
 
 	GE_ERROR_IFNULL(suite);
@@ -103,7 +104,7 @@ int query_deblist(int exists, char *suite,
 	if (!fmt) fmt = QF_DEFAULT;
 	if (!arch) arch = "all";
 
-	s = bcov_search_all(suite, arch, exists, fmt, query_fetch_cb);
+	s = bcov_search_all(suite, arch, exists, (void *)fmt, query_fetch_cb);
 
 	return s;
 }

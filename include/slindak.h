@@ -21,6 +21,8 @@ struct suite {
 extern struct suite *SUITES[MAX_SUITES];
 extern int nsuites;
 
+#include "suite.h"
+
 #define GE_OK    (0)
 #define GE_ERROR (-1)
 #define GE_EMPTY (-2)
@@ -28,21 +30,21 @@ extern int nsuites;
 #define GE_ERROR_IFNULL(x) do { if (!(x)) return GE_ERROR; } while (0)
 
 /* util.h */
-char *parent_dir(char *path, int tailcut);
+char *parent_dir(const char *path, int tailcut);
 
 typedef void (*traverse_fn_t)(char *path, void *data);
 
 int traverse(char *path, traverse_fn_t callback, void *data);
 
-int spawn(char *cmd, char **argv);
+int spawn(const char *cmd, char *const argv[]);
 
 int rm_rf(char *dir);
 
 int mkdir_p(char *dst, mode_t mode);
 
-int copy(char *src, char *dst);
+int copy(const char *src, const char *dst);
 
-int md5sum(char *file, char *buf);
+int md5sum(const char *file, char *buf);
 
 int dpkg_deb(char *path);
 

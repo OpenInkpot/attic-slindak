@@ -3,6 +3,7 @@
  */
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 #include <sqlite3.h>
 #include <limits.h>
@@ -11,6 +12,8 @@
 #include "configuration.h"
 #include "lua.h"
 #include "db.h"
+#include "package.h"
+#include "pool.h"
 #include "debfile.h"
 #include "util.h"
 
@@ -18,7 +21,7 @@
  * Match binary package against database and inject it into a proper
  * location.
  */
-int inject_deb(struct debfile *debf, char *suite, char *path)
+int inject_deb(struct debfile *debf, char *suite, const char *path)
 {
 	int s;
 	char *newpath;
@@ -47,7 +50,7 @@ int inject_deb(struct debfile *debf, char *suite, char *path)
 	return GE_OK;
 }
 
-int process_deb(char *path)
+int process_deb(const char *path)
 {
 	int s;
 	struct debfile debf;
@@ -216,13 +219,15 @@ int process_dsc(char *path)
 			__arch = __arch[0] ? strtok_r(NULL, " ", &st) : NULL;
 		} while (__arch);
 	}
+
+	return GE_OK;
 }
 
 int validate_deb(char *path)
 {
 	int s;
 	struct debfile debf;
-	char *suite, *c;
+	char *c;
 
 	s = debfile_read(path, &debf);
 	if (s != GE_OK)

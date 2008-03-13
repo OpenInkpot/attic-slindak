@@ -6,8 +6,8 @@
 #define __POOL_H__
 
 char *mk_pool_path(char *comp, char *pkgname, char *suite);
-int scan_pool();
-int apt_ftparchive();
+int scan_pool(void);
+int apt_ftparchive(void);
 
 #endif
 

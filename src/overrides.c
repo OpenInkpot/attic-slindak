@@ -1,6 +1,7 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <sqlite3.h>
@@ -16,8 +17,6 @@
 static int row_count = 0;
 static int ov_select_cb(void *user, int cols, char **values, char **keys)
 {
-	int i;
-
 	DBG("select: %s=%s\n", keys[0], values[0]);
 	return GE_OK;
 }
@@ -310,7 +309,6 @@ int ov_find_component(char *pkgname, char *version, char *arch, char *suite,
 		char **component)
 {
 	char *req;
-	char *err;
 	char *arch_clause;
 	char *data[OV_NCOLS];
 	int s;
@@ -354,7 +352,6 @@ int ov_find_suite(char *pkgname, char *version, char *arch,
 {
 	int s;
 	char *req;
-	char *err;
 	char *arch_clause;
 	char *data[OV_NCOLS];
 
@@ -392,8 +389,6 @@ int ov_find_suite(char *pkgname, char *version, char *arch,
 int ov_version_count(char *pkgname, char *suite, int *count)
 {
 	char *req;
-	char *err;
-	char *data[OV_NCOLS];
 	int s;
 	int n;
 
@@ -422,7 +417,6 @@ int ov_version_count(char *pkgname, char *suite, int *count)
 int ov_find_version(char *pkgname, char *arch, char *suite, char **version)
 {
 	char *req;
-	char *err;
 	char *data[OV_NCOLS];
 	char *arch_clause;
 	int s;
@@ -460,7 +454,6 @@ int ov_find_version(char *pkgname, char *arch, char *suite, char **version)
 int ov_find_same_uver(char *pkgname, char *uver)
 {
 	char *req;
-	char *err;
 	int s, n;
 
 	GE_ERROR_IFNULL(pkgname);
@@ -512,7 +505,7 @@ int ov_delete(char *pkgname, char *version, char *suite, char *arch)
 	return s;
 }
 
-int ov_create_table()
+int ov_create_table(void)
 {
 	char *req;
 	char *err;

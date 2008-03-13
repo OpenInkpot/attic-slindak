@@ -1,6 +1,7 @@
 /*
  * vi: sw=4 ts=4 noexpandtab
  */
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -8,6 +9,7 @@
 #include <lualib.h>
 #include <lauxlib.h>
 #include "common.h"
+#include "lua-helpers.h"
 #include "configuration.h"
 #include "debfile.h"
 
@@ -153,7 +155,7 @@ int L_get_array(int index, char **array, int narr)
 	return i;
 }
 
-int L_init()
+int L_init(void)
 {
 	L = luaL_newstate();
 	if (!L)
@@ -162,9 +164,11 @@ int L_init()
 	luaL_openlibs(L);
 
 	L_push_pair_str(LUA_GLOBALSINDEX, "BUILD_DATE", BUILD_DATE);
+
+	return GE_OK;
 }
 
-void L_done()
+void L_done(void)
 {
 	lua_close(L);
 }
