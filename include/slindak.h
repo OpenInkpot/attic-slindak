@@ -54,5 +54,14 @@ size_t read_pipe(char **out, const char *fmt, ...);
 
 void root_squash();
 
+/* library */
+typedef void (*exit_fn_t)(void);
+
+int push_cleaner(exit_fn_t exit_fn);
+int pop_cleaner(exit_fn_t exit_fn);
+
+void libslindak_lock(void);
+void libslindak_unlock(void);
+
 #endif /* __SLINDAK_H__ */
 
