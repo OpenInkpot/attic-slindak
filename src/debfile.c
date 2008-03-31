@@ -289,7 +289,7 @@ int dscfile_read(const char *path, struct dscfile *df)
 
 	memset(df, 0, sizeof(struct dscfile));
 
-	read_pipe(&buf, "cat %s", path);
+	read_file(&buf, path);
 	GE_ERROR_IFNULL(buf);
 
 	parse_buf(buf, dscfile_scanner_cb, df);
