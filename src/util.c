@@ -58,7 +58,7 @@ int traverse(char *path, traverse_fn_t callback, void *data)
 		if (!de)
 			break;
 
-		if ( 
+		if (
 			de->d_name[0] == '.' &&
 			((de->d_name[1] == '.' && de->d_name[2] == '\0') ||
 			(de->d_name[1] == '\0'))
@@ -223,14 +223,14 @@ int dpkg_source(char *dir, char *where)
 	return ret;
 }
 
-size_t vread_pipe(char **out, const char *openstr)
+size_t __vread(int is_pipe, char **out, const char *openstr)
 {
 	FILE *p;
 	char *buf = NULL;
 	size_t len = 0;
 	int r = 1;
 
-	p = popen(openstr, "r");
+	p = is_pipe ? popen(openstr, "r") : fopen(openstr, "r");
 	if (!p)
 		return GE_ERROR;
 
@@ -243,12 +243,20 @@ size_t vread_pipe(char **out, const char *openstr)
 		r = read(fileno(p), buf + len, BUFSIZ);
 	}
 
-	pclose(p);
+	if (is_pipe)
+		pclose(p);
+	else
+		fclose(p);
 
 	buf[len] = '\0';
 	*out = buf;
 
 	return len;
+}
+
+size_t vread_pipe(char **out, const char *openstr)
+{
+	return __vread(1, out, openstr);
 }
 
 size_t read_pipe(char **out, const char *fmt, ...)
@@ -265,6 +273,27 @@ size_t read_pipe(char **out, const char *fmt, ...)
 		return GE_ERROR;
 
 	return vread_pipe(out, opstr);
+}
+
+size_t vread_file(char **out, const char *openstr)
+{
+	return __vread(0, out, openstr);
+}
+
+size_t read_file(char **out, const char *fmt, ...)
+{
+	va_list args;
+	char *opstr;
+	int s;
+
+	va_start(args, fmt);
+	s = vasprintf(&opstr, fmt, args);
+	va_end(args);
+
+	if (s == -1)
+		return GE_ERROR;
+
+	return vread_file(out, opstr);
 }
 
 void root_squash()
