@@ -25,6 +25,190 @@ int deb_ver_gt(char *v1, char *v2)
 	return GE_OK;
 }
 
+/* skip whitespaces */
+#define skipws(P)              \
+	do {                       \
+		while (                \
+				' ' == *P  ||  \
+				'\t' == *P ||  \
+				'\n' == *P     \
+			  ) P++;           \
+	} while (0);
+
+/*
+ * control file parser callback for binary controls
+ * understands: Package, Version, Architecture, Section, Source
+ * This function is called from parse_buf() when a key-value pair
+ * is read from a control file.
+ */
+static int debfile_scanner_cb(struct debfile *df, char *key, char *value)
+{
+	if (!strcmp(key, "Package")) {
+		strncpy(df->debname, value, DF_NAMELEN);
+	} else if (!strcmp(key, "Version")) {
+		strncpy(df->version, value, DF_VERLEN);
+	} else if (!strcmp(key, "Architecture")) {
+		/* for arch="all" leave df->arch empty */
+		if (strcmp(value, "all"))
+			strncpy(df->arch, value, DF_ARCHLEN);
+	} else if (!strcmp(key, "Section")) {
+		strncpy(df->component, value, DF_COMPLEN);
+	} else if (!strcmp(key, "Source")) {
+		strncpy(df->source, value, DF_SRCLEN);
+	}
+
+	return GE_OK;
+}
+
+/*
+ * control file parser callback for source controls
+ * understands: Package, Version, Architecture, Section, Source, Files
+ * This function is called from parse_buf() when a key-value pair
+ * is read from a control file.
+ */
+static int dscfile_scanner_cb(struct dscfile *df, char *key, char *value)
+{
+	if (!strcmp(key, "Package") && !df->pkgname[0]) {
+		strncpy(df->pkgname, value, DF_SRCLEN);
+	} else if (!strcmp(key, "Version") && !df->version[0]) {
+		strncpy(df->version, value, DF_VERLEN);
+	} else if (!strcmp(key, "Architecture") && !df->arch[0]) {
+		if (!strcmp(key, "all") || !strcmp(key, "any"))
+			df->arch[0] = '\0';
+		else
+			strncpy(df->arch, value, DF_ARCHLEN);
+	} else if (!strcmp(key, "Section") && !df->component[0]) {
+		strncpy(df->component, value, DF_COMPLEN);
+	} else if (!strcmp(key, "Source") && !df->pkgname[0]) {
+		strncpy(df->pkgname, value, DF_SRCLEN);
+	} else if (!strcmp(key, "Files")) {
+		struct pkgfile PF;
+		char *__p = value;
+
+		while (__p && sscanf(__p, "%32s %d %s\n",
+					PF.md5sum, &PF.size, PF.name) == 3) {
+			struct pkgfile *pf = malloc(sizeof(struct pkgfile));
+			GE_ERROR_IFNULL(pf);
+
+			DBG("## => File: %s, size: %d, md5: %s\n", PF.name, PF.size, PF.md5sum);
+			strncpy(pf->name, PF.name, FILENAME_MAX);
+			strncpy(pf->md5sum, PF.md5sum, 33);
+			pf->size = PF.size;
+
+			df->files[df->nfiles++] = pf;
+
+			__p = strchr(__p, '\n');
+			if (__p) skipws(__p);
+		}
+	}
+
+	return GE_OK;
+}
+
+/* callback type for control file scanner */
+typedef int (*scanner_fn)(void *user, char *key, char *value);
+
+/* parser states */
+enum {
+	AT_NEW = 0, /* expect a key /^([^:]+):/ */
+	AT_KEY      /* expect value string(s) */
+};
+
+/* possible string delimiters, per state */
+const char *delims[] = {
+	/* AT_NEW */":",
+	/* AT_KEY */"\n"
+};
+
+/*
+ * Parse a buffer containing a control file.
+ * Calls scanner_cb() for each key-value pair found.
+ */
+int parse_buf(char *buf, scanner_fn scanner_cb, void *user)
+{
+	char *start = buf, *end;
+	char *token, *key = NULL, *val = NULL;
+	int state = AT_NEW;
+
+	do {
+		int i, d = -1;
+		char *_end;
+
+		skipws(start);
+
+		end = start + strlen(buf);
+		for (i = 0; i < strlen(delims[state]); i++) {
+			_end = strchr(start, delims[state][i]);
+			if (!_end) continue;
+			if (_end == start) continue;
+			if (_end <= end) {
+				end = _end;
+				d = i;
+			}
+		}
+
+		if (d == -1)
+			break;
+
+		if (end > start) {
+			char *__p = end + 1;
+
+			token = strndup(start, end - start);
+			if (!token) {
+				SHOUT("SHIT!\n");
+				return GE_ERROR;
+			}
+
+			switch (state) {
+				case AT_NEW:
+					state = AT_KEY;
+
+					if (key) {
+						if (scanner_cb(user, key, val) != GE_OK)
+							return GE_ERROR;
+
+						free(key);
+						free(val);
+						key = val = NULL;
+					}
+
+					key = token;
+					DBG("found key: \"%s\"\n", token);
+					break;
+
+				case AT_KEY:
+					/* this is unsafe, since skipws() can go outside
+					 * the input buffer */
+					skipws(__p); /* __p now points to first non-whitespace */
+
+					if (__p - end <= 1)
+						state = AT_NEW;
+
+					if (val) {
+						/* 2 == newline + nul terminator */
+						val = realloc(val, strlen(val) + strlen(token) + 2);
+						sprintf(val, "%s\n%s", val, token);
+					} else
+						val = token;
+
+					DBG("found value: \"%s\"\n", token);
+					break;
+
+				default:
+					SHOUT("Internal slindak error at %s:%d\n",
+							__FILE__, __LINE__);
+			}
+		}
+
+		start = end + 1;
+	} while (*end);
+
+	if (scanner_cb(user, key, val) != GE_OK)
+		return GE_ERROR;
+
+	return GE_OK;
+}
+
 int debfile_read(const char *path, struct debfile *df)
 {
 	FILE *p;
@@ -38,10 +222,6 @@ int debfile_read(const char *path, struct debfile *df)
 		SHOUT("Can't stat %s\n", path);
 		return GE_ERROR;
 	}
-
-	snprintf(cmd, PATH_MAX, "/usr/bin/dpkg --info %s", path);
-	p = popen(cmd, "r");
-	GE_ERROR_IFNULL(p);
 
 	memset(df, 0, sizeof(struct debfile));
 
@@ -69,39 +249,10 @@ int debfile_read(const char *path, struct debfile *df)
 		return GE_ERROR;
 	}
 
-	read_pipe(&df->deb_control, "/usr/bin/dpkg --info %s", path);
-	if (!df->deb_control)
-		return GE_ERROR;
+	read_pipe(&df->deb_control, "ar p %s control.tar.gz|tar zxO ./control", path);
+	GE_ERROR_IFNULL(df->deb_control);
 
-	while (!feof(p)) {
-		fscanf(p, "%s", tok);
-
-		if (!strcmp(tok, "Package:")) {
-			fscanf(p, "%s", tok);
-
-			strncpy(df->debname, tok, DF_NAMELEN);
-		} else if (!strcmp(tok, "Version:")) {
-			fscanf(p, "%s", tok);
-
-			strncpy(df->version, tok, DF_VERLEN);
-		} else if (!strcmp(tok, "Architecture:")) {
-			fscanf(p, "%s", tok);
-
-			/* for arch="all" leave df->arch empty */
-			if (strcmp(tok, "all"))
-				strncpy(df->arch, tok, DF_ARCHLEN);
-		} else if (!strcmp(tok, "Section:")) {
-			fscanf(p, "%s", tok);
-
-			strncpy(df->component, tok, DF_COMPLEN);
-		} else if (!strcmp(tok, "Source:")) {
-			fscanf(p, "%s", tok);
-
-			strncpy(df->source, tok, DF_SRCLEN);
-		}
-	}
-
-	pclose(p);
+	parse_buf(df->deb_control, debfile_scanner_cb, df);
 
 	if (df->source[0] == '\0')
 		strncpy(df->source, df->debname, DF_SRCLEN);
@@ -134,61 +285,15 @@ void debfile_free(struct debfile *debf)
 
 int dscfile_read(const char *path, struct dscfile *df)
 {
-	FILE *f;
-	char tok[256];
-
-	f = fopen(path, "r");
-	GE_ERROR_IFNULL(f);
+	char *buf;
 
 	memset(df, 0, sizeof(struct dscfile));
 
-	while (!feof(f)) {
-		fscanf(f, "%s", tok);
+	read_pipe(&buf, "cat %s", path);
+	GE_ERROR_IFNULL(buf);
 
-		if (!strcmp(tok, "Package:") && !df->pkgname[0]) {
-			fscanf(f, "%s", tok);
-
-			strncpy(df->pkgname, tok, DF_SRCLEN);
-		} else if (!strcmp(tok, "Version:") && !df->version[0]) {
-			fscanf(f, "%s", tok);
-
-			strncpy(df->version, tok, DF_VERLEN);
-		} else if (!strcmp(tok, "Architecture:") && !df->arch[0]) {
-			fscanf(f, " %255[^\n]\n", tok);
-
-			if (!strcmp(tok, "all") || !strcmp(tok, "any"))
-				df->arch[0] = '\0';
-			else
-				strncpy(df->arch, tok, DF_ARCHLEN);
-		} else if (!strcmp(tok, "Section:") && !df->component[0]) {
-			fscanf(f, "%s", tok);
-
-			strncpy(df->component, tok, DF_COMPLEN);
-		} else if (!strcmp(tok, "Source:") && !df->pkgname[0]) {
-			fscanf(f, "%s", tok);
-
-			strncpy(df->pkgname, tok, DF_SRCLEN);
-		} else if (!strcmp(tok, "Files:")) {
-			struct pkgfile PF;
-
-			while (fscanf(f, " %32s %d %s\n",
-					PF.md5sum, &PF.size, PF.name) == 3) {
-				struct pkgfile *pf = malloc(sizeof(struct pkgfile));
-				GE_ERROR_IFNULL(pf);
-
-				DBG("## => File: %s, size: %d, md5: %s\n", PF.name, PF.size, PF.md5sum);
-				strncpy(pf->name, PF.name, FILENAME_MAX);
-				strncpy(pf->md5sum, PF.md5sum, 33);
-				pf->size = PF.size;
-
-				df->files[df->nfiles++] = pf;
-			}
-
-			break;
-		}
-	}
-
-	fclose(f);
+	parse_buf(buf, dscfile_scanner_cb, df);
+	free(buf);
 
 	if (df->component[0] == '\0')
 		strcpy(df->component, "host-tools");
