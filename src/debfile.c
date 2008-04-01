@@ -73,7 +73,7 @@ static int dscfile_scanner_cb(struct dscfile *df, char *key, char *value)
 	} else if (!strcmp(key, "Version") && !df->version[0]) {
 		strncpy(df->version, value, DF_VERLEN);
 	} else if (!strcmp(key, "Architecture") && !df->arch[0]) {
-		if (!strcmp(key, "all") || !strcmp(key, "any"))
+		if (!strcmp(value, "all") || !strcmp(value, "any"))
 			df->arch[0] = '\0';
 		else
 			strncpy(df->arch, value, DF_ARCHLEN);
