@@ -1,3 +1,14 @@
+slindak (0.1.11) unstable; urgency=low
+
+  * New version.
+
+  [ Alexander Shishkin ]
+  * add read_file() to complement read_pipe()
+  * use read_file() instead of read_pipe() from "cat %s"
+  * fix architecture field detection during pool scan
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Wed,  2 Apr 2008 12:36:47 +0400
+
 slindak (0.1.10) unstable; urgency=low
 
   * New version.
