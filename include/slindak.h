@@ -54,6 +54,10 @@ size_t vread_pipe(char **out, const char *openstr);
 
 size_t read_pipe(char **out, const char *fmt, ...);
 
+size_t vread_file(char **out, const char *openstr);
+
+size_t read_file(char **out, const char *fmt, ...);
+
 void root_squash();
 
 /* library */
