@@ -56,6 +56,8 @@ static struct poptOption opts_table[] = {
 	{ "cleanup",  'C', POPT_ARG_NONE,   &G.cleanup, 0,
 	  "remove binary packages that do not match source packages "
 	  "known to overrides.db" },
+	{ "cache",    'c', POPT_ARG_NONE,   &G.cached, 0,
+	  "use cached information on binary packages" },
 	{ "force",    'F', POPT_ARG_NONE,   &G.force, 0,
 	  "forced complete rebuild of all the indices, "
 	  "despices apt-ftparchive's caches." },
@@ -231,7 +233,8 @@ int main(int argc, const char **argv)
 	}
 
 	G.op_mode = OM_POOL;
-	bc_clear();
+	if (!G.cached)
+		bc_clear();
 
 	lists_cleanup();
 	s = scan_pool();

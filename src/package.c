@@ -24,7 +24,7 @@
 int inject_deb(struct debfile *debf, char *suite, const char *path)
 {
 	int s;
-	char *newpath;
+	char *newpath, *fn;
 	char *c;
 
 	s = ov_find_component(debf->source, debf->version, debf->arch,
@@ -35,17 +35,45 @@ int inject_deb(struct debfile *debf, char *suite, const char *path)
 		return GE_EMPTY;
 	}
 
-	newpath = mk_pool_path(debf->component, debf->source, suite);
-	if (!newpath)
-		return GE_ERROR;
+	newpath = mk_pool_path(debf->component, debf->source, suite, 1);
+	GE_ERROR_IFNULL(newpath);
 
 	DBG("pool path %s", newpath);
 	mkdir_p(newpath, 0755);
 	copy(path, newpath);
-
-	pkg_append(path, suite, debf->arch, c, 0);
-	free(c);
 	free(newpath);
+
+	/* fix up pool_file so that the reference in binary_cache is correct */
+	newpath = mk_pool_path(debf->component, debf->source, suite, 0);
+	GE_ERROR_IFNULL(newpath);
+
+	strncpy(debf->pool_file, newpath, PATH_MAX);
+	free(newpath);
+
+	fn = strrchr(path, '/');
+	GE_ERROR_IFNULL(fn);
+
+	strncat(debf->pool_file, fn, PATH_MAX - strlen(debf->pool_file));
+
+	/* TODO: should probably go inside pkg_append() */
+	if (!debf->arch[0]) {
+		int an, sn;
+
+		sn = get_suite_by_name(debf->suite);
+		for (an = 0; SUITES[sn]->archlist[an]; an++) {
+			pkg_append(path, debf->suite, SUITES[sn]->archlist[an],
+					debf->component, 0);
+			strncpy(debf->arch, SUITES[sn]->archlist[an], DF_ARCHLEN);
+			bc_insert_debf(debf);
+		}
+
+		debf->arch[0] = '\0';
+	} else {
+		pkg_append(path, suite, debf->arch, c, 0);
+		bc_insert_debf(debf);
+	}
+
+	free(c);
 
 	return GE_OK;
 }
@@ -76,6 +104,7 @@ int process_deb(const char *path)
 			return GE_ERROR;
 		}
 
+		debf.suite = G.users_suite;
 		s = inject_deb(&debf, G.users_suite, path);
 		if (s != GE_OK)
 			return GE_ERROR;

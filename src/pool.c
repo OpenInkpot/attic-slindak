@@ -16,18 +16,19 @@
 #include "debfile.h"
 #include "package.h"
 #include "util.h"
+#include "bc.h"
 
-char *mk_pool_path(char *comp, char *pkgname, char *suite)
+char *mk_pool_path(char *comp, char *pkgname, char *suite, int abs)
 {
 	char *newpath = NULL;
 	int s;
 
 	if (!strncmp(pkgname, "lib", 3))
-		s = asprintf(&newpath, "%s/%s/lib%c/%s/%s", G.pool_dir, comp,
-				pkgname[3], pkgname, suite);
+		s = asprintf(&newpath, "%s/%s/lib%c/%s/%s", abs ? G.pool_dir : "pool",
+				comp, pkgname[3], pkgname, suite);
 	else
-		s = asprintf(&newpath, "%s/%s/%c/%s/%s", G.pool_dir, comp,
-				pkgname[0], pkgname, suite);
+		s = asprintf(&newpath, "%s/%s/%c/%s/%s", abs ? G.pool_dir : "pool",
+				comp, pkgname[0], pkgname, suite);
 
 	if (s == -1)
 		return NULL;
@@ -98,9 +99,19 @@ static void check_file(char *path, void *data)
 	}
 }
 
+static int process_cache_cb(void *user, int cols, char **values, char **keys)
+{
+	DBG("binary pkg %s\n", values[BC_POOL_FILE]);
+	pkg_append(values[BC_POOL_FILE], values[BC_SUITE], values[BC_DEB_ARCH],
+			values[BC_DEB_SECTION], 0);
+
+	return GE_OK;
+}
+
 int scan_pool(void)
 {
 	struct file_entry *entry;
+	int s;
 
 	traverse(G.repo_dir, check_file, NULL);
 
@@ -120,14 +131,22 @@ int scan_pool(void)
 	if (!debs_list.next)
 		return GE_OK;
 
-	entry = debs_list.next;
-	SAY("Processing %d binary packages.\n", debs_list.next->n);
-	while (entry) {
-		if (G.cleanup)
-			validate_deb(entry->pathname);
-		else
-			process_deb(entry->pathname);
-		entry = entry->next;
+	if (G.cached) {
+		SAY("Processing cached binary packages.\n");
+
+		s = bc_search_all("", NULL, process_cache_cb);
+		if (s != GE_OK)
+			return GE_ERROR;
+	} else {
+		entry = debs_list.next;
+		SAY("Processing %d binary packages.\n", debs_list.next->n);
+		while (entry) {
+			if (G.cleanup)
+				validate_deb(entry->pathname);
+			else
+				process_deb(entry->pathname);
+			entry = entry->next;
+		}
 	}
 
 	return GE_OK;
