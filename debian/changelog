@@ -1,3 +1,9 @@
+slindak (0.1.11.oi1) unstable; urgency=low
+
+  * Missing debhelper build dependency added.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Thu, 08 May 2008 19:03:08 +0700
+
 slindak (0.1.11) unstable; urgency=low
 
   * New version.
