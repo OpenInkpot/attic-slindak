@@ -3,7 +3,7 @@ Maintainer: Alexander Shishkin <virtuoso@slind.org>
 Section: host-tools
 Priority: optional
 Standards-Version: 3.6.2
-Build-Depends: libc6-dev, libpopt-dev, liblua5.1-0-dev, libsqlite3-dev, libcgi-dev
+Build-Depends: libc6-dev, libpopt-dev, liblua5.1-0-dev, libsqlite3-dev, libcgi-dev, debhelper
 
 Package: slindak
 Section: host-tools
