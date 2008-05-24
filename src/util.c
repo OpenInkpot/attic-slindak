@@ -147,6 +147,12 @@ int mkdir_p(char *dst, mode_t mode)
 {
 	char *argv[] = { "mkdir", "-p", dst, NULL };
 	int ret;
+	struct stat stat_buf;
+
+	/* Is directory exist? */
+	ret = stat(dst, &stat_buf);
+	if (!ret)
+		return GE_OK;
 
 	ret = spawn(MKDIR_BIN_PATH, argv);
 	if (ret)
