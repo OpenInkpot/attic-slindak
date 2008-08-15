@@ -50,7 +50,10 @@ static int ov_fetch_cb(void *user, int cols, char **values, char **keys)
 	for (i = OV_FIRSTCOL; i < OV_NCOLS; i++) {
 		_DBG("%s=\"%s\" ", keys[i], values[i]);
 		if (out)
-			out[i] = values[i];
+        {
+            /* FIXME: this is memory leak */
+			out[i] = strdup(values[i]);
+        }
 	}
 	_DBG("\n");
 
