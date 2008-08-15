@@ -122,7 +122,7 @@ int spawn(const char *cmd, char *const argv[])
 		}
 	}
 
-	return ret;
+	return (WIFEXITED(ret) && WEXITSTATUS(ret) == 0) ? GE_OK : GE_ERROR;
 }
 
 /*
