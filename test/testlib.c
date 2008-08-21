@@ -241,7 +241,11 @@ int mk_deb_package(
 	}
 
 	snprintf(binpkg, PATH_MAX, "%s.deb", pkgdir);
-	slindak_i(repodir, binpkg, "clydesdale");
+	ret = slindak_i(repodir, binpkg, "clydesdale");
+	if (ret) {
+		SHOUT("Failed to inject %s [%d].\n", binpkg, ret);
+		return GE_ERROR;
+	}
 
 out_rm:
 	ret = rm_rf(tmpdir_r);
