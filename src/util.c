@@ -122,6 +122,15 @@ int spawn(const char *cmd, char *const argv[])
 		}
 	}
 
+    if (verbosity >= VERB_DEBUG)
+    {
+        DBG("exit code: ");
+        if (WIFEXITED(ret))
+            output(ERR, VERB_DEBUG, "%d\n", WEXITSTATUS(ret));
+        else if (WIFSIGNALED(ret))
+            output(ERR, VERB_DEBUG, "SIG %d%s\n", WTERMSIG(ret), WCOREDUMP(ret) ? " (core dumped)" : "");
+    }
+
 	return (WIFEXITED(ret) && WEXITSTATUS(ret) == 0) ? GE_OK : GE_ERROR;
 }
 
