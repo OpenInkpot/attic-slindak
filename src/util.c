@@ -99,7 +99,7 @@ int spawn(const char *cmd, char *const argv[])
 	int ret;
 
 	if (verbosity >= VERB_DEBUG) {
-		DBG("going to execute:");
+		DBG("going to execute [%s]:", cmd);
 		while (argv[i])
 			output(ERR, VERB_DEBUG, " %s", argv[i++]);
 		output(ERR, VERB_DEBUG, "\n");
