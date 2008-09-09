@@ -1,3 +1,22 @@
+slindak (0.1.12.oi1) asimov; urgency=low
+
+  * New OI version, merging Slind changes.
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Tue, 09 Sep 2008 18:42:47 +0700
+
+slindak (0.1.12) unstable; urgency=low
+
+  * New version.
+
+  [ Mikhail Gusarov ]
+  * Missing pkg-config build-dependency added.
+  * debhelper build-dependency added
+
+  [ Alexander Shishkin ]
+  * be slightly more verbose in testcases
+
+ -- Alexander Shishkin <virtuoso@slind.org>  Thu, 21 Aug 2008 10:44:21 +0300
+
 slindak (0.1.11.oi2) unstable; urgency=low
 
   * Forced chmod invocation in mkdir_p was removed.
