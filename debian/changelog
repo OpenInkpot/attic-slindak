@@ -1,3 +1,10 @@
+slindak (0.1.12.oi2) unstable; urgency=low
+
+  * spawn() fixed on x86-64
+  * Fixed memory corruption in slindak
+
+ -- Mikhail Gusarov <dottedmag@dottedmag.net>  Wed, 10 Sep 2008 02:31:20 +0700
+
 slindak (0.1.12.oi1) asimov; urgency=low
 
   * New OI version, merging Slind changes.
